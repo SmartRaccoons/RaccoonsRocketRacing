@@ -1,0 +1,32 @@
+body,html{
+    font:normal 16px/20px arial;
+    color:#fff;
+}
+h1{
+	margin:10px;
+	padding:0;
+	font-size:20px;
+	line-height: 24px;
+}
+.c{
+    width:100%;
+    overflow:hidden;
+}
+.c .l{
+    float:left;
+}
+.c .r{
+    float:right;
+}
+.c .w15{
+    width:15%;
+}
+.c .w25{
+    width:25%;
+}
+.c .w33{
+    width:33%
+}
+.c .w49{
+    width:49%;
+}
