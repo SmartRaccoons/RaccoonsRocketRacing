@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta content='text/html;charset=utf-8' http-equiv='Content-Type' />
+        <link rel='stylesheet' href='d/c.css?{version}' />
+        <!--[if lt IE 9]>
+            <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+        <![endif]-->
+        <script>
+            var _gaq = _gaq || [], oldOnerrror = window.onerror;
+            window.onerror = function(msg, url, line) {
+                var message = navigator.userAgent + ' -> ' + url + " : " + line + ' (' + window.location + ')';
+                _gaq.push(['_trackEvent', 'JS Error', msg, message, 0, true]);
+                if(oldOnerrror) return oldOnerrror(msg, url, line);
+                return false;
+            };
+        </script>
+    </head>
+    <body>
+        <script src='d/j.js?{version}'></script>
+        <script>
+            (function() {
+//                window.draugiem_callback_url = 'http://'+document.domain+'/callback.html';
+//                window.draugiem_domain = window.GET['domain'];
+//                var r = new App.Router({el: $('body')});
+//                var socket = io.connect('', {'sync disconnect on unload': true});
+//                var emit = socket.emit;
+//                socket.on('disconnect', function(){
+//                    window.location.reload();
+//                });
+//                socket.emit = function() {
+//                    emit.apply(socket, arguments);
+//                };
+//                var $emit = socket.$emit;
+//                socket.$emit = function(evt) {
+//                    App.socket.receive.trigger.apply(App.socket.receive, Array.prototype.slice.apply(arguments));
+//                    $emit.apply(socket, arguments);
+//                };
+//                App.socket.send.on('all', function(){
+//                    socket.emit.apply(socket, Array.prototype.slice.call(arguments));
+//                });
+//
+//                socket.on('global:link', function(link){
+//                    draugiemWindowOpen(link, 350, 400);
+//                });
+//                App.events.on('coin:buy', function(price){
+//                    socket.emit('coin:buy', price);
+//                });
+            })();
+        </script>
+        <script src='http://ifrype.com/applications/external/draugiem.js'></script>
+        <script>
+//            var _gaq = _gaq || [];
+//            _gaq.push(['_setAccount', 'UA-24527026-4']);
+//            _gaq.push(['_trackPageview']);
+//
+//            (function() {
+//                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+//                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+//                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+//            })();
+        </script>
+    </body>
+</html>

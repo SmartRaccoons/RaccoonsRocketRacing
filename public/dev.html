@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta content='text/html;charset=utf-8' http-equiv='Content-Type' />
+        <link rel='stylesheet' href='d/css/screen.css' />
+        <!--[if lt IE 9]>
+            <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+        <![endif]-->
+    </head>
+    <body>
+        <script src="d/js/jquery-1.10.0.min.js"></script>
+        <script src='/socket.io/socket.io.js'></script>
+        <script src="/lodash/lodash.js"></script>
+        <script src="/backbone/backbone.js"></script>
+        <!--<script src="d/js/backbone-patch.js"></script>-->
+        <script src="d/js/locale.js"></script>
+        <script src="d/js/init.js"></script>
+
+        <!--<script src="d/js/popup.js"></script>-->
+
+        <!--<script src="d/js/rooms.js"></script>-->
+        <!--<script src="d/js/coin.js"></script>-->
+
+        <!--<script src="d/js/chat.js"></script>-->
+
+        <!--<script src="d/js/game.js"></script>-->
+
+        <script src="d/js/router.js"></script>
+        <script>
+            (function() {
+                if(!console || !console.log){ var console = {'log': function(){}}; }
+                var r = new App.Router({el: document.body});
+                var socket = io.connect('', {'sync disconnect on unload': true});
+                var emit = socket.emit;
+                socket.emit = function() {
+                    emit.apply(socket, arguments);
+                };
+                var $emit = socket.$emit;
+                socket.$emit = function(evt) {
+                    App.socket.receive.trigger.apply(App.socket.receive, Array.prototype.slice.apply(arguments));
+                    $emit.apply(socket, arguments);
+                };
+                App.socket.send.on('all', function(){
+                    socket.emit.apply(socket, Array.prototype.slice.call(arguments));
+                });
+            })();
+        </script>
+    </body>
+</html>
