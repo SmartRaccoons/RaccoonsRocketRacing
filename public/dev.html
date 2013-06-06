@@ -30,69 +30,68 @@
         <script>
             (function() {
 //                if(!console || !console.log){ var console = {'log': function(){}}; }
-                var r = new App.Router({el: document.body});
+                var r = new App.Router({el: $('body')});
                 r.start();
-                r.add({'id': 2, 'pos': [32, 32]});
-                $('body').on({
-                    'keydown': function(e){
-                        if(e.keyCode == 38){
-                            //up
-//                            r.get(2).speed = 10;
-//                            r.get(2).angle = 270;
-                            r.get(2).speed++;
-                        }
-                        if(e.keyCode == 37){
-                            //left
-//                            r.get(2).speed = 10;
-//                            r.get(2).angle = 180;
-                            r.get(2).angle -= 5;
-                        }
-                        if(e.keyCode == 39){
-                            //right
-//                            r.get(2).speed = 10;
-//                            r.get(2).angle = 0;
-                            r.get(2).angle += 5;
-                        }
-                        if(e.keyCode == 40){
-                            //down
-//                            r.get(2).speed = 10;
-//                            r.get(2).angle = 90;
-                            r.get(2).speed--;
-                        }
-                        if(e.keyCode == 32){
-                            //space
-                        }
-                    },
-                    'keyup': function(e){
+//                r.add({'id': 2, 'pos': [32, 32]});
+//                $('body').on({
+//                    'keydown': function(e){
 //                        if(e.keyCode == 38){
-//                            r.get(2).speed = 0;
+//                            //up
+////                            r.get(2).speed = 10;
+////                            r.get(2).angle = 270;
+//                            r.get(2).speed++;
 //                        }
 //                        if(e.keyCode == 37){
-//                            r.get(2).speed = 0;
+//                            //left
+////                            r.get(2).speed = 10;
+////                            r.get(2).angle = 180;
+//                            r.get(2).angle -= 5;
 //                        }
 //                        if(e.keyCode == 39){
-//                            r.get(2).speed = 0;
+//                            //right
+////                            r.get(2).speed = 10;
+////                            r.get(2).angle = 0;
+//                            r.get(2).angle += 5;
 //                        }
 //                        if(e.keyCode == 40){
-//                            r.get(2).speed = 0;
+//                            //down
+////                            r.get(2).speed = 10;
+////                            r.get(2).angle = 90;
+//                            r.get(2).speed--;
 //                        }
-                    }
-                });
-
-
-//                var socket = io.connect('', {'sync disconnect on unload': true});
-//                var emit = socket.emit;
-//                socket.emit = function() {
-//                    emit.apply(socket, arguments);
-//                };
-//                var $emit = socket.$emit;
-//                socket.$emit = function(evt) {
-//                    App.socket.receive.trigger.apply(App.socket.receive, Array.prototype.slice.apply(arguments));
-//                    $emit.apply(socket, arguments);
-//                };
-//                App.socket.send.on('all', function(){
-//                    socket.emit.apply(socket, Array.prototype.slice.call(arguments));
+//                        if(e.keyCode == 32){
+//                            //space
+//                            r.remove(2, {'speed': 20});
+//                        }
+//                    },
+//                    'keyup': function(e){
+////                        if(e.keyCode == 38){
+////                            r.get(2).speed = 0;
+////                        }
+////                        if(e.keyCode == 37){
+////                            r.get(2).speed = 0;
+////                        }
+////                        if(e.keyCode == 39){
+////                            r.get(2).speed = 0;
+////                        }
+////                        if(e.keyCode == 40){
+////                            r.get(2).speed = 0;
+////                        }
+//                    }
 //                });
+                var socket = io.connect('', {'sync disconnect on unload': true});
+                var emit = socket.emit;
+                socket.emit = function() {
+                    emit.apply(socket, arguments);
+                };
+                var $emit = socket.$emit;
+                socket.$emit = function(evt) {
+                    App.socket.receive.trigger.apply(App.socket.receive, Array.prototype.slice.apply(arguments));
+                    $emit.apply(socket, arguments);
+                };
+                App.socket.send.on('all', function(){
+                    socket.emit.apply(socket, Array.prototype.slice.call(arguments));
+                });
             })();
         </script>
     </body>

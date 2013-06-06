@@ -55,12 +55,43 @@ class Tank extends Sprite
 App.Router = class Router extends Backbone.View
   lastTime: 0
   elements: {}
+  _keys:
+    'up':
+      'active': false
+      'code': [38]
+    'down':
+      'active': false
+      'code': [40]
+    'left':
+      'active': false
+      'code': [37]
+    'right':
+      'active': false
+      'code': [39]
+    'fire':
+      'active': false
+      'code': [32]
+  events:
+    'keydown': (e)->
+      for attr, val of @_keys
+        if e.keyCode in val.code and not val.active
+          val.active = true
+          App.socket.send.trigger 'control', {'move': attr, 'active': val.active}
+      @
+    'keyup': (e)->
+      for attr, val of @_keys
+        if e.keyCode in val.code and val.active
+          val.active = false
+          App.socket.send.trigger 'control', {'move': attr, 'active': val.active}
+      @
 
   initialize: ->
     super
-
     @canvas = $('<canvas width='+(@$el.width()-6)+' height='+(@$el.height()-6)+'>').appendTo(@$el)
     @c = @canvas[0].getContext('2d')
+    App.socket.receive.on 'add', (params)=> @add(params)
+    App.socket.receive.on 'update', (params)=> @update(params.id, params.attr)
+    App.socket.receive.on 'remove', (params)=> @update(params.id)
 
   add: (params)->
     @elements[params.id] =
@@ -69,10 +100,17 @@ App.Router = class Router extends Backbone.View
       'speed': 2
       'angle': 0
 
+  update: (id, prop)->
+    for attr, val of prop
+      @get(id)[attr] = val
+
+  remove: (id)->
+    delete @elements[id]
+
   get: (id)->
     @elements[id]
 
-  update: (dt)->
+  _updateView: (dt)->
     for attr, val of @elements
       rd = val.angle * Math.PI/180.0
       hypo = val.speed * dt
@@ -97,7 +135,7 @@ App.Router = class Router extends Backbone.View
   process: ->
     now = Date.now()
     dt = (now - @lastTime) / 1000.0
-    @update(dt)
+    @_updateView(dt)
     @render()
     @lastTime = now
     requestAnimFrame =>

@@ -1,7 +1,8 @@
 (function() {
   var PreloadImg, Router, Sprite, Tank, requestAnimFrame,
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   requestAnimFrame = function(callback) {
     return window.setTimeout(callback, 1000 / 1);
@@ -95,10 +96,76 @@
 
     Router.prototype.elements = {};
 
+    Router.prototype._keys = {
+      'up': {
+        'active': false,
+        'code': [38]
+      },
+      'down': {
+        'active': false,
+        'code': [40]
+      },
+      'left': {
+        'active': false,
+        'code': [37]
+      },
+      'right': {
+        'active': false,
+        'code': [39]
+      },
+      'fire': {
+        'active': false,
+        'code': [32]
+      }
+    };
+
+    Router.prototype.events = {
+      'keydown': function(e) {
+        var attr, val, _ref, _ref1;
+        _ref = this._keys;
+        for (attr in _ref) {
+          val = _ref[attr];
+          if ((_ref1 = e.keyCode, __indexOf.call(val.code, _ref1) >= 0) && !val.active) {
+            val.active = true;
+            App.socket.send.trigger('control', {
+              'move': attr,
+              'active': val.active
+            });
+          }
+        }
+        return this;
+      },
+      'keyup': function(e) {
+        var attr, val, _ref, _ref1;
+        _ref = this._keys;
+        for (attr in _ref) {
+          val = _ref[attr];
+          if ((_ref1 = e.keyCode, __indexOf.call(val.code, _ref1) >= 0) && val.active) {
+            val.active = false;
+            App.socket.send.trigger('control', {
+              'move': attr,
+              'active': val.active
+            });
+          }
+        }
+        return this;
+      }
+    };
+
     Router.prototype.initialize = function() {
+      var _this = this;
       Router.__super__.initialize.apply(this, arguments);
       this.canvas = $('<canvas width=' + (this.$el.width() - 6) + ' height=' + (this.$el.height() - 6) + '>').appendTo(this.$el);
-      return this.c = this.canvas[0].getContext('2d');
+      this.c = this.canvas[0].getContext('2d');
+      App.socket.receive.on('add', function(params) {
+        return _this.add(params);
+      });
+      App.socket.receive.on('update', function(params) {
+        return _this.update(params.id, params.attr);
+      });
+      return App.socket.receive.on('remove', function(params) {
+        return _this.update(params.id);
+      });
     };
 
     Router.prototype.add = function(params) {
@@ -110,11 +177,25 @@
       };
     };
 
+    Router.prototype.update = function(id, prop) {
+      var attr, val, _results;
+      _results = [];
+      for (attr in prop) {
+        val = prop[attr];
+        _results.push(this.get(id)[attr] = val);
+      }
+      return _results;
+    };
+
+    Router.prototype.remove = function(id) {
+      return delete this.elements[id];
+    };
+
     Router.prototype.get = function(id) {
       return this.elements[id];
     };
 
-    Router.prototype.update = function(dt) {
+    Router.prototype._updateView = function(dt) {
       var attr, hypo, rd, val, _ref, _results;
       _ref = this.elements;
       _results = [];
@@ -156,7 +237,7 @@
         _this = this;
       now = Date.now();
       dt = (now - this.lastTime) / 1000.0;
-      this.update(dt);
+      this._updateView(dt);
       this.render();
       this.lastTime = now;
       return requestAnimFrame(function() {
