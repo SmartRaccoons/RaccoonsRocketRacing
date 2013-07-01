@@ -1,11 +1,11 @@
 requestAnimFrame =
-#  window.requestAnimationFrame ||
-#    window.webkitRequestAnimationFrame ||
-#    window.mozRequestAnimationFrame ||
-#    window.oRequestAnimationFrame ||
-#    window.msRequestAnimationFrame ||
+  window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
   (callback)->
-    window.setTimeout(callback, 1000 / 1)
+    window.setTimeout(callback, 1000 / 30)
 
 
 
@@ -90,25 +90,23 @@ App.Router = class Router extends Backbone.View
     @canvas = $('<canvas width='+(@$el.width()-6)+' height='+(@$el.height()-6)+'>').appendTo(@$el)
     @c = @canvas[0].getContext('2d')
     App.socket.receive.on 'add', (params)=> @add(params)
-    App.socket.receive.on 'update', (params)=> @update(params.id, params.attr)
-    App.socket.receive.on 'remove', (params)=> @update(params.id)
+    App.socket.receive.on 'update', (params)=> @update(params)
+    App.socket.receive.on 'remove', (params)=> @remove(params.id)
 
   add: (params)->
     @elements[params.id] =
       'sprite': new Tank()
       'pos': params.pos
-      'speed': 2
+      'speed': 0
       'angle': 0
 
-  update: (id, prop)->
+  update: (prop)->
     for attr, val of prop
-      @get(id)[attr] = val
+      if attr isnt 'id'
+        @elements[prop['id']][attr] = val
 
   remove: (id)->
     delete @elements[id]
-
-  get: (id)->
-    @elements[id]
 
   _updateView: (dt)->
     for attr, val of @elements

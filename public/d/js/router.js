@@ -4,8 +4,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  requestAnimFrame = function(callback) {
-    return window.setTimeout(callback, 1000 / 1);
+  requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+    return window.setTimeout(callback, 1000 / 30);
   };
 
   PreloadImg = (function() {
@@ -161,10 +161,10 @@
         return _this.add(params);
       });
       App.socket.receive.on('update', function(params) {
-        return _this.update(params.id, params.attr);
+        return _this.update(params);
       });
       return App.socket.receive.on('remove', function(params) {
-        return _this.update(params.id);
+        return _this.remove(params.id);
       });
     };
 
@@ -172,27 +172,27 @@
       return this.elements[params.id] = {
         'sprite': new Tank(),
         'pos': params.pos,
-        'speed': 2,
+        'speed': 0,
         'angle': 0
       };
     };
 
-    Router.prototype.update = function(id, prop) {
+    Router.prototype.update = function(prop) {
       var attr, val, _results;
       _results = [];
       for (attr in prop) {
         val = prop[attr];
-        _results.push(this.get(id)[attr] = val);
+        if (attr !== 'id') {
+          _results.push(this.elements[prop['id']][attr] = val);
+        } else {
+          _results.push(void 0);
+        }
       }
       return _results;
     };
 
     Router.prototype.remove = function(id) {
       return delete this.elements[id];
-    };
-
-    Router.prototype.get = function(id) {
-      return this.elements[id];
     };
 
     Router.prototype._updateView = function(dt) {
