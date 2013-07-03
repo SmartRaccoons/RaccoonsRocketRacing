@@ -7,6 +7,10 @@ extend = (from, to)->
   from
 
 
+
+collides = (x, y, r, b, x2, y2, r2, b2)-> !(r <= x2 || x > r2 || b <= y2 || y > b2)
+
+
 class Game extends events.EventEmitter
 
   elements: {}
@@ -14,11 +18,18 @@ class Game extends events.EventEmitter
 
   add: (params)->
     @id++
+    if params.object is 'tank'
+      size = [32, 32]
+    else if params.object is 'bullet'
+      size = [8, 8]
     p =
       'id': @id
-      'pos': params.pos
-      'speed': 0
-      'angle': 0
+      'object': params.object
+      'params': params.params || {}
+      'pos': params.pos || [0, 0]
+      'size': size
+      'speed': params.speed || 0
+      'angle': params.angle || 0
     @elements[@id] = p
     @emit 'add', p
     @id
@@ -33,12 +44,27 @@ class Game extends events.EventEmitter
     delete @elements[id]
     @emit 'remove', {'id': id}
 
+  get: (id)->
+    @elements[id]
+
   _updateView: (dt)->
-    for attr, val of @elements
+    for id, val of @elements
       rd = val.angle * Math.PI/180.0
       hypo = val.speed * dt
       val.pos[0] += hypo * Math.cos(rd)
       val.pos[1] += hypo * Math.sin(rd)
+      if val.object isnt 'tank'
+        if val.pos[0] > 416 or val.pos[0] < 0 or val.pos[1] > 416 or val.pos[1] < 0
+          @remove(id)
+
+
+    for id, val of @elements
+      for id2, val2 of @elements
+        if id isnt id2 and val2.object is 'bullet' and val2.params.owner isnt val.id
+          if collides(val.pos[0], val.pos[1], val.pos[0]+val.size[0], val.pos[1]+val.size[1],
+                     val2.pos[0], val2.pos[1], val2.pos[0]+val2.size[0], val2.pos[1]+val2.size[1])
+            @remove(id2)
+            @remove(id)
 
   start: ->
     @lastTime = Date.now()
@@ -63,6 +89,8 @@ module.exports = class Router extends events.EventEmitter
   connection: (socket)->
     move_controls = []
     socket.on 'control', (p)=>
+      if !@game.get(socket.tank_id)
+        return
       if p.move in ['up', 'down', 'left', 'right']
         if p.active
           move_controls.push(p.move)
@@ -83,7 +111,9 @@ module.exports = class Router extends events.EventEmitter
             update_params['angle'] = 90
           @game.update(update_params)
       else if p.move is 'fire'
-        console.info 'fire'
+        if p.active
+          user_tank = @game.get(socket.tank_id)
+          @game.add({'object': 'bullet', 'params': {'owner': socket.tank_id}, 'pos': [user_tank.pos[0]+12, user_tank.pos[1]+12], 'angle': user_tank.angle, 'speed': 200})
 
 
     socket.on 'disconnect', =>
@@ -93,6 +123,5 @@ module.exports = class Router extends events.EventEmitter
     @game.on 'remove', (params)-> socket.emit 'remove', params
     @game.on 'update', (params)-> socket.emit 'update', extend({}, params)
     for el of @game.elements
-      console.info el
       socket.emit 'add', @game.elements[el]
-    socket.tank_id = @game.add({'pos': [0, 0]})
+    socket.tank_id = @game.add({'object': 'tank'})

@@ -52,6 +52,11 @@ class Tank extends Sprite
   size: [32, 32]
 
 
+class Bullet extends Sprite
+  url: 'd/img/bullet.png'
+  size: [8, 8]
+
+
 App.Router = class Router extends Backbone.View
   lastTime: 0
   elements: {}
@@ -87,18 +92,22 @@ App.Router = class Router extends Backbone.View
 
   initialize: ->
     super
-    @canvas = $('<canvas width='+(@$el.width()-6)+' height='+(@$el.height()-6)+'>').appendTo(@$el)
+    @canvas = $('<canvas width=416 height=416>').appendTo(@$el)
     @c = @canvas[0].getContext('2d')
     App.socket.receive.on 'add', (params)=> @add(params)
     App.socket.receive.on 'update', (params)=> @update(params)
     App.socket.receive.on 'remove', (params)=> @remove(params.id)
 
   add: (params)->
+    if params.object is 'tank'
+      object = new Tank()
+    else if params.object is 'bullet'
+      object = new Bullet()
     @elements[params.id] =
-      'sprite': new Tank()
-      'pos': params.pos
-      'speed': 0
-      'angle': 0
+      'sprite': object
+      'pos': params.pos || [0, 0]
+      'speed': params.speed || 0
+      'angle': params.angle || 0
 
   update: (prop)->
     for attr, val of prop

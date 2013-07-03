@@ -1,5 +1,5 @@
 (function() {
-  var Game, Router, events, extend,
+  var Game, Router, collides, events, extend,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -12,6 +12,10 @@
       from[v] = attr;
     }
     return from;
+  };
+
+  collides = function(x, y, r, b, x2, y2, r2, b2) {
+    return !(r <= x2 || x > r2 || b <= y2 || y > b2);
   };
 
   Game = (function(_super) {
@@ -27,13 +31,21 @@
     Game.prototype.id = 0;
 
     Game.prototype.add = function(params) {
-      var p;
+      var p, size;
       this.id++;
+      if (params.object === 'tank') {
+        size = [32, 32];
+      } else if (params.object === 'bullet') {
+        size = [8, 8];
+      }
       p = {
         'id': this.id,
-        'pos': params.pos,
-        'speed': 0,
-        'angle': 0
+        'object': params.object,
+        'params': params.params || {},
+        'pos': params.pos || [0, 0],
+        'size': size,
+        'speed': params.speed || 0,
+        'angle': params.angle || 0
       };
       this.elements[this.id] = p;
       this.emit('add', p);
@@ -58,16 +70,48 @@
       });
     };
 
+    Game.prototype.get = function(id) {
+      return this.elements[id];
+    };
+
     Game.prototype._updateView = function(dt) {
-      var attr, hypo, rd, val, _ref, _results;
+      var hypo, id, id2, rd, val, val2, _ref, _ref1, _results;
       _ref = this.elements;
-      _results = [];
-      for (attr in _ref) {
-        val = _ref[attr];
+      for (id in _ref) {
+        val = _ref[id];
         rd = val.angle * Math.PI / 180.0;
         hypo = val.speed * dt;
         val.pos[0] += hypo * Math.cos(rd);
-        _results.push(val.pos[1] += hypo * Math.sin(rd));
+        val.pos[1] += hypo * Math.sin(rd);
+        if (val.object !== 'tank') {
+          if (val.pos[0] > 416 || val.pos[0] < 0 || val.pos[1] > 416 || val.pos[1] < 0) {
+            this.remove(id);
+          }
+        }
+      }
+      _ref1 = this.elements;
+      _results = [];
+      for (id in _ref1) {
+        val = _ref1[id];
+        _results.push((function() {
+          var _ref2, _results1;
+          _ref2 = this.elements;
+          _results1 = [];
+          for (id2 in _ref2) {
+            val2 = _ref2[id2];
+            if (id !== id2 && val2.object === 'bullet' && val2.params.owner !== val.id) {
+              if (collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
+                this.remove(id2);
+                _results1.push(this.remove(id));
+              } else {
+                _results1.push(void 0);
+              }
+            } else {
+              _results1.push(void 0);
+            }
+          }
+          return _results1;
+        }).call(this));
       }
       return _results;
     };
@@ -109,7 +153,10 @@
         _this = this;
       move_controls = [];
       socket.on('control', function(p) {
-        var active_move, update_params, _ref;
+        var active_move, update_params, user_tank, _ref;
+        if (!_this.game.get(socket.tank_id)) {
+          return;
+        }
         if ((_ref = p.move) === 'up' || _ref === 'down' || _ref === 'left' || _ref === 'right') {
           if (p.active) {
             move_controls.push(p.move);
@@ -142,7 +189,18 @@
             return _this.game.update(update_params);
           }
         } else if (p.move === 'fire') {
-          return console.info('fire');
+          if (p.active) {
+            user_tank = _this.game.get(socket.tank_id);
+            return _this.game.add({
+              'object': 'bullet',
+              'params': {
+                'owner': socket.tank_id
+              },
+              'pos': [user_tank.pos[0] + 12, user_tank.pos[1] + 12],
+              'angle': user_tank.angle,
+              'speed': 200
+            });
+          }
         }
       });
       socket.on('disconnect', function() {
@@ -158,11 +216,10 @@
         return socket.emit('update', extend({}, params));
       });
       for (el in this.game.elements) {
-        console.info(el);
         socket.emit('add', this.game.elements[el]);
       }
       return socket.tank_id = this.game.add({
-        'pos': [0, 0]
+        'object': 'tank'
       });
     };
 

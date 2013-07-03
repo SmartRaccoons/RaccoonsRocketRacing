@@ -1,5 +1,5 @@
 (function() {
-  var PreloadImg, Router, Sprite, Tank, requestAnimFrame,
+  var Bullet, PreloadImg, Router, Sprite, Tank, requestAnimFrame,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -84,6 +84,22 @@
 
   })(Sprite);
 
+  Bullet = (function(_super) {
+
+    __extends(Bullet, _super);
+
+    function Bullet() {
+      return Bullet.__super__.constructor.apply(this, arguments);
+    }
+
+    Bullet.prototype.url = 'd/img/bullet.png';
+
+    Bullet.prototype.size = [8, 8];
+
+    return Bullet;
+
+  })(Sprite);
+
   App.Router = Router = (function(_super) {
 
     __extends(Router, _super);
@@ -155,7 +171,7 @@
     Router.prototype.initialize = function() {
       var _this = this;
       Router.__super__.initialize.apply(this, arguments);
-      this.canvas = $('<canvas width=' + (this.$el.width() - 6) + ' height=' + (this.$el.height() - 6) + '>').appendTo(this.$el);
+      this.canvas = $('<canvas width=416 height=416>').appendTo(this.$el);
       this.c = this.canvas[0].getContext('2d');
       App.socket.receive.on('add', function(params) {
         return _this.add(params);
@@ -169,11 +185,17 @@
     };
 
     Router.prototype.add = function(params) {
+      var object;
+      if (params.object === 'tank') {
+        object = new Tank();
+      } else if (params.object === 'bullet') {
+        object = new Bullet();
+      }
       return this.elements[params.id] = {
-        'sprite': new Tank(),
-        'pos': params.pos,
-        'speed': 0,
-        'angle': 0
+        'sprite': object,
+        'pos': params.pos || [0, 0],
+        'speed': params.speed || 0,
+        'angle': params.angle || 0
       };
     };
 
