@@ -75,8 +75,9 @@ class Game extends events.EventEmitter
     dt = (now - @lastTime) / 1000.0
     @_updateView(dt)
     @lastTime = now
-    process.nextTick =>
+    setTimeout =>
       @process()
+    , 1000/40
 
 
 module.exports = class Router extends events.EventEmitter
