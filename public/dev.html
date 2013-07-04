@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta content='text/html;charset=utf-8' http-equiv='Content-Type' />
+        <link rel='stylesheet' href='d/css/screen.css' />
+        <!--[if lt IE 9]>
+            <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+        <![endif]-->
+    </head>
+    <body>
+        <script src="d/js/jquery-1.10.0.min.js"></script>
+        <script src='/socket.io/socket.io.js'></script>
+        <script src="/lodash/lodash.js"></script>
+        <script src="/backbone/backbone.js"></script>
+        <!--<script src="d/js/backbone-patch.js"></script>-->
+        <script src="d/js/locale.js"></script>
+        <script src="d/js/init.js"></script>
+
+        <!--<script src="d/js/popup.js"></script>-->
+
+        <!--<script src="d/js/rooms.js"></script>-->
+        <!--<script src="d/js/coin.js"></script>-->
+
+        <!--<script src="d/js/chat.js"></script>-->
+
+        <!--<script src="d/js/game.js"></script>-->
+
+        <script src="d/js/router.js"></script>
+        <script>
+            (function() {
+//                if(!console || !console.log){ var console = {'log': function(){}}; }
+                var r = new App.Router({el: $('body')});
+                r.start();
+//                r.add({'id': 2, 'pos': [32, 32]});
+//                $('body').on({
+//                    'keydown': function(e){
+//                        if(e.keyCode == 38){
+//                            //up
+////                            r.get(2).speed = 10;
+////                            r.get(2).angle = 270;
+//                            r.get(2).speed++;
+//                        }
+//                        if(e.keyCode == 37){
+//                            //left
+////                            r.get(2).speed = 10;
+////                            r.get(2).angle = 180;
+//                            r.get(2).angle -= 5;
+//                        }
+//                        if(e.keyCode == 39){
+//                            //right
+////                            r.get(2).speed = 10;
+////                            r.get(2).angle = 0;
+//                            r.get(2).angle += 5;
+//                        }
+//                        if(e.keyCode == 40){
+//                            //down
+////                            r.get(2).speed = 10;
+////                            r.get(2).angle = 90;
+//                            r.get(2).speed--;
+//                        }
+//                        if(e.keyCode == 32){
+//                            //space
+//                            r.remove(2, {'speed': 20});
+//                        }
+//                    },
+//                    'keyup': function(e){
+////                        if(e.keyCode == 38){
+////                            r.get(2).speed = 0;
+////                        }
+////                        if(e.keyCode == 37){
+////                            r.get(2).speed = 0;
+////                        }
+////                        if(e.keyCode == 39){
+////                            r.get(2).speed = 0;
+////                        }
+////                        if(e.keyCode == 40){
+////                            r.get(2).speed = 0;
+////                        }
+//                    }
+//                });
+                var socket = io.connect('', {'sync disconnect on unload': true});
+                var emit = socket.emit;
+                socket.emit = function() {
+                    emit.apply(socket, arguments);
+                };
+                var $emit = socket.$emit;
+                socket.$emit = function(evt) {
+                    App.socket.receive.trigger.apply(App.socket.receive, Array.prototype.slice.apply(arguments));
+                    $emit.apply(socket, arguments);
+                };
+                App.socket.send.on('all', function(){
+                    socket.emit.apply(socket, Array.prototype.slice.call(arguments));
+                });
+            })();
+        </script>
+    </body>
+</html>

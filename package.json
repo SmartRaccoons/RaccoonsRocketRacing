@@ -1,0 +1,23 @@
+{
+    "name": "BattleTank",
+    "version" : "0.0.1",
+    "author": {
+        "name": "raccoons.lv"
+    },
+    "dependencies": {
+        "express": "3.0",
+        "socket.io": "0.9",
+        "backbone": "0.9",
+        "lodash": "1.0",
+        "mysql": "2.0",
+        "emailjs": "0.3",
+        "memory-cache": "0.0.5"
+    },
+    "devDependencies": {
+        "mocha": "1.8",
+        "sinon": "1.5",
+        "expect.js": "0.2",
+        "nock": "0.16",
+        "memwatch": "0.2"
+    }
+}

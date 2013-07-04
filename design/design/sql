@@ -1,0 +1,103 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci ;
+CREATE SCHEMA IF NOT EXISTS `bco` DEFAULT CHARACTER SET latin1 ;
+
+-- -----------------------------------------------------
+-- Table `bco`.`bco_user`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `bco`.`bco_user` (
+  `id` INT NOT NULL ,
+  `name` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `bco`.`bco_map`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `bco`.`bco_map` (
+  `id` INT NOT NULL ,
+  `name` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `bco`.`bco_object`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `bco`.`bco_object` (
+  `id` INT NOT NULL ,
+  `name` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `bco`.`bco_object_param`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `bco`.`bco_object_param` (
+  `id` INT NOT NULL ,
+  `name` VARCHAR(45) NULL ,
+  `default` TINYINT(4)  NULL DEFAULT 0 ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `bco`.`bco_param`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `bco`.`bco_param` (
+  `id` INT NOT NULL ,
+  `object_id` INT NOT NULL ,
+  `object_param_id` INT NOT NULL ,
+  `value` TINYINT(4)  NULL DEFAULT 0 ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_bco_param_bco_object` (`object_id` ASC) ,
+  INDEX `fk_bco_param_bco_object_params1` (`object_param_id` ASC) ,
+  CONSTRAINT `fk_bco_param_bco_object`
+    FOREIGN KEY (`object_id` )
+    REFERENCES `bco`.`bco_object` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_bco_param_bco_object_params1`
+    FOREIGN KEY (`object_param_id` )
+    REFERENCES `bco`.`bco_object_param` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `bco`.`bco_bild_map`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `bco`.`bco_bild_map` (
+  `id` INT NOT NULL ,
+  `map_id` INT NOT NULL ,
+  `object_id` INT NOT NULL ,
+  `width` FLOAT  NULL ,
+  `height` FLOAT  NULL ,
+  `x` FLOAT  NULL COMMENT 'position on map' ,
+  `y` FLOAT  NULL COMMENT 'position on map' ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_bco_bildMap_bco_map1` (`map_id` ASC) ,
+  INDEX `fk_bco_bildMap_bco_object1` (`object_id` ASC) ,
+  CONSTRAINT `fk_bco_bildMap_bco_map1`
+    FOREIGN KEY (`map_id` )
+    REFERENCES `bco`.`bco_map` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_bco_bildMap_bco_object1`
+    FOREIGN KEY (`object_id` )
+    REFERENCES `bco`.`bco_object` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
