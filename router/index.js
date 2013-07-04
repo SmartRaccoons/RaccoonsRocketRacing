@@ -128,9 +128,9 @@
       dt = (now - this.lastTime) / 1000.0;
       this._updateView(dt);
       this.lastTime = now;
-      return process.nextTick(function() {
+      return setTimeout(function() {
         return _this.process();
-      });
+      }, 1000 / 40);
     };
 
     return Game;
