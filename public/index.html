@@ -18,48 +18,26 @@
         </script>
     </head>
     <body>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
         <script src='d/j.js?{version}'></script>
         <script>
             (function() {
-//                window.draugiem_callback_url = 'http://'+document.domain+'/callback.html';
-//                window.draugiem_domain = window.GET['domain'];
-//                var r = new App.Router({el: $('body')});
-//                var socket = io.connect('', {'sync disconnect on unload': true});
-//                var emit = socket.emit;
-//                socket.on('disconnect', function(){
-//                    window.location.reload();
-//                });
-//                socket.emit = function() {
-//                    emit.apply(socket, arguments);
-//                };
-//                var $emit = socket.$emit;
-//                socket.$emit = function(evt) {
-//                    App.socket.receive.trigger.apply(App.socket.receive, Array.prototype.slice.apply(arguments));
-//                    $emit.apply(socket, arguments);
-//                };
-//                App.socket.send.on('all', function(){
-//                    socket.emit.apply(socket, Array.prototype.slice.call(arguments));
-//                });
-//
-//                socket.on('global:link', function(link){
-//                    draugiemWindowOpen(link, 350, 400);
-//                });
-//                App.events.on('coin:buy', function(price){
-//                    socket.emit('coin:buy', price);
-//                });
+                var r = new App.Router({el: $('body')});
+                r.start();
+                var socket = io.connect('', {'sync disconnect on unload': true});
+                var emit = socket.emit;
+                socket.emit = function() {
+                    emit.apply(socket, arguments);
+                };
+                var $emit = socket.$emit;
+                socket.$emit = function(evt) {
+                    App.socket.receive.trigger.apply(App.socket.receive, Array.prototype.slice.apply(arguments));
+                    $emit.apply(socket, arguments);
+                };
+                App.socket.send.on('all', function(){
+                    socket.emit.apply(socket, Array.prototype.slice.call(arguments));
+                });
             })();
-        </script>
-        <script src='http://ifrype.com/applications/external/draugiem.js'></script>
-        <script>
-//            var _gaq = _gaq || [];
-//            _gaq.push(['_setAccount', 'UA-24527026-4']);
-//            _gaq.push(['_trackPageview']);
-//
-//            (function() {
-//                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-//                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-//                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-//            })();
         </script>
     </body>
 </html>
