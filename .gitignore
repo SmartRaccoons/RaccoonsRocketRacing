@@ -1,3 +1,5 @@
+config.js
+public/d/.sass-cache/
 .idea/
-source-demos/
 node_modules/
+*~
