@@ -40,9 +40,9 @@ class Game extends events.EventEmitter
         @elements[prop['id']][attr] = val
     @emit 'update', prop
 
-  remove: (id)->
+  remove: (id, reason=null)->
+    @emit 'remove', {'id': id, 'reason': reason}
     delete @elements[id]
-    @emit 'remove', {'id': id}
 
   get: (id)->
     @elements[id]
@@ -64,7 +64,7 @@ class Game extends events.EventEmitter
           if collides(val.pos[0], val.pos[1], val.pos[0]+val.size[0], val.pos[1]+val.size[1],
                      val2.pos[0], val2.pos[1], val2.pos[0]+val2.size[0], val2.pos[1]+val2.size[1])
             @remove(id2)
-            @remove(id)
+            @remove(id, 'destroy')
 
   start: ->
     @lastTime = Date.now()
@@ -81,11 +81,20 @@ class Game extends events.EventEmitter
 
 
 module.exports = class Router extends events.EventEmitter
-  constructor: (options, db)->
+  constructor: (options, db, io)->
     @db = db
+    @io = io
     @send = new events.EventEmitter()
     @game = new Game()
+    @game.on 'remove', (params)=>
+      element = @game.get(params.id)
+      if element.object is 'tank' and params.reason is 'destroy'
+        @add_tank(@io.sockets.socket(element.socket_id))
     @game.start()
+
+  add_tank: (socket)->
+    socket.tank_id = @game.add({'object': 'tank'})
+    @game.get(socket.tank_id).socket_id = socket.id
 
   connection: (socket)->
     move_controls = []
@@ -101,7 +110,7 @@ module.exports = class Router extends events.EventEmitter
           @game.update({'id': socket.tank_id, 'speed': 0})
         else
           active_move = move_controls[move_controls.length-1]
-          update_params = {'id': socket.tank_id, 'speed': 50}
+          update_params = {'id': socket.tank_id, 'speed': 100}
           if active_move is 'up'
             update_params['angle'] = 270
           if active_move is 'left'
@@ -120,9 +129,13 @@ module.exports = class Router extends events.EventEmitter
     socket.on 'disconnect', =>
       @game.remove(socket.tank_id)
 
-    @game.on 'add', (params)-> socket.emit 'add', params
-    @game.on 'remove', (params)-> socket.emit 'remove', params
-    @game.on 'update', (params)-> socket.emit 'update', extend({}, params)
+    @game.on 'add', (params)->
+      socket.emit 'add', params
+    @game.on 'remove', (params)->
+      socket.emit 'remove', params
+    @game.on 'update', (params)=>
+      element = @game.get(params.id)
+      socket.emit 'update', extend({'pos': element.pos}, params)
     for el of @game.elements
       socket.emit 'add', @game.elements[el]
-    socket.tank_id = @game.add({'object': 'tank'})
+    @add_tank(socket)

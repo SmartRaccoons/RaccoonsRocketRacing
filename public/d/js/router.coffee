@@ -126,8 +126,11 @@ App.Router = class Router extends Backbone.View
       val.sprite.update(dt)
 
   render: ->
+    @c.fillStyle = "rgb(0,0,0)"
     @c.fillRect(0, 0, @canvas.width(), @canvas.height())
     for id, el of @elements
+      @c.fillStyle = "rgba(255,255,255,0.4)"
+      @c.fillRect(el.pos[0], el.pos[1], el.sprite.size[0], el.sprite.size[1])
       @c.save()
       @c.translate(el.pos[0]+el.sprite.size[0]/2, el.pos[1]+el.sprite.size[1]/2)
       @c.rotate(el.angle * Math.PI/180.0)

@@ -234,11 +234,14 @@
 
     Router.prototype.render = function() {
       var el, id, _ref, _results;
+      this.c.fillStyle = "rgb(0,0,0)";
       this.c.fillRect(0, 0, this.canvas.width(), this.canvas.height());
       _ref = this.elements;
       _results = [];
       for (id in _ref) {
         el = _ref[id];
+        this.c.fillStyle = "rgba(255,255,255,0.4)";
+        this.c.fillRect(el.pos[0], el.pos[1], el.sprite.size[0], el.sprite.size[1]);
         this.c.save();
         this.c.translate(el.pos[0] + el.sprite.size[0] / 2, el.pos[1] + el.sprite.size[1] / 2);
         this.c.rotate(el.angle * Math.PI / 180.0);

@@ -2774,10 +2774,13 @@ m.push(q.sprite.update(o))
 }return m
 };
 j.prototype.render=function(){var m,o,n,l;
+this.c.fillStyle="rgb(0,0,0)";
 this.c.fillRect(0,0,this.canvas.width(),this.canvas.height());
 n=this.elements;
 l=[];
 for(o in n){m=n[o];
+this.c.fillStyle="rgba(255,255,255,0.4)";
+this.c.fillRect(m.pos[0],m.pos[1],m.sprite.size[0],m.sprite.size[1]);
 this.c.save();
 this.c.translate(m.pos[0]+m.sprite.size[0]/2,m.pos[1]+m.sprite.size[1]/2);
 this.c.rotate(m.angle*Math.PI/180);

@@ -63,11 +63,15 @@
       return this.emit('update', prop);
     };
 
-    Game.prototype.remove = function(id) {
-      delete this.elements[id];
-      return this.emit('remove', {
-        'id': id
+    Game.prototype.remove = function(id, reason) {
+      if (reason == null) {
+        reason = null;
+      }
+      this.emit('remove', {
+        'id': id,
+        'reason': reason
       });
+      return delete this.elements[id];
     };
 
     Game.prototype.get = function(id) {
@@ -102,7 +106,7 @@
             if (id !== id2 && val2.object === 'bullet' && val2.params.owner !== val.id) {
               if (collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
                 this.remove(id2);
-                _results1.push(this.remove(id));
+                _results1.push(this.remove(id, 'destroy'));
               } else {
                 _results1.push(void 0);
               }
@@ -141,12 +145,28 @@
 
     __extends(Router, _super);
 
-    function Router(options, db) {
+    function Router(options, db, io) {
+      var _this = this;
       this.db = db;
+      this.io = io;
       this.send = new events.EventEmitter();
       this.game = new Game();
+      this.game.on('remove', function(params) {
+        var element;
+        element = _this.game.get(params.id);
+        if (element.object === 'tank' && params.reason === 'destroy') {
+          return _this.add_tank(_this.io.sockets.socket(element.socket_id));
+        }
+      });
       this.game.start();
     }
+
+    Router.prototype.add_tank = function(socket) {
+      socket.tank_id = this.game.add({
+        'object': 'tank'
+      });
+      return this.game.get(socket.tank_id).socket_id = socket.id;
+    };
 
     Router.prototype.connection = function(socket) {
       var el, move_controls,
@@ -172,7 +192,7 @@
             active_move = move_controls[move_controls.length - 1];
             update_params = {
               'id': socket.tank_id,
-              'speed': 50
+              'speed': 100
             };
             if (active_move === 'up') {
               update_params['angle'] = 270;
@@ -213,14 +233,16 @@
         return socket.emit('remove', params);
       });
       this.game.on('update', function(params) {
-        return socket.emit('update', extend({}, params));
+        var element;
+        element = _this.game.get(params.id);
+        return socket.emit('update', extend({
+          'pos': element.pos
+        }, params));
       });
       for (el in this.game.elements) {
         socket.emit('add', this.game.elements[el]);
       }
-      return socket.tank_id = this.game.add({
-        'object': 'tank'
-      });
+      return this.add_tank(socket);
     };
 
     return Router;

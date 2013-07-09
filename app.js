@@ -50,7 +50,7 @@
 
   io.set('polling duration', config.io.duration);
 
-  r = new Router({}, db);
+  r = new Router({}, db, io);
 
   r.send.emit = function(event, socket) {
     var args;
