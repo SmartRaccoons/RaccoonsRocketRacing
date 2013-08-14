@@ -20,6 +20,12 @@
       return b = new Bco();
     });
     afterEach(function() {});
+    describe('init', function() {
+      return it('size', function() {
+        b = new Bco();
+        return assert.deepEqual([416, 416], b.size);
+      });
+    });
     describe('add', function() {
       it('auto id', function() {
         assert.equal(b.id, 0);
@@ -56,6 +62,8 @@
         assert.deepEqual([8, 8], b.get(id).size);
         assert.equal(0, b.get(id).speed);
         assert.equal(0, b.get(id).angle);
+        assert.equal(0, b.get(id).destroy);
+        assert.equal(1, b.get(id).hitpoints);
         id = b.add({
           'object': 'benja2',
           'params': {
@@ -63,7 +71,9 @@
           },
           'pos': [1, 2],
           'speed': 2,
-          'angle': 3
+          'angle': 3,
+          'destroy': 1,
+          'hitpoints': 10
         });
         assert.equal(2, b.get(id).id);
         assert.equal('benja2', b.get(id).object);
@@ -73,7 +83,8 @@
         assert.deepEqual([1, 2], b.get(id).pos);
         assert.deepEqual([8, 8], b.get(id).size);
         assert.equal(2, b.get(id).speed);
-        return assert.equal(3, b.get(id).angle);
+        assert.equal(3, b.get(id).angle);
+        return assert.equal(10, b.get(id).hitpoints);
       });
       return it('event add', function() {
         var id, spy;
@@ -140,7 +151,7 @@
         return assert.equal('benja', spy.getCall(0).args[0].reason);
       });
     });
-    return describe('process', function() {
+    describe('process', function() {
       var clock;
       clock = null;
       beforeEach(function() {
@@ -192,6 +203,87 @@
         assert(b.get(id).pos[0] - 7.07 < 0.01);
         return assert(b.get(id).pos[1] - 7.07 < 0.01);
       });
+      it('update position out of space for destroyers', function() {
+        var id;
+        id = b.add({
+          'object': 'benja',
+          'speed': 10,
+          'angle': 180,
+          'pos': [1, 1],
+          'destroy': 1
+        });
+        b._updateView(0.2);
+        assert.equal(null, b.get(id));
+        id = b.add({
+          'object': 'benja',
+          'speed': 10,
+          'angle': 270,
+          'pos': [1, 1],
+          'destroy': 1
+        });
+        b._updateView(0.2);
+        assert.equal(null, b.get(id));
+        id = b.add({
+          'object': 'benja',
+          'speed': 10,
+          'angle': 0,
+          'pos': [408, 1],
+          'destroy': 1
+        });
+        b._updateView(0.2);
+        assert.equal(null, b.get(id));
+        id = b.add({
+          'object': 'benja',
+          'speed': 10,
+          'angle': 90,
+          'pos': [1, 408],
+          'destroy': 1
+        });
+        b._updateView(0.2);
+        return assert.equal(null, b.get(id));
+      });
+      it('collides', function() {
+        var bullet, tank;
+        bullet = b.add({
+          'object': 'bullet',
+          'speed': 10,
+          'angle': 0,
+          'pos': [10, 10],
+          'destroy': 1
+        });
+        tank = b.add({
+          'object': 'tank',
+          'speed': 0,
+          'angle': 90,
+          'pos': [20, 10]
+        });
+        b._updateView(0.1);
+        assert.equal(bullet, b.get(bullet).id);
+        b._updateView(0.2);
+        assert.equal(null, b.get(bullet));
+        return assert.equal(null, b.get(tank));
+      });
+      it('collides with hitpoints', function() {
+        var bullet, tank;
+        bullet = b.add({
+          'object': 'bullet',
+          'speed': 10,
+          'angle': 0,
+          'pos': [10, 10],
+          'destroy': 1
+        });
+        tank = b.add({
+          'object': 'tank',
+          'speed': 0,
+          'angle': 90,
+          'pos': [20, 10],
+          'hitpoints': 2
+        });
+        b._updateView(0.3);
+        assert.equal(null, b.get(bullet));
+        assert.equal(tank, b.get(tank).id);
+        return assert.equal(1, b.get(tank).hitpoints);
+      });
       return it('stop', function() {
         b._updateView = sinon.spy();
         b.start();
@@ -201,6 +293,12 @@
         clock.tick(100);
         return assert.equal(1, b._updateView.callCount);
       });
+    });
+    return describe('collides', function() {
+      it('rt');
+      it('rb');
+      it('lt');
+      return it('lb');
     });
   });
 

@@ -1,9 +1,15 @@
 events = require('events')
 
+collides = (x, y, r, b, x2, y2, r2, b2)-> !(r <= x2 || x > r2 || b <= y2 || y > b2)
 
 module.exports = class Bco extends events.EventEmitter
   id: 0
+  size: [416, 416]
   _elements: {}
+
+
+  constructor: (params)->
+
 
   add: (pr)->
     @id++
@@ -15,6 +21,8 @@ module.exports = class Bco extends events.EventEmitter
       size: if pr.object is 'tank' then [32, 32] else [8, 8]
       speed: pr.speed || 0
       angle: pr.angle || 0
+      destroy: pr.destroy || 0
+      hitpoints: pr.hitpoints || 1
     @emit 'add', @_elements[@id]
     @id
 
@@ -55,3 +63,17 @@ module.exports = class Bco extends events.EventEmitter
       hypo = val.speed * dt
       val.pos[0] += hypo * Math.cos(rd)
       val.pos[1] += hypo * Math.sin(rd)
+
+    for id, val of @_elements
+      if val.destroy > 0 and (val.pos[0] < 0 or val.pos[1] < 0 or val.pos[0]+val.size[0] > @size[0] or val.pos[1]+val.size[1] > @size[1])
+        @remove(id)
+
+    for id, val of @_elements
+      for id2, val2 of @_elements
+        if id isnt id2 and val.destroy > 0
+          if collides(val.pos[0], val.pos[1], val.pos[0]+val.size[0], val.pos[1]+val.size[1],
+                      val2.pos[0], val2.pos[1], val2.pos[0]+val2.size[0], val2.pos[1]+val2.size[1])
+            val2.hitpoints -= val.destroy
+            @remove(id)
+            if val2.hitpoints <= 0
+              @remove(id2)

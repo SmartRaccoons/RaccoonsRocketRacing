@@ -2,7 +2,7 @@ update :
 	npm install
 
 test :
-
+	mocha --reporter list ./bco/test/
 
 production :
 	yui-compressor public/d/css/screen.css -o public/d/c.css
