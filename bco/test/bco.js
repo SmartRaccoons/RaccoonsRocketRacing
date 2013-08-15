@@ -294,6 +294,93 @@
         return assert.equal(1, b._updateView.callCount);
       });
     });
+    describe('control', function() {
+      var id;
+      id = null;
+      beforeEach(function() {
+        return id = b.add({
+          'object': 'tank',
+          'pos': [2, 3],
+          'angle': 90
+        });
+      });
+      it('fire', function() {
+        var spy;
+        spy = sinon.spy();
+        b.on('add', spy);
+        b.tank_start(id, 'fire');
+        assert.equal('bullet', spy.getCall(0).args[0].object);
+        assert.equal(id, spy.getCall(0).args[0].params.owner);
+        assert.deepEqual([14, 15], spy.getCall(0).args[0].pos);
+        assert.deepEqual(90, spy.getCall(0).args[0].angle);
+        return assert.deepEqual(200, spy.getCall(0).args[0].speed);
+      });
+      it('move', function() {
+        var spy;
+        spy = sinon.spy();
+        b.on('update', spy);
+        b.tank_start(id, 'up');
+        assert.equal(id, spy.getCall(0).args[0].id);
+        assert.equal(270, spy.getCall(0).args[0].angle);
+        return assert.equal(100, spy.getCall(0).args[0].speed);
+      });
+      it('move down', function() {
+        var spy;
+        spy = sinon.spy();
+        b.on('update', spy);
+        b.tank_start(id, 'down');
+        return assert.equal(90, spy.getCall(0).args[0].angle);
+      });
+      it('move left', function() {
+        var spy;
+        spy = sinon.spy();
+        b.on('update', spy);
+        b.tank_start(id, 'left');
+        return assert.equal(180, spy.getCall(0).args[0].angle);
+      });
+      it('move right', function() {
+        var spy;
+        spy = sinon.spy();
+        b.on('update', spy);
+        b.tank_start(id, 'right');
+        return assert.equal(0, spy.getCall(0).args[0].angle);
+      });
+      it('move stop', function() {
+        var spy;
+        spy = sinon.spy();
+        b.tank_start(id, 'up');
+        b.on('update', spy);
+        b.tank_stop(id, 'up');
+        return assert.equal(0, spy.getCall(0).args[0].speed);
+      });
+      it('move with more keystokes', function() {
+        var spy;
+        spy = sinon.spy();
+        b.on('update', spy);
+        b.tank_start(id, 'down');
+        b.tank_start(id, 'left');
+        b.tank_start(id, 'up');
+        b.tank_stop(id, 'up');
+        assert.equal(4, spy.callCount);
+        assert.equal(180, spy.getCall(3).args[0].angle);
+        assert.equal(100, spy.getCall(3).args[0].speed);
+        b.tank_stop(id, 'down');
+        return assert.equal(4, spy.callCount);
+      });
+      return it('wrong move', function() {
+        var add, update;
+        update = sinon.spy();
+        add = sinon.spy();
+        b.on('update', update);
+        b.on('add', add);
+        b.tank_start(id, 'ben');
+        assert.equal(0, update.callCount);
+        assert.equal(0, add.callCount);
+        b._tank_move = sinon.spy();
+        b.tank_stop(id, 'ben');
+        return assert.equal(0, b._tank_move.callCount);
+      });
+    });
     return describe('collides', function() {
       it('rt');
       it('rb');

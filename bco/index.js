@@ -32,7 +32,8 @@
         speed: pr.speed || 0,
         angle: pr.angle || 0,
         destroy: pr.destroy || 0,
-        hitpoints: pr.hitpoints || 1
+        hitpoints: pr.hitpoints || 1,
+        _keystokes: []
       };
       this.emit('add', this._elements[this.id]);
       return this.id;
@@ -50,11 +51,69 @@
     };
 
     Bco.prototype.remove = function(id, reason) {
-      delete this._elements[id];
-      return this.emit('remove', {
+      this.emit('remove', {
         'id': id,
         'reason': reason
       });
+      return delete this._elements[id];
+    };
+
+    Bco.prototype.tank_start = function(tank_id, move) {
+      var tank;
+      tank = this.get(tank_id);
+      if (move === 'up' || move === 'down' || move === 'left' || move === 'right') {
+        return this._tank_move(tank_id, move, true);
+      } else if (move === 'fire') {
+        return this.add({
+          'object': 'bullet',
+          'params': {
+            'owner': tank_id
+          },
+          'pos': [tank.pos[0] + tank.size[0] / 2 - 4, tank.pos[1] + tank.size[1] / 2 - 4],
+          'angle': tank.angle,
+          'speed': 200
+        });
+      }
+    };
+
+    Bco.prototype.tank_stop = function(tank_id, move) {
+      if (move === 'up' || move === 'down' || move === 'left' || move === 'right') {
+        return this._tank_move(tank_id, move);
+      }
+    };
+
+    Bco.prototype._tank_move = function(tank_id, move, active) {
+      var last_move, params;
+      if (active == null) {
+        active = false;
+      }
+      if (active) {
+        this._elements[tank_id]._keystokes.push(move);
+      } else {
+        if (this._elements[tank_id]._keystokes[this._elements[tank_id]._keystokes.length - 1] !== move) {
+          return this._elements[tank_id]._keystokes.splice(this._elements[tank_id]._keystokes.indexOf(move), 1);
+        }
+        this._elements[tank_id]._keystokes.splice(this._elements[tank_id]._keystokes.length - 1, 1);
+      }
+      params = {
+        'id': tank_id,
+        'speed': 100
+      };
+      if (this._elements[tank_id]._keystokes.length === 0) {
+        params['speed'] = 0;
+      } else {
+        last_move = this._elements[tank_id]._keystokes[this._elements[tank_id]._keystokes.length - 1];
+        if (last_move === 'up') {
+          params['angle'] = 270;
+        } else if (last_move === 'down') {
+          params['angle'] = 90;
+        } else if (last_move === 'left') {
+          params['angle'] = 180;
+        } else if (last_move === 'right') {
+          params['angle'] = 0;
+        }
+      }
+      return this.update(params);
     };
 
     Bco.prototype.get = function(id) {

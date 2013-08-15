@@ -177,6 +177,80 @@ describe 'bco', ->
       clock.tick(100)
       assert.equal(1, b._updateView.callCount)
 
+  describe 'control', ->
+    id = null
+    beforeEach ->
+      id = b.add({'object': 'tank', 'pos': [2, 3], 'angle': 90})
+
+    it 'fire', ->
+      spy = sinon.spy()
+      b.on 'add', spy
+      b.tank_start(id, 'fire')
+      assert.equal('bullet', spy.getCall(0).args[0].object)
+      assert.equal(id, spy.getCall(0).args[0].params.owner)
+      assert.deepEqual([14, 15], spy.getCall(0).args[0].pos)
+      assert.deepEqual(90, spy.getCall(0).args[0].angle)
+      assert.deepEqual(200, spy.getCall(0).args[0].speed)
+
+    it 'move', ->
+      spy = sinon.spy()
+      b.on 'update', spy
+      b.tank_start(id, 'up')
+      assert.equal(id, spy.getCall(0).args[0].id)
+      assert.equal(270, spy.getCall(0).args[0].angle)
+      assert.equal(100, spy.getCall(0).args[0].speed)
+
+    it 'move down', ->
+      spy = sinon.spy()
+      b.on 'update', spy
+      b.tank_start(id, 'down')
+      assert.equal(90, spy.getCall(0).args[0].angle)
+
+    it 'move left', ->
+      spy = sinon.spy()
+      b.on 'update', spy
+      b.tank_start(id, 'left')
+      assert.equal(180, spy.getCall(0).args[0].angle)
+
+    it 'move right', ->
+      spy = sinon.spy()
+      b.on 'update', spy
+      b.tank_start(id, 'right')
+      assert.equal(0, spy.getCall(0).args[0].angle)
+
+    it 'move stop', ->
+      spy = sinon.spy()
+      b.tank_start(id, 'up')
+      b.on 'update', spy
+      b.tank_stop(id, 'up')
+      assert.equal(0, spy.getCall(0).args[0].speed)
+
+    it 'move with more keystokes', ->
+      spy = sinon.spy()
+      b.on 'update', spy
+      b.tank_start(id, 'down')
+      b.tank_start(id, 'left')
+      b.tank_start(id, 'up')
+      b.tank_stop(id, 'up')
+      assert.equal(4, spy.callCount)
+      assert.equal(180, spy.getCall(3).args[0].angle)
+      assert.equal(100, spy.getCall(3).args[0].speed)
+      b.tank_stop(id, 'down')
+      assert.equal(4, spy.callCount)
+
+    it 'wrong move', ->
+      update = sinon.spy()
+      add = sinon.spy()
+      b.on 'update', update
+      b.on 'add', add
+      b.tank_start(id, 'ben')
+      assert.equal(0, update.callCount)
+      assert.equal(0, add.callCount)
+      b._tank_move = sinon.spy()
+      b.tank_stop(id, 'ben')
+      assert.equal(0, b._tank_move.callCount)
+
+
   describe 'collides', ->
     it 'rt'
     it 'rb'

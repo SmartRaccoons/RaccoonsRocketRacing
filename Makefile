@@ -3,6 +3,7 @@ update :
 
 test :
 	mocha --reporter list ./bco/test/
+	mocha --reporter list ./router/test/
 
 production :
 	yui-compressor public/d/css/screen.css -o public/d/c.css

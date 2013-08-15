@@ -52,13 +52,6 @@
 
   r = new Router({}, db, io);
 
-  r.send.emit = function(event, socket) {
-    var args;
-    args = Array.prototype.slice.apply(arguments).splice(2);
-    args.unshift(event);
-    return socket.emit.apply(socket, args);
-  };
-
   io.sockets.on('connection', function(socket) {
     return r.connection(socket);
   });

@@ -23,6 +23,7 @@ module.exports = class Bco extends events.EventEmitter
       angle: pr.angle || 0
       destroy: pr.destroy || 0
       hitpoints: pr.hitpoints || 1
+      _keystokes: []
     @emit 'add', @_elements[@id]
     @id
 
@@ -33,8 +34,46 @@ module.exports = class Bco extends events.EventEmitter
     @emit 'update', pr
 
   remove: (id, reason)->
-    delete @_elements[id]
     @emit 'remove', {'id': id, 'reason': reason}
+    delete @_elements[id]
+
+  tank_start: (tank_id, move)->
+    tank = @get(tank_id)
+    if move in ['up', 'down', 'left', 'right']
+      @_tank_move(tank_id, move, true)
+    else if move is 'fire'
+      @add
+        'object': 'bullet'
+        'params': {'owner': tank_id}
+        'pos': [tank.pos[0]+tank.size[0]/2-4, tank.pos[1]+tank.size[1]/2-4]
+        'angle': tank.angle
+        'speed': 200
+
+  tank_stop: (tank_id, move)->
+    if move in ['up', 'down', 'left', 'right']
+      @_tank_move(tank_id, move)
+
+  _tank_move: (tank_id, move, active=false)->
+    if active
+      @_elements[tank_id]._keystokes.push(move)
+    else
+      if @_elements[tank_id]._keystokes[@_elements[tank_id]._keystokes.length - 1] isnt move
+        return @_elements[tank_id]._keystokes.splice(@_elements[tank_id]._keystokes.indexOf(move), 1)
+      @_elements[tank_id]._keystokes.splice(@_elements[tank_id]._keystokes.length-1, 1)
+    params = {'id': tank_id, 'speed': 100}
+    if @_elements[tank_id]._keystokes.length is 0
+      params['speed'] = 0
+    else
+      last_move = @_elements[tank_id]._keystokes[@_elements[tank_id]._keystokes.length - 1]
+      if last_move is 'up'
+        params['angle'] = 270
+      else if last_move is 'down'
+        params['angle'] = 90
+      else if last_move is 'left'
+        params['angle'] = 180
+      else if last_move is 'right'
+        params['angle'] = 0
+    @update(params)
 
   get: (id)->
     @_elements[id]
