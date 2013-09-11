@@ -5,19 +5,15 @@ nock = require('nock')
 extend = require('util')._extend
 
 
-Bco = require('../')
+Bco = require('../').Bco
 
-describe 'bco', ->
+
+describe 'Bco', ->
   b = null
   beforeEach ->
     b = new Bco()
 
   afterEach ->
-
-  describe 'init', ->
-    it 'size', ->
-      b = new Bco()
-      assert.deepEqual([416, 416], b.size)
 
   describe 'add', ->
     it 'auto id', ->
@@ -69,11 +65,6 @@ describe 'bco', ->
     beforeEach ->
       id = b.add({'object': 'benja'})
 
-    it 'elements', ->
-      b.update({'id': id, 'pos': [10, 11], 'speed': 11})
-      assert.deepEqual([10, 11], b.get(id).pos)
-      assert.equal(11, b.get(id).speed)
-
     it 'event update', ->
       spy = sinon.spy()
       b.on 'update', spy
@@ -91,7 +82,6 @@ describe 'bco', ->
       spy = sinon.spy()
       b.on 'remove', spy
       b.remove(id)
-      assert.equal(null, b.get(id))
       assert.equal(id, spy.getCall(0).args[0].id)
 
     it 'reason', ->
@@ -108,34 +98,6 @@ describe 'bco', ->
       b._elements = {}
     afterEach ->
       clock.restore()
-
-    it 'start', ->
-      b._updateView = sinon.spy()
-      clock.tick(1000)
-      assert.equal(0, b._updateView.callCount)
-      b.start()
-      clock.tick(24)
-      assert.equal(0, b._updateView.callCount)
-      clock.tick(25)
-      assert.equal(1, b._updateView.callCount)
-      assert.equal(0.025, b._updateView.getCall(0).args[0])
-      clock.tick(100)
-      assert.equal(5, b._updateView.callCount)
-
-    it 'update position', ->
-      id = b.add({'object': 'benja', 'speed': 10, 'angle': 0, 'pos': [0, 0]})
-      b._updateView(1)
-      assert.deepEqual([10, 0], b.get(id).pos)
-      b._updateView(0.5)
-      assert.deepEqual([15, 0], b.get(id).pos)
-      b.update({'id': id, 'angle': 90, 'pos': [0, 0]})
-      b._updateView(0.5)
-      assert(b.get(id).pos[0]<0.0001)
-      assert(b.get(id).pos[1]-5<0.0001)
-      b.update({'id': id, 'angle': 45, 'pos': [0, 0]})
-      b._updateView(1)
-      assert(b.get(id).pos[0]-7.07<0.01)
-      assert(b.get(id).pos[1]-7.07<0.01)
 
     it 'update position out of space for destroyers', ->
       id = b.add({'object': 'benja', 'speed': 10, 'angle': 180, 'pos': [1, 1], 'destroy': 1})
@@ -168,14 +130,6 @@ describe 'bco', ->
       assert.equal(tank, b.get(tank).id)
       assert.equal(1, b.get(tank).hitpoints)
 
-    it 'stop', ->
-      b._updateView = sinon.spy()
-      b.start()
-      clock.tick(25)
-      b.stop()
-      assert.equal(1, b._updateView.callCount)
-      clock.tick(100)
-      assert.equal(1, b._updateView.callCount)
 
   describe 'control', ->
     id = null

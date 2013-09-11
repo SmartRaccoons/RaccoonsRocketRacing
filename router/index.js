@@ -7,7 +7,7 @@
 
   extend = require('util')._extend;
 
-  Bco = require('../bco');
+  Bco = require('../bco').Bco;
 
   module.exports = Router = (function(_super) {
 

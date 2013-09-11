@@ -1,29 +1,36 @@
 (function() {
-  var Bco, collides, events,
+  var Backbone, Bco, BcoCore, collides, _,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  events = require('events');
+  Backbone = require('backbone');
+
+  _ = require('lodash');
 
   collides = function(x, y, r, b, x2, y2, r2, b2) {
     return !(r <= x2 || x > r2 || b <= y2 || y > b2);
   };
 
-  module.exports = Bco = (function(_super) {
+  BcoCore = require('./client').BcoCore;
+
+  module.exports.Bco = Bco = (function(_super) {
 
     __extends(Bco, _super);
 
+    function Bco() {
+      return Bco.__super__.constructor.apply(this, arguments);
+    }
+
     Bco.prototype.id = 0;
 
-    Bco.prototype.size = [416, 416];
-
-    Bco.prototype._elements = {};
-
-    function Bco(params) {}
+    Bco.prototype.__requestAnimFrame = function(callback) {
+      return setTimeout(callback, 1000 / 40);
+    };
 
     Bco.prototype.add = function(pr) {
+      var params;
       this.id++;
-      this._elements[this.id] = {
+      params = {
         id: this.id,
         object: pr.object,
         params: pr.params || {},
@@ -35,27 +42,22 @@
         hitpoints: pr.hitpoints || 1,
         _keystokes: []
       };
-      this.emit('add', this._elements[this.id]);
+      Bco.__super__.add.call(this, params);
+      this.trigger('add', params);
       return this.id;
     };
 
     Bco.prototype.update = function(pr) {
-      var attr, val;
-      for (attr in pr) {
-        val = pr[attr];
-        if (attr !== 'id') {
-          this._elements[pr['id']][attr] = val;
-        }
-      }
-      return this.emit('update', pr);
+      Bco.__super__.update.call(this, pr);
+      return this.trigger('update', pr);
     };
 
     Bco.prototype.remove = function(id, reason) {
-      this.emit('remove', {
+      this.trigger('remove', {
         'id': id,
         'reason': reason
       });
-      return delete this._elements[id];
+      return Bco.__super__.remove.call(this, id);
     };
 
     Bco.prototype.tank_start = function(tank_id, move) {
@@ -116,62 +118,26 @@
       return this.update(params);
     };
 
-    Bco.prototype.get = function(id) {
-      return this._elements[id];
-    };
-
-    Bco.prototype.start = function() {
-      this._lastTime = Date.now();
-      return this._process();
-    };
-
-    Bco.prototype.stop = function() {
-      return this._stop = true;
-    };
-
-    Bco.prototype._process = function() {
-      var dt, now,
-        _this = this;
-      now = Date.now();
-      dt = (now - this._lastTime) / 1000.0;
-      if (dt > 0) {
-        this._updateView(dt);
-      }
-      this._lastTime = now;
-      return setTimeout(function() {
-        if (!_this._stop) {
-          return _this._process();
-        }
-      }, 1000 / 40);
-    };
-
     Bco.prototype._updateView = function(dt) {
-      var hypo, id, id2, rd, val, val2, _ref, _ref1, _ref2, _results;
+      var id, id2, val, val2, _ref, _ref1, _results;
+      Bco.__super__._updateView.call(this, dt);
       _ref = this._elements;
       for (id in _ref) {
         val = _ref[id];
-        rd = val.angle * Math.PI / 180.0;
-        hypo = val.speed * dt;
-        val.pos[0] += hypo * Math.cos(rd);
-        val.pos[1] += hypo * Math.sin(rd);
-      }
-      _ref1 = this._elements;
-      for (id in _ref1) {
-        val = _ref1[id];
         if (val.destroy > 0 && (val.pos[0] < 0 || val.pos[1] < 0 || val.pos[0] + val.size[0] > this.size[0] || val.pos[1] + val.size[1] > this.size[1])) {
           this.remove(id);
         }
       }
-      _ref2 = this._elements;
+      _ref1 = this._elements;
       _results = [];
-      for (id in _ref2) {
-        val = _ref2[id];
+      for (id in _ref1) {
+        val = _ref1[id];
         _results.push((function() {
-          var _ref3, _results1;
-          _ref3 = this._elements;
+          var _ref2, _results1;
+          _ref2 = this._elements;
           _results1 = [];
-          for (id2 in _ref3) {
-            val2 = _ref3[id2];
+          for (id2 in _ref2) {
+            val2 = _ref2[id2];
             if (id !== id2 && val.destroy > 0) {
               if (collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
                 val2.hitpoints -= val.destroy;
@@ -196,6 +162,6 @@
 
     return Bco;
 
-  })(events.EventEmitter);
+  })(BcoCore);
 
 }).call(this);

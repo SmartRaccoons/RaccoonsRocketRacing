@@ -3,6 +3,7 @@ guard 'livereload', :port => '35729', :apply_js_live => false do
 end
 
 guard 'coffeescript', :input => 'public/d/js'
+guard 'coffeescript', :input => 'public_test/js'
 guard 'coffeescript', :input => 'app.coffee'
 guard 'coffeescript', :input => 'app_dev.coffee'
 guard 'coffeescript', :input => 'router'

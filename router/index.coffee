@@ -2,7 +2,7 @@ events = require('events')
 extend = require('util')._extend
 
 
-Bco = require('../bco')
+Bco = require('../bco').Bco
 
 
 module.exports = class Router extends events.EventEmitter

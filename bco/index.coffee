@@ -1,19 +1,19 @@
-events = require('events')
+Backbone = require('backbone')
+_ = require('lodash')
 
 collides = (x, y, r, b, x2, y2, r2, b2)-> !(r <= x2 || x > r2 || b <= y2 || y > b2)
 
-module.exports = class Bco extends events.EventEmitter
+
+BcoCore = require('./client').BcoCore
+
+module.exports.Bco = class Bco extends BcoCore
   id: 0
-  size: [416, 416]
-  _elements: {}
 
-
-  constructor: (params)->
-
+  __requestAnimFrame: (callback)-> setTimeout(callback, 1000 / 40)
 
   add: (pr)->
     @id++
-    @_elements[@id] =
+    params =
       id: @id
       object: pr.object
       params: pr.params || {}
@@ -24,18 +24,17 @@ module.exports = class Bco extends events.EventEmitter
       destroy: pr.destroy || 0
       hitpoints: pr.hitpoints || 1
       _keystokes: []
-    @emit 'add', @_elements[@id]
+    super(params)
+    @trigger 'add', params
     @id
 
   update: (pr)->
-    for attr, val of pr
-      if attr isnt 'id'
-        @_elements[pr['id']][attr] = val
-    @emit 'update', pr
+    super(pr)
+    @trigger 'update', pr
 
   remove: (id, reason)->
-    @emit 'remove', {'id': id, 'reason': reason}
-    delete @_elements[id]
+    @trigger 'remove', {'id': id, 'reason': reason}
+    super(id)
 
   tank_start: (tank_id, move)->
     tank = @get(tank_id)
@@ -75,33 +74,8 @@ module.exports = class Bco extends events.EventEmitter
         params['angle'] = 0
     @update(params)
 
-  get: (id)->
-    @_elements[id]
-
-  start: ->
-    @_lastTime = Date.now()
-    @_process()
-
-  stop: ->
-    @_stop = true
-
-  _process: ->
-    now = Date.now()
-    dt = (now - @_lastTime) / 1000.0
-    if dt>0
-      @_updateView(dt)
-    @_lastTime = now
-    setTimeout =>
-      if not @_stop
-        @_process()
-    , 1000/40
-
   _updateView: (dt)->
-    for id, val of @_elements
-      rd = val.angle * Math.PI/180.0
-      hypo = val.speed * dt
-      val.pos[0] += hypo * Math.cos(rd)
-      val.pos[1] += hypo * Math.sin(rd)
+    super(dt)
 
     for id, val of @_elements
       if val.destroy > 0 and (val.pos[0] < 0 or val.pos[1] < 0 or val.pos[0]+val.size[0] > @size[0] or val.pos[1]+val.size[1] > @size[1])

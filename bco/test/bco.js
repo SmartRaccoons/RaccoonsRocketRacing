@@ -11,21 +11,15 @@
 
   extend = require('util')._extend;
 
-  Bco = require('../');
+  Bco = require('../').Bco;
 
-  describe('bco', function() {
+  describe('Bco', function() {
     var b;
     b = null;
     beforeEach(function() {
       return b = new Bco();
     });
     afterEach(function() {});
-    describe('init', function() {
-      return it('size', function() {
-        b = new Bco();
-        return assert.deepEqual([416, 416], b.size);
-      });
-    });
     describe('add', function() {
       it('auto id', function() {
         assert.equal(b.id, 0);
@@ -105,15 +99,6 @@
           'object': 'benja'
         });
       });
-      it('elements', function() {
-        b.update({
-          'id': id,
-          'pos': [10, 11],
-          'speed': 11
-        });
-        assert.deepEqual([10, 11], b.get(id).pos);
-        return assert.equal(11, b.get(id).speed);
-      });
       return it('event update', function() {
         var spy;
         spy = sinon.spy();
@@ -140,7 +125,6 @@
         spy = sinon.spy();
         b.on('remove', spy);
         b.remove(id);
-        assert.equal(null, b.get(id));
         return assert.equal(id, spy.getCall(0).args[0].id);
       });
       return it('reason', function() {
@@ -160,48 +144,6 @@
       });
       afterEach(function() {
         return clock.restore();
-      });
-      it('start', function() {
-        b._updateView = sinon.spy();
-        clock.tick(1000);
-        assert.equal(0, b._updateView.callCount);
-        b.start();
-        clock.tick(24);
-        assert.equal(0, b._updateView.callCount);
-        clock.tick(25);
-        assert.equal(1, b._updateView.callCount);
-        assert.equal(0.025, b._updateView.getCall(0).args[0]);
-        clock.tick(100);
-        return assert.equal(5, b._updateView.callCount);
-      });
-      it('update position', function() {
-        var id;
-        id = b.add({
-          'object': 'benja',
-          'speed': 10,
-          'angle': 0,
-          'pos': [0, 0]
-        });
-        b._updateView(1);
-        assert.deepEqual([10, 0], b.get(id).pos);
-        b._updateView(0.5);
-        assert.deepEqual([15, 0], b.get(id).pos);
-        b.update({
-          'id': id,
-          'angle': 90,
-          'pos': [0, 0]
-        });
-        b._updateView(0.5);
-        assert(b.get(id).pos[0] < 0.0001);
-        assert(b.get(id).pos[1] - 5 < 0.0001);
-        b.update({
-          'id': id,
-          'angle': 45,
-          'pos': [0, 0]
-        });
-        b._updateView(1);
-        assert(b.get(id).pos[0] - 7.07 < 0.01);
-        return assert(b.get(id).pos[1] - 7.07 < 0.01);
       });
       it('update position out of space for destroyers', function() {
         var id;
@@ -263,7 +205,7 @@
         assert.equal(null, b.get(bullet));
         return assert.equal(null, b.get(tank));
       });
-      it('collides with hitpoints', function() {
+      return it('collides with hitpoints', function() {
         var bullet, tank;
         bullet = b.add({
           'object': 'bullet',
@@ -283,15 +225,6 @@
         assert.equal(null, b.get(bullet));
         assert.equal(tank, b.get(tank).id);
         return assert.equal(1, b.get(tank).hitpoints);
-      });
-      return it('stop', function() {
-        b._updateView = sinon.spy();
-        b.start();
-        clock.tick(25);
-        b.stop();
-        assert.equal(1, b._updateView.callCount);
-        clock.tick(100);
-        return assert.equal(1, b._updateView.callCount);
       });
     });
     describe('control', function() {

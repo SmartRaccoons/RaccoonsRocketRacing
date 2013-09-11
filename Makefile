@@ -12,6 +12,8 @@ production :
 	node_modules/backbone/backbone.js \
 	public/d/js/locale.js \
 	public/d/js/init.js \
+	bco/client.js \
+	public/d/js/objects.js \
 	public/d/js/router.js \
 > public/d/all.js
 	yui-compressor --line-break 0 public/d/all.js -o public/d/j.js
