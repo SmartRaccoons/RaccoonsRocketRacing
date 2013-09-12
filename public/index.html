@@ -23,7 +23,6 @@
         <script>
             (function() {
                 var r = new App.Router({el: $('body')});
-                r.start();
                 var socket = io.connect('', {'sync disconnect on unload': true});
                 var emit = socket.emit;
                 socket.emit = function() {

@@ -73,21 +73,21 @@ describe 'Bco', ->
       assert.equal(11, spy.getCall(0).args[0].speed)
 
 
-  describe 'remove', ->
+  describe 'destroy', ->
     id = null
     beforeEach ->
       id = b.add({'object': 'benja'})
 
     it 'event', ->
       spy = sinon.spy()
-      b.on 'remove', spy
-      b.remove(id)
+      b.on 'destroy', spy
+      b.destroy(id)
       assert.equal(id, spy.getCall(0).args[0].id)
 
     it 'reason', ->
       spy = sinon.spy()
-      b.on 'remove', spy
-      b.remove(id, 'benja')
+      b.on 'destroy', spy
+      b.destroy(id, 'benja')
       assert.equal('benja', spy.getCall(0).args[0].reason)
 
 
@@ -114,6 +114,7 @@ describe 'Bco', ->
       assert.equal(null, b.get(id))
 
     it 'collides', ->
+      spy = sinon.spy(b, 'destroy')
       bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1})
       tank = b.add({'object': 'tank', 'speed': 0, 'angle': 90, 'pos': [20, 10]})
       b._updateView(0.1)
@@ -121,6 +122,16 @@ describe 'Bco', ->
       b._updateView(0.2)
       assert.equal(null, b.get(bullet))
       assert.equal(null, b.get(tank))
+      assert(spy.withArgs(tank, 'destroy').calledOnce)
+      assert(spy.withArgs(bullet, 'destroy').calledOnce)
+
+    it 'collides self bullet', ->
+      spy = sinon.spy(b, 'destroy')
+      tank = b.add({'object': 'tank', 'speed': 0, 'angle': 90, 'pos': [20, 10]})
+      bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1, 'params': {'owner': tank}})
+      b._updateView(0.3)
+      assert.equal(0, spy.callCount)
+
 
     it 'collides with hitpoints', ->
       bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1})
@@ -145,6 +156,7 @@ describe 'Bco', ->
       assert.deepEqual([14, 15], spy.getCall(0).args[0].pos)
       assert.deepEqual(90, spy.getCall(0).args[0].angle)
       assert.deepEqual(200, spy.getCall(0).args[0].speed)
+      assert.deepEqual(1, spy.getCall(0).args[0].destroy)
 
     it 'move', ->
       spy = sinon.spy()

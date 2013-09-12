@@ -78,10 +78,10 @@
         return assert.equal(2, r.emit_socket.getCall(0).args[2]);
       });
       it('disconnect', function() {
-        r.game.remove = sinon.spy();
+        r.game.destroy = sinon.spy();
         r.connection(socket);
         socket.emit('disconnect');
-        return assert.equal(socket.tank_id, r.game.remove.getCall(0).args[0]);
+        return assert.equal(socket.tank_id, r.game.destroy.getCall(0).args[0]);
       });
       it('event: new element', function() {
         r.connection(socket);
@@ -92,15 +92,15 @@
         assert.equal('add', r.emit_socket.getCall(0).args[1]);
         return assert.equal('ret', r.emit_socket.getCall(0).args[2].object);
       });
-      it('event: remove element', function() {
+      it('event: destroy element', function() {
         var id;
         r.connection(socket);
         id = r.game.add({
           'object': 'ret'
         });
         r.emit_socket = sinon.spy();
-        r.game.remove(id);
-        assert.equal('remove', r.emit_socket.getCall(0).args[1]);
+        r.game.destroy(id);
+        assert.equal('destroy', r.emit_socket.getCall(0).args[1]);
         return assert.equal(id, r.emit_socket.getCall(0).args[2].id);
       });
       it('event: update element', function() {
@@ -129,8 +129,8 @@
           'object': 'bullet'
         });
         r.add_tank = sinon.spy();
-        r.game.remove(2, 'destroy');
-        r.game.remove(1, 'destroy');
+        r.game.destroy(2, 'destroy');
+        r.game.destroy(1, 'destroy');
         return assert.equal('ben', r.add_tank.getCall(0).args[0].id);
       });
     });

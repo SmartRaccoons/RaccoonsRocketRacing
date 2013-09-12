@@ -112,7 +112,7 @@
         return assert.equal(11, spy.getCall(0).args[0].speed);
       });
     });
-    describe('remove', function() {
+    describe('destroy', function() {
       var id;
       id = null;
       beforeEach(function() {
@@ -123,15 +123,15 @@
       it('event', function() {
         var spy;
         spy = sinon.spy();
-        b.on('remove', spy);
-        b.remove(id);
+        b.on('destroy', spy);
+        b.destroy(id);
         return assert.equal(id, spy.getCall(0).args[0].id);
       });
       return it('reason', function() {
         var spy;
         spy = sinon.spy();
-        b.on('remove', spy);
-        b.remove(id, 'benja');
+        b.on('destroy', spy);
+        b.destroy(id, 'benja');
         return assert.equal('benja', spy.getCall(0).args[0].reason);
       });
     });
@@ -185,7 +185,8 @@
         return assert.equal(null, b.get(id));
       });
       it('collides', function() {
-        var bullet, tank;
+        var bullet, spy, tank;
+        spy = sinon.spy(b, 'destroy');
         bullet = b.add({
           'object': 'bullet',
           'speed': 10,
@@ -203,7 +204,31 @@
         assert.equal(bullet, b.get(bullet).id);
         b._updateView(0.2);
         assert.equal(null, b.get(bullet));
-        return assert.equal(null, b.get(tank));
+        assert.equal(null, b.get(tank));
+        assert(spy.withArgs(tank, 'destroy').calledOnce);
+        return assert(spy.withArgs(bullet, 'destroy').calledOnce);
+      });
+      it('collides self bullet', function() {
+        var bullet, spy, tank;
+        spy = sinon.spy(b, 'destroy');
+        tank = b.add({
+          'object': 'tank',
+          'speed': 0,
+          'angle': 90,
+          'pos': [20, 10]
+        });
+        bullet = b.add({
+          'object': 'bullet',
+          'speed': 10,
+          'angle': 0,
+          'pos': [10, 10],
+          'destroy': 1,
+          'params': {
+            'owner': tank
+          }
+        });
+        b._updateView(0.3);
+        return assert.equal(0, spy.callCount);
       });
       return it('collides with hitpoints', function() {
         var bullet, tank;
@@ -246,7 +271,8 @@
         assert.equal(id, spy.getCall(0).args[0].params.owner);
         assert.deepEqual([14, 15], spy.getCall(0).args[0].pos);
         assert.deepEqual(90, spy.getCall(0).args[0].angle);
-        return assert.deepEqual(200, spy.getCall(0).args[0].speed);
+        assert.deepEqual(200, spy.getCall(0).args[0].speed);
+        return assert.deepEqual(1, spy.getCall(0).args[0].destroy);
       });
       it('move', function() {
         var spy;

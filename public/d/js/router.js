@@ -54,8 +54,8 @@
       App.socket.receive.on('update', function(params) {
         return _this.game.update(params);
       });
-      App.socket.receive.on('remove', function(params) {
-        return _this.game.remove(params);
+      App.socket.receive.on('destroy', function(params) {
+        return _this.game.destroy(params);
       });
       this.game.start();
     }

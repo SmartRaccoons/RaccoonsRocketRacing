@@ -52,12 +52,14 @@
       return this.trigger('update', pr);
     };
 
-    Bco.prototype.remove = function(id, reason) {
-      this.trigger('remove', {
+    Bco.prototype.destroy = function(id, reason) {
+      this.trigger('destroy', {
         'id': id,
         'reason': reason
       });
-      return Bco.__super__.remove.call(this, id);
+      return Bco.__super__.destroy.call(this, {
+        'id': id
+      });
     };
 
     Bco.prototype.tank_start = function(tank_id, move) {
@@ -73,6 +75,7 @@
           },
           'pos': [tank.pos[0] + tank.size[0] / 2 - 4, tank.pos[1] + tank.size[1] / 2 - 4],
           'angle': tank.angle,
+          'destroy': 1,
           'speed': 200
         });
       }
@@ -125,7 +128,7 @@
       for (id in _ref) {
         val = _ref[id];
         if (val.destroy > 0 && (val.pos[0] < 0 || val.pos[1] < 0 || val.pos[0] + val.size[0] > this.size[0] || val.pos[1] + val.size[1] > this.size[1])) {
-          this.remove(id);
+          this.destroy(id);
         }
       }
       _ref1 = this._elements;
@@ -138,12 +141,12 @@
           _results1 = [];
           for (id2 in _ref2) {
             val2 = _ref2[id2];
-            if (id !== id2 && val.destroy > 0) {
+            if (id !== id2 && val.destroy > 0 && val.params.owner !== val2.id) {
               if (collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
                 val2.hitpoints -= val.destroy;
-                this.remove(id);
+                this.destroy(val.id, 'destroy');
                 if (val2.hitpoints <= 0) {
-                  _results1.push(this.remove(id2));
+                  _results1.push(this.destroy(val2.id, 'destroy'));
                 } else {
                   _results1.push(void 0);
                 }

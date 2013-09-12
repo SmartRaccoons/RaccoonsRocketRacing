@@ -48,8 +48,8 @@
       return _results;
     };
 
-    BcoCore.prototype.remove = function(id) {
-      return delete this._elements[id];
+    BcoCore.prototype.destroy = function(pr) {
+      return delete this._elements[pr.id];
     };
 
     BcoCore.prototype.start = function() {

@@ -56,10 +56,10 @@ describe 'router', ->
       assert.equal(2, r.emit_socket.getCall(0).args[2])
 
     it 'disconnect', ->
-      r.game.remove = sinon.spy()
+      r.game.destroy = sinon.spy()
       r.connection(socket)
       socket.emit('disconnect')
-      assert.equal(socket.tank_id, r.game.remove.getCall(0).args[0])
+      assert.equal(socket.tank_id, r.game.destroy.getCall(0).args[0])
 
     it 'event: new element', ->
       r.connection(socket)
@@ -68,12 +68,12 @@ describe 'router', ->
       assert.equal('add', r.emit_socket.getCall(0).args[1])
       assert.equal('ret', r.emit_socket.getCall(0).args[2].object)
 
-    it 'event: remove element', ->
+    it 'event: destroy element', ->
       r.connection(socket)
       id = r.game.add({'object': 'ret'})
       r.emit_socket = sinon.spy()
-      r.game.remove(id)
-      assert.equal('remove', r.emit_socket.getCall(0).args[1])
+      r.game.destroy(id)
+      assert.equal('destroy', r.emit_socket.getCall(0).args[1])
       assert.equal(id, r.emit_socket.getCall(0).args[2].id)
 
     it 'event: update element', ->
@@ -91,8 +91,8 @@ describe 'router', ->
       r.game.update({'id': 1, 'speed': 100})
       r.game.add({'object': 'bullet'})
       r.add_tank = sinon.spy()
-      r.game.remove(2, 'destroy')
-      r.game.remove(1, 'destroy')
+      r.game.destroy(2, 'destroy')
+      r.game.destroy(1, 'destroy')
       assert.equal('ben', r.add_tank.getCall(0).args[0].id)
 
 

@@ -89,11 +89,11 @@ describe 'Router', ->
       expect(r.game._lastTime).to.be.ok()
 
     it 'events', ->
-      r.game = {'add': sinon.spy(), 'update': sinon.spy(), 'remove': sinon.spy()}
-      App.socket.receive.trigger 'add', 'add'
-      expect(r.game.add.getCall(0).args[0]).to.be('add')
-      App.socket.receive.trigger 'update', 'update'
-      expect(r.game.update.getCall(0).args[0]).to.be('update')
-      App.socket.receive.trigger 'remove', 'remove'
-      expect(r.game.remove.getCall(0).args[0]).to.be('remove')
+      r.game = {'add': sinon.spy(), 'update': sinon.spy(), 'destroy': sinon.spy()}
+      App.socket.receive.trigger 'add', {'id': 1, 'pos': [0, 0]}
+      expect(r.game.add.getCall(0).args[0].id).to.be(1)
+      App.socket.receive.trigger 'update', {'id': 1, 'size': 2}
+      expect(r.game.update.getCall(0).args[0].size).to.be(2)
+      App.socket.receive.trigger 'destroy', {'id': 1}
+      expect(r.game.destroy.getCall(0).args[0].id).to.be(1)
       

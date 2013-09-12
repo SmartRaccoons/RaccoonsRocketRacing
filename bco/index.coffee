@@ -32,9 +32,9 @@ module.exports.Bco = class Bco extends BcoCore
     super(pr)
     @trigger 'update', pr
 
-  remove: (id, reason)->
-    @trigger 'remove', {'id': id, 'reason': reason}
-    super(id)
+  destroy: (id, reason)->
+    @trigger 'destroy', {'id': id, 'reason': reason}
+    super({'id': id})
 
   tank_start: (tank_id, move)->
     tank = @get(tank_id)
@@ -46,6 +46,7 @@ module.exports.Bco = class Bco extends BcoCore
         'params': {'owner': tank_id}
         'pos': [tank.pos[0]+tank.size[0]/2-4, tank.pos[1]+tank.size[1]/2-4]
         'angle': tank.angle
+        'destroy': 1
         'speed': 200
 
   tank_stop: (tank_id, move)->
@@ -79,14 +80,14 @@ module.exports.Bco = class Bco extends BcoCore
 
     for id, val of @_elements
       if val.destroy > 0 and (val.pos[0] < 0 or val.pos[1] < 0 or val.pos[0]+val.size[0] > @size[0] or val.pos[1]+val.size[1] > @size[1])
-        @remove(id)
+        @destroy(id)
 
     for id, val of @_elements
       for id2, val2 of @_elements
-        if id isnt id2 and val.destroy > 0
+        if id isnt id2 and val.destroy > 0 and val.params.owner isnt val2.id
           if collides(val.pos[0], val.pos[1], val.pos[0]+val.size[0], val.pos[1]+val.size[1],
                       val2.pos[0], val2.pos[1], val2.pos[0]+val2.size[0], val2.pos[1]+val2.size[1])
             val2.hitpoints -= val.destroy
-            @remove(id)
+            @destroy(val.id, 'destroy')
             if val2.hitpoints <= 0
-              @remove(id2)
+              @destroy(val2.id, 'destroy')

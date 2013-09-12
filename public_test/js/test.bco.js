@@ -60,16 +60,19 @@
         return expect(b.get(1).speed).to.be(11);
       });
     });
-    describe('remove', function() {
+    describe('destroy', function() {
       var id;
-      id = null;
+      id = 2;
       beforeEach(function() {
-        return id = b.add({
-          'object': 'benja'
+        return b.add({
+          'object': 'benja',
+          'id': id
         });
       });
       return it('from elements', function() {
-        b.remove(id);
+        b.destroy({
+          'id': id
+        });
         return expect(b.get(id)).not.be.ok();
       });
     });

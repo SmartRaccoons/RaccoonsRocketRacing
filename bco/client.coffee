@@ -33,8 +33,8 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
       if attr isnt 'id'
         @_elements[pr['id']][attr] = val
 
-  remove: (id)->
-    delete @_elements[id]
+  destroy: (pr)->
+    delete @_elements[pr.id]
 
   start: ->
     @_lastTime = Date.now()

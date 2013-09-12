@@ -37,13 +37,13 @@ describe 'BcoCore', ->
       expect(b.get(1).speed).to.be(11)
 
 
-  describe 'remove', ->
-    id = null
+  describe 'destroy', ->
+    id = 2
     beforeEach ->
-      id = b.add({'object': 'benja'})
+      b.add({'object': 'benja', 'id': id})
 
     it 'from elements', ->
-      b.remove(id)
+      b.destroy({'id': id})
       expect(b.get(id)).not.be.ok()
 
 

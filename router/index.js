@@ -19,7 +19,7 @@
       var _this = this;
       this.game = new Bco();
       this.game.start();
-      this.game.on('remove', function(params) {
+      this.game.on('destroy', function(params) {
         var element;
         element = _this.game.get(params.id);
         if (element.object === 'tank' && params.reason === 'destroy') {
@@ -52,14 +52,14 @@
         }
       });
       socket.on('disconnect', function() {
-        _this.game.remove(socket.tank_id);
+        _this.game.destroy(socket.tank_id);
         return delete _this._sockets[socket.id];
       });
       this.game.on('add', function(params) {
         return _this.emit_socket(socket, 'add', params);
       });
-      this.game.on('remove', function(params) {
-        return _this.emit_socket(socket, 'remove', params);
+      this.game.on('destroy', function(params) {
+        return _this.emit_socket(socket, 'destroy', params);
       });
       this.game.on('update', function(params) {
         return _this.emit_socket(socket, 'update', extend({

@@ -11,7 +11,7 @@ module.exports = class Router extends events.EventEmitter
   constructor: ->
     @game = new Bco()
     @game.start()
-    @game.on 'remove', (params)=>
+    @game.on 'destroy', (params)=>
       element = @game.get(params.id)
       if element.object is 'tank' and params.reason is 'destroy'
         @add_tank(@_sockets[element.params.socket_id])
@@ -30,11 +30,11 @@ module.exports = class Router extends events.EventEmitter
         @game.tank_stop(socket.tank_id, p.move)
 
     socket.on 'disconnect', =>
-      @game.remove(socket.tank_id)
+      @game.destroy(socket.tank_id)
       delete @_sockets[socket.id]
 
     @game.on 'add', (params)=> @emit_socket(socket, 'add', params)
-    @game.on 'remove', (params)=> @emit_socket(socket, 'remove', params)
+    @game.on 'destroy', (params)=> @emit_socket(socket, 'destroy', params)
     @game.on 'update', (params)=> @emit_socket(socket, 'update', extend({'pos': @game.get(params.id).pos}, params))
 
     for id, val of @game._elements
