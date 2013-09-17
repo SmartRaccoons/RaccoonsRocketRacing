@@ -9,6 +9,19 @@ BcoCore = require('./client').BcoCore
 module.exports.Bco = class Bco extends BcoCore
   id: 0
 
+  constructor: (map)->
+    super
+    if map
+      y = 0
+      for r in map
+        x = 0
+        for l in r
+          if l is 1
+            @add {'object': 'brick', pos: [x*16, y*16]}
+          x++
+        y++
+    @
+
   __requestAnimFrame: (callback)-> setTimeout(callback, 1000 / 40)
 
   add: (pr)->
@@ -18,12 +31,18 @@ module.exports.Bco = class Bco extends BcoCore
       object: pr.object
       params: pr.params || {}
       pos: pr.pos || [0, 0]
-      size: if pr.object is 'tank' then [32, 32] else [8, 8]
+      size: [16, 16]
       speed: pr.speed || 0
       angle: pr.angle || 0
       destroy: pr.destroy || 0
       hitpoints: pr.hitpoints || 1
       _keystokes: []
+    if pr.object is 'tank'
+      params['size'] = [32, 32]
+    if pr.object is 'bullet'
+      params['size'] = [8,  8]
+    if pr.object is 'brick'
+      params['hitpoints'] = 2
     super(params)
     @trigger 'add', params
     @id
@@ -81,13 +100,15 @@ module.exports.Bco = class Bco extends BcoCore
     for id, val of @_elements
       if val.destroy > 0 and (val.pos[0] < 0 or val.pos[1] < 0 or val.pos[0]+val.size[0] > @size[0] or val.pos[1]+val.size[1] > @size[1])
         @destroy(id)
-
+    remove = []
     for id, val of @_elements
       for id2, val2 of @_elements
         if id isnt id2 and val.destroy > 0 and val.params.owner isnt val2.id
           if collides(val.pos[0], val.pos[1], val.pos[0]+val.size[0], val.pos[1]+val.size[1],
                       val2.pos[0], val2.pos[1], val2.pos[0]+val2.size[0], val2.pos[1]+val2.size[1])
             val2.hitpoints -= val.destroy
-            @destroy(val.id, 'destroy')
+            remove.push(val.id) if remove.indexOf(val.id) is -1
             if val2.hitpoints <= 0
-              @destroy(val2.id, 'destroy')
+              remove.push(val2.id) if remove.indexOf(val2.id) is -1
+    for id in remove
+      @destroy(id, 'destroy')

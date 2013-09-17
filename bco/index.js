@@ -17,11 +17,32 @@
 
     __extends(Bco, _super);
 
-    function Bco() {
-      return Bco.__super__.constructor.apply(this, arguments);
-    }
-
     Bco.prototype.id = 0;
+
+    function Bco(map) {
+      var l, r, x, y, _i, _j, _len, _len1;
+      Bco.__super__.constructor.apply(this, arguments);
+      if (map) {
+        y = 0;
+        for (_i = 0, _len = map.length; _i < _len; _i++) {
+          r = map[_i];
+          x = 0;
+          for (_j = 0, _len1 = r.length; _j < _len1; _j++) {
+            l = r[_j];
+            if (l === 1) {
+              this.add({
+                'object': 'brick',
+                pos: [x * 16, y * 16]
+              });
+            }
+            x++;
+          }
+          y++;
+        }
+      }
+      this;
+
+    }
 
     Bco.prototype.__requestAnimFrame = function(callback) {
       return setTimeout(callback, 1000 / 40);
@@ -35,13 +56,22 @@
         object: pr.object,
         params: pr.params || {},
         pos: pr.pos || [0, 0],
-        size: pr.object === 'tank' ? [32, 32] : [8, 8],
+        size: [16, 16],
         speed: pr.speed || 0,
         angle: pr.angle || 0,
         destroy: pr.destroy || 0,
         hitpoints: pr.hitpoints || 1,
         _keystokes: []
       };
+      if (pr.object === 'tank') {
+        params['size'] = [32, 32];
+      }
+      if (pr.object === 'bullet') {
+        params['size'] = [8, 8];
+      }
+      if (pr.object === 'brick') {
+        params['hitpoints'] = 2;
+      }
       Bco.__super__.add.call(this, params);
       this.trigger('add', params);
       return this.id;
@@ -122,7 +152,7 @@
     };
 
     Bco.prototype._updateView = function(dt) {
-      var id, id2, val, val2, _ref, _ref1, _results;
+      var id, id2, remove, val, val2, _i, _len, _ref, _ref1, _ref2, _results;
       Bco.__super__._updateView.call(this, dt);
       _ref = this._elements;
       for (id in _ref) {
@@ -131,34 +161,32 @@
           this.destroy(id);
         }
       }
+      remove = [];
       _ref1 = this._elements;
-      _results = [];
       for (id in _ref1) {
         val = _ref1[id];
-        _results.push((function() {
-          var _ref2, _results1;
-          _ref2 = this._elements;
-          _results1 = [];
-          for (id2 in _ref2) {
-            val2 = _ref2[id2];
-            if (id !== id2 && val.destroy > 0 && val.params.owner !== val2.id) {
-              if (collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
-                val2.hitpoints -= val.destroy;
-                this.destroy(val.id, 'destroy');
-                if (val2.hitpoints <= 0) {
-                  _results1.push(this.destroy(val2.id, 'destroy'));
-                } else {
-                  _results1.push(void 0);
-                }
-              } else {
-                _results1.push(void 0);
+        _ref2 = this._elements;
+        for (id2 in _ref2) {
+          val2 = _ref2[id2];
+          if (id !== id2 && val.destroy > 0 && val.params.owner !== val2.id) {
+            if (collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
+              val2.hitpoints -= val.destroy;
+              if (remove.indexOf(val.id) === -1) {
+                remove.push(val.id);
               }
-            } else {
-              _results1.push(void 0);
+              if (val2.hitpoints <= 0) {
+                if (remove.indexOf(val2.id) === -1) {
+                  remove.push(val2.id);
+                }
+              }
             }
           }
-          return _results1;
-        }).call(this));
+        }
+      }
+      _results = [];
+      for (_i = 0, _len = remove.length; _i < _len; _i++) {
+        id = remove[_i];
+        _results.push(this.destroy(id, 'destroy'));
       }
       return _results;
     };

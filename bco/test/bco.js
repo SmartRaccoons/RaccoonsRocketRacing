@@ -44,6 +44,21 @@
         assert.equal(1, id);
         return assert.deepEqual(b.get(id).size, [8, 8]);
       });
+      return it('add brick', function() {
+        var id;
+        id = b.add({
+          'object': 'brick'
+        });
+        return assert.equal(b.get(id).hitpoints, 2);
+      });
+    });
+    describe('load map', function() {
+      it('elements', function() {
+        b = new Bco([[0, 0, 1], [1, 0, 0]]);
+        assert.deepEqual([32, 0], b.get(1).pos);
+        assert.equal('brick', b.get(1).object);
+        return assert.deepEqual([0, 16], b.get(2).pos);
+      });
       it('default params', function() {
         var id;
         id = b.add({
@@ -53,7 +68,7 @@
         assert.equal('benja', b.get(id).object);
         assert.deepEqual({}, b.get(id).params);
         assert.deepEqual([0, 0], b.get(id).pos);
-        assert.deepEqual([8, 8], b.get(id).size);
+        assert.deepEqual([16, 16], b.get(id).size);
         assert.equal(0, b.get(id).speed);
         assert.equal(0, b.get(id).angle);
         assert.equal(0, b.get(id).destroy);
@@ -75,7 +90,7 @@
           '1': 1
         }, b.get(id).params);
         assert.deepEqual([1, 2], b.get(id).pos);
-        assert.deepEqual([8, 8], b.get(id).size);
+        assert.deepEqual([16, 16], b.get(id).size);
         assert.equal(2, b.get(id).speed);
         assert.equal(3, b.get(id).angle);
         return assert.equal(10, b.get(id).hitpoints);
@@ -230,7 +245,7 @@
         b._updateView(0.3);
         return assert.equal(0, spy.callCount);
       });
-      return it('collides with hitpoints', function() {
+      it('collides with hitpoints', function() {
         var bullet, tank;
         bullet = b.add({
           'object': 'bullet',
@@ -250,6 +265,32 @@
         assert.equal(null, b.get(bullet));
         assert.equal(tank, b.get(tank).id);
         return assert.equal(1, b.get(tank).hitpoints);
+      });
+      return it('collides 3 elements', function() {
+        var bullet, spy;
+        spy = sinon.spy(b, 'destroy');
+        bullet = b.add({
+          'object': 'bullet',
+          'speed': 10,
+          'angle': 0,
+          'pos': [10, 10],
+          'destroy': 1
+        });
+        b.add({
+          'object': 'tank',
+          'speed': 0,
+          'angle': 90,
+          'pos': [20, 10]
+        });
+        b.add({
+          'object': 'tank',
+          'speed': 0,
+          'angle': 90,
+          'pos': [20, 10]
+        });
+        b._updateView(0.3);
+        assert.equal(3, spy.callCount);
+        return assert(spy.withArgs(bullet, 'destroy').calledOnce);
       });
     });
     describe('control', function() {

@@ -173,13 +173,20 @@
         expect(b.get(2).sprite).to.be.ok();
         return expect(b.get(2).sprite.size).to.be.eql([32, 32]);
       });
-      return it('bullet', function() {
+      it('bullet', function() {
         b.add({
           'id': 2,
           'object': 'bullet'
         });
         expect(b.get(2).sprite).to.be.ok();
         return expect(b.get(2).sprite.size).to.be.eql([8, 8]);
+      });
+      return it('brick', function() {
+        b.add({
+          'id': 3,
+          'object': 'brick'
+        });
+        return expect(b.get(3).sprite._name).to.be('brick');
       });
     });
     describe('updateView', function() {

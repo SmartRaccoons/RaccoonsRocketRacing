@@ -109,11 +109,8 @@
 
     Bco.prototype.add = function(pr) {
       Bco.__super__.add.apply(this, arguments);
-      if (pr.object === 'tank') {
-        this._elements[pr.id]['sprite'] = new App.SpriteTank();
-      }
-      if (pr.object === 'bullet') {
-        return this._elements[pr.id]['sprite'] = new App.SpriteBullet();
+      if (['tank', 'bullet', 'brick'].indexOf(pr.object) !== -1) {
+        return this._elements[pr.id]['sprite'] = new App['Sprite' + pr.object[0].toUpperCase() + pr.object.substr(1)]();
       }
     };
 

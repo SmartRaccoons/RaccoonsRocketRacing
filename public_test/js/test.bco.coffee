@@ -122,6 +122,11 @@ describe 'Bco', ->
       expect(b.get(2).sprite).to.be.ok()
       expect(b.get(2).sprite.size).to.be.eql([8,8])
 
+    it 'brick', ->
+      b.add({'id': 3, 'object': 'brick'})
+      expect(b.get(3).sprite._name).to.be('brick')
+
+
   describe 'updateView', ->
     beforeEach ->
       b.draw = sinon.spy()

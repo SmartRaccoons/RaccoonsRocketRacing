@@ -31,13 +31,25 @@ describe 'Bco', ->
       assert.equal(1, id)
       assert.deepEqual(b.get(id).size, [8, 8])
 
+    it 'add brick', ->
+      id = b.add({'object': 'brick'})
+      assert.equal(b.get(id).hitpoints, 2)
+
+  describe 'load map', ->
+    it 'elements', ->
+      b = new Bco([[0, 0, 1], [1, 0, 0]])
+      assert.deepEqual([32, 0], b.get(1).pos)
+      assert.equal('brick', b.get(1).object)
+      assert.deepEqual([0, 16], b.get(2).pos)
+
+
     it 'default params', ->
       id = b.add({'object': 'benja'})
       assert.equal(1, b.get(id).id)
       assert.equal('benja', b.get(id).object)
       assert.deepEqual({}, b.get(id).params)
       assert.deepEqual([0, 0], b.get(id).pos)
-      assert.deepEqual([8, 8], b.get(id).size)
+      assert.deepEqual([16, 16], b.get(id).size)
       assert.equal(0, b.get(id).speed)
       assert.equal(0, b.get(id).angle)
       assert.equal(0, b.get(id).destroy)
@@ -47,7 +59,7 @@ describe 'Bco', ->
       assert.equal('benja2', b.get(id).object)
       assert.deepEqual({'1': 1}, b.get(id).params)
       assert.deepEqual([1, 2], b.get(id).pos)
-      assert.deepEqual([8, 8], b.get(id).size)
+      assert.deepEqual([16, 16], b.get(id).size)
       assert.equal(2, b.get(id).speed)
       assert.equal(3, b.get(id).angle)
       assert.equal(10, b.get(id).hitpoints)
@@ -140,6 +152,16 @@ describe 'Bco', ->
       assert.equal(null, b.get(bullet))
       assert.equal(tank, b.get(tank).id)
       assert.equal(1, b.get(tank).hitpoints)
+
+    it 'collides 3 elements', ->
+      spy = sinon.spy(b, 'destroy')
+      bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1})
+      b.add({'object': 'tank', 'speed': 0, 'angle': 90, 'pos': [20, 10]})
+      b.add({'object': 'tank', 'speed': 0, 'angle': 90, 'pos': [20, 10]})
+      b._updateView(0.3)
+      assert.equal(3, spy.callCount)
+      assert(spy.withArgs(bullet, 'destroy').calledOnce)
+
 
 
   describe 'control', ->

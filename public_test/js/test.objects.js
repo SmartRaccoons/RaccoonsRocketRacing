@@ -108,12 +108,20 @@
         return expect(t.url).to.be('d/img/tank.png');
       });
     });
-    return describe('Bullet', function() {
+    describe('Bullet', function() {
       return it('params', function() {
         var t;
         t = new App.SpriteBullet();
         expect(t.size).to.be.eql([8, 8]);
         return expect(t.url).to.be('d/img/bullet.png');
+      });
+    });
+    return describe('Brick', function() {
+      return it('params', function() {
+        var t;
+        t = new App.SpriteBrick();
+        expect(t.size).to.be.eql([16, 16]);
+        return expect(t.url).to.be('d/img/brick.png');
       });
     });
   });

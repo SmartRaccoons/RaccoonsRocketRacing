@@ -56,6 +56,6 @@
     return r.connection(socket);
   });
 
-  console.log('http://127.0.0.1:' + config.port + ' version:' + pjson.version);
+  console.log('http://127.0.0.1:' + config.port + '/-bco version:' + pjson.version);
 
 }).call(this);

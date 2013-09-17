@@ -1,5 +1,5 @@
 (function() {
-  var Bullet, Sprite, Tank,
+  var Brick, Bullet, Sprite, Tank,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -17,6 +17,9 @@
 
     function Sprite() {
       var _this = this;
+      if (this._name) {
+        this.url = 'd/img/' + this._name + '.png';
+      }
       this.img = new Image();
       this.img.onload = function() {
         return _this._loaded = true;
@@ -56,7 +59,7 @@
 
     Tank.prototype.size = [32, 32];
 
-    Tank.prototype.url = 'd/img/tank.png';
+    Tank.prototype._name = 'tank';
 
     return Tank;
 
@@ -72,9 +75,25 @@
 
     Bullet.prototype.size = [8, 8];
 
-    Bullet.prototype.url = 'd/img/bullet.png';
+    Bullet.prototype._name = 'bullet';
 
     return Bullet;
+
+  })(Sprite);
+
+  App.SpriteBrick = Brick = (function(_super) {
+
+    __extends(Brick, _super);
+
+    function Brick() {
+      return Brick.__super__.constructor.apply(this, arguments);
+    }
+
+    Brick.prototype.size = [16, 16];
+
+    Brick.prototype._name = 'brick';
+
+    return Brick;
 
   })(Sprite);
 

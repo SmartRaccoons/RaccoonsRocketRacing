@@ -7,6 +7,8 @@ App.Sprite = class Sprite
   _frames_index: 0
 
   constructor: ->
+    if @_name
+      @url = 'd/img/'+@_name+'.png'
     @img = new Image()
     @img.onload = =>
       @_loaded = true
@@ -30,9 +32,14 @@ App.Sprite = class Sprite
 
 App.SpriteTank = class Tank extends Sprite
   size: [32, 32]
-  url: 'd/img/tank.png'
+  _name: 'tank'
 
 
 App.SpriteBullet = class Bullet extends Sprite
   size: [8, 8]
-  url: 'd/img/bullet.png'
+  _name: 'bullet'
+
+
+App.SpriteBrick = class Brick extends Sprite
+  size: [16, 16]
+  _name: 'brick'
