@@ -105,7 +105,8 @@
           'object': 'benja',
           'speed': 10,
           'angle': 0,
-          'pos': [0, 0]
+          'pos': [0, 0],
+          'stuck': 1
         });
         b._updateView(1);
         expect(b.get(1).pos).to.be.eql([10, 0]);
@@ -127,6 +128,30 @@
         b._updateView(1);
         expect(b.get(1).pos[0] - 7.07 < 0.01).to.be.ok();
         return expect(b.get(1).pos[1] - 7.07 < 0.01).to.be.ok();
+      });
+      it('update position stuck', function() {
+        b.add({
+          'id': 1,
+          'object': 'benja',
+          'speed': 10,
+          'angle': 0,
+          'pos': [0, 0],
+          'stuck': 1
+        });
+        b._updateView(1);
+        expect(b.get(1).pos).to.be.eql([10, 0]);
+        b.update({
+          'id': 1,
+          'stuck': 0.5
+        });
+        b._updateView(1);
+        expect(b.get(1).pos).to.be.eql([15, 0]);
+        b.update({
+          'id': 1,
+          'stuck': 0.1
+        });
+        b._updateView(1);
+        return expect(b.get(1).pos).to.be.eql([16, 0]);
       });
       return it('stop', function() {
         b._updateView = sinon.spy();

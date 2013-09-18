@@ -1,15 +1,11 @@
 (function() {
-  var Backbone, Bco, BcoCore, collides, _,
+  var Backbone, Bco, BcoCore, _,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Backbone = require('backbone');
 
   _ = require('lodash');
-
-  collides = function(x, y, r, b, x2, y2, r2, b2) {
-    return !(r <= x2 || x > r2 || b <= y2 || y > b2);
-  };
 
   BcoCore = require('./client').BcoCore;
 
@@ -44,6 +40,10 @@
 
     }
 
+    Bco.prototype._collides = function(x, y, r, b, x2, y2, r2, b2) {
+      return !(r <= x2 || x >= r2 || b <= y2 || y >= b2);
+    };
+
     Bco.prototype.__requestAnimFrame = function(callback) {
       return setTimeout(callback, 1000 / 40);
     };
@@ -60,6 +60,8 @@
         speed: pr.speed || 0,
         angle: pr.angle || 0,
         destroy: pr.destroy || 0,
+        over: 0,
+        stuck: 1,
         hitpoints: pr.hitpoints || 1,
         _keystokes: []
       };
@@ -132,7 +134,8 @@
       }
       params = {
         'id': tank_id,
-        'speed': 100
+        'speed': 100,
+        'stuck': 1
       };
       if (this._elements[tank_id]._keystokes.length === 0) {
         params['speed'] = 0;
@@ -152,7 +155,7 @@
     };
 
     Bco.prototype._updateView = function(dt) {
-      var id, id2, remove, val, val2, _i, _len, _ref, _ref1, _ref2, _results;
+      var id, id2, remove, update, val, val2, _i, _len, _ref, _ref1, _ref2, _results;
       Bco.__super__._updateView.call(this, dt);
       _ref = this._elements;
       for (id in _ref) {
@@ -168,9 +171,29 @@
         _ref2 = this._elements;
         for (id2 in _ref2) {
           val2 = _ref2[id2];
-          if (id !== id2 && val.destroy > 0 && val.params.owner !== val2.id) {
-            if (collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
-              val2.hitpoints -= val.destroy;
+          if (id !== id2 && this._collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
+            if (val.destroy === 0 && val.speed > 0 && val.stuck !== val2.over) {
+              update = {
+                'id': val.id,
+                'stuck': val2.over,
+                'pos': val.pos
+              };
+              if (val.angle === 0) {
+                update.pos[0] = val2.pos[0] - val.size[0];
+              } else if (val.angle === 90) {
+                update.pos[1] = val2.pos[1] - val.size[1];
+              } else if (val.angle === 180) {
+                update.pos[0] = val2.pos[0] + val2.size[0];
+              } else if (val.angle === 270) {
+                update.pos[1] = val2.pos[1] + val2.size[1];
+              }
+              this.update(update);
+            }
+            if (val.destroy > 0 && val.params.owner !== val2.id) {
+              this.update({
+                'id': val2.id,
+                'hitpoints': val2.hitpoints - val.destroy
+              });
               if (remove.indexOf(val.id) === -1) {
                 remove.push(val.id);
               }

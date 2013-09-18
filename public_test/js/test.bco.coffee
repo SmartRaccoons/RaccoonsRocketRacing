@@ -69,7 +69,7 @@ describe 'BcoCore', ->
       expect(b._updateView.callCount).to.be(5)
 
     it 'update position', ->
-      b.add({'id': 1, 'object': 'benja', 'speed': 10, 'angle': 0, 'pos': [0, 0]})
+      b.add({'id': 1, 'object': 'benja', 'speed': 10, 'angle': 0, 'pos': [0, 0], 'stuck': 1})
       b._updateView(1)
       expect(b.get(1).pos).to.be.eql([10, 0])
       b._updateView(0.5)
@@ -82,6 +82,18 @@ describe 'BcoCore', ->
       b._updateView(1)
       expect(b.get(1).pos[0]-7.07<0.01).to.be.ok()
       expect(b.get(1).pos[1]-7.07<0.01).to.be.ok()
+
+    it 'update position stuck', ->
+      b.add({'id': 1, 'object': 'benja', 'speed': 10, 'angle': 0, 'pos': [0, 0], 'stuck': 1})
+      b._updateView(1)
+      expect(b.get(1).pos).to.be.eql([10, 0])
+      b.update({'id': 1, 'stuck': 0.5})
+      b._updateView(1)
+      expect(b.get(1).pos).to.be.eql([15, 0])
+      b.update({'id': 1, 'stuck': 0.1})
+      b._updateView(1)
+      expect(b.get(1).pos).to.be.eql([16, 0])
+
 
     it 'stop', ->
       b._updateView = sinon.spy()

@@ -63,6 +63,8 @@ describe 'Bco', ->
       assert.equal(2, b.get(id).speed)
       assert.equal(3, b.get(id).angle)
       assert.equal(10, b.get(id).hitpoints)
+      assert.equal(0, b.get(id).over)
+      assert.equal(1, b.get(id).stuck)
 
     it 'event add', ->
       spy = sinon.spy()
@@ -125,7 +127,7 @@ describe 'Bco', ->
       b._updateView(0.2)
       assert.equal(null, b.get(id))
 
-    it 'collides', ->
+    it 'collides bullet', ->
       spy = sinon.spy(b, 'destroy')
       bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1})
       tank = b.add({'object': 'tank', 'speed': 0, 'angle': 90, 'pos': [20, 10]})
@@ -145,15 +147,18 @@ describe 'Bco', ->
       assert.equal(0, spy.callCount)
 
 
-    it 'collides with hitpoints', ->
+    it 'collides bullet with hitpoints', ->
+      spy = sinon.spy(b, 'update')
       bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1})
       tank = b.add({'object': 'tank', 'speed': 0, 'angle': 90, 'pos': [20, 10], 'hitpoints': 2})
       b._updateView(0.3)
       assert.equal(null, b.get(bullet))
-      assert.equal(tank, b.get(tank).id)
       assert.equal(1, b.get(tank).hitpoints)
+      assert.equal(1, spy.callCount)
+      assert.equal(tank, spy.getCall(0).args[0].id)
+      assert.equal(1, spy.getCall(0).args[0].hitpoints)
 
-    it 'collides 3 elements', ->
+    it 'collides bullet with 2 elements', ->
       spy = sinon.spy(b, 'destroy')
       bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1})
       b.add({'object': 'tank', 'speed': 0, 'angle': 90, 'pos': [20, 10]})
@@ -162,7 +167,58 @@ describe 'Bco', ->
       assert.equal(3, spy.callCount)
       assert(spy.withArgs(bullet, 'destroy').calledOnce)
 
+  describe 'collides', ->
+    clock = null
+    tank1 = null
+    tank2 = null
+    spy = null
+    beforeEach ->
+      clock = sinon.useFakeTimers()
+      b._elements = {}
+      spy = sinon.spy(b, 'update')
+      tank1 = b.add({'object': 'tank', 'speed': 10, 'angle': 0, 'pos': [0, 0]})
+      tank2 = b.add({'object': 'brick', 'speed': 0, 'angle': 0, 'pos': [0, 0]})
+    afterEach ->
+      clock.restore()
 
+    it 'over elements', ->
+      b._updateView(0.8)
+      assert.equal(0, b.get(tank1).stuck)
+      assert.equal(1, b.get(tank2).stuck)
+      assert.equal(1, spy.callCount)
+      assert.equal(tank1, spy.getCall(0).args[0].id)
+      assert.equal(0, spy.getCall(0).args[0].stuck)
+      b._updateView(0.1)
+      assert.equal(1, spy.callCount)
+
+    it 'remove stuck', ->
+      b.get(tank1).stuck = 0
+      b._tank_move(tank1, 'up', true)
+      assert.equal(1, b.get(tank1).stuck)
+
+    it 'over element from left', ->
+      b.get(tank2).pos = [34, 0]
+      b.get(tank1).pos = [0, 1]
+      b._updateView(1)
+      assert.deepEqual([2, 1], b.get(tank1).pos)
+
+    it 'over element from right', ->
+      b.get(tank1).angle = 180
+      b.get(tank1).pos = [17, 1]
+      b._updateView(1)
+      assert.deepEqual([16, 1], b.get(tank1).pos)
+
+    it 'over element from top', ->
+      b.get(tank1).angle = 90
+      b.get(tank2).pos = [0, 34]
+      b._updateView(1)
+      assert.deepEqual([0, 2], b.get(tank1).pos)
+
+    it 'over element from bottom', ->
+      b.get(tank1).angle = 270
+      b.get(tank1).pos = [0, 17]
+      b._updateView(1)
+      assert.deepEqual([0, 16], b.get(tank1).pos)
 
   describe 'control', ->
     id = null
@@ -240,7 +296,31 @@ describe 'Bco', ->
 
 
   describe 'collides', ->
-    it 'rt'
-    it 'rb'
-    it 'lt'
-    it 'lb'
+    it 'top', ->
+      assert(!b._collides(2, 0, 8, 9,
+        0, 10, 10, 20))
+      assert(!b._collides(2, 0, 8, 10,
+        0, 10, 10, 20))
+      assert(b._collides(2, 0, 8, 11,
+        0, 10, 10, 20))
+    it 'bottom', ->
+      assert(!b._collides(2, 21, 8, 22,
+        0, 10, 10, 20))
+      assert(!b._collides(2, 20, 8, 22,
+        0, 10, 10, 20))
+      assert(b._collides(2, 19, 8, 22,
+        0, 10, 10, 20))
+    it 'left', ->
+      assert(!b._collides(0, 2, 9, 8,
+        10, 0, 20, 10))
+      assert(!b._collides(0, 2, 10, 8,
+        10, 0, 20, 10))
+      assert(b._collides(0, 2, 11, 8,
+        10, 0, 20, 10))
+    it 'right', ->
+      assert(!b._collides(21, 2, 30, 8,
+        10, 0, 20, 10))
+      assert(!b._collides(20, 2, 30, 8,
+        10, 0, 20, 10))
+      assert(b._collides(19, 2, 30, 8,
+        10, 0, 20, 10))

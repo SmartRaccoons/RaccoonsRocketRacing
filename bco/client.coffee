@@ -56,9 +56,9 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
   _updateView: (dt)->
     for id, val of @_elements
       rd = val.angle * Math.PI/180.0
-      hypo = val.speed * dt
-      val.pos[0] += hypo * Math.cos(rd)
-      val.pos[1] += hypo * Math.sin(rd)
+      hypo = val.speed * val.stuck * dt
+      val.pos[0] += Math.round(hypo * Math.cos(rd))
+      val.pos[1] += Math.round(hypo * Math.sin(rd))
     @
 
 
