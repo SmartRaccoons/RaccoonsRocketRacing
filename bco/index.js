@@ -141,6 +141,7 @@
         params['speed'] = 0;
       } else {
         last_move = this._elements[tank_id]._keystokes[this._elements[tank_id]._keystokes.length - 1];
+        params['pos'] = [Math.round(this._elements[tank_id].pos[0] / 8) * 8, Math.round(this._elements[tank_id].pos[1] / 8) * 8];
         if (last_move === 'up') {
           params['angle'] = 270;
         } else if (last_move === 'down') {

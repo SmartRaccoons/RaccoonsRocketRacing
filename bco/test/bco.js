@@ -416,6 +416,17 @@
         b.tank_start(id, 'right');
         return assert.equal(0, spy.getCall(0).args[0].angle);
       });
+      it('move round coors', function() {
+        var spy;
+        spy = sinon.spy();
+        b.on('update', spy);
+        b.get(id).pos = [3, 4];
+        b.tank_start(id, 'right');
+        assert.deepEqual([0, 8], spy.getCall(0).args[0].pos);
+        b._elements[id].pos = [4, 12];
+        b.tank_start(id, 'left');
+        return assert.deepEqual([8, 16], spy.getCall(1).args[0].pos);
+      });
       it('move stop', function() {
         var spy;
         spy = sinon.spy();
