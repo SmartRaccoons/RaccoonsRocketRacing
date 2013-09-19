@@ -76,12 +76,10 @@ describe 'BcoCore', ->
       expect(b.get(1).pos).to.be.eql([15, 0])
       b.update({'id': 1, 'angle': 90, 'pos': [0, 0]})
       b._updateView(0.5)
-      expect(b.get(1).pos[0]<0.0001).to.be.ok()
-      expect(b.get(1).pos[1]-5<0.0001).to.be.ok()
+      expect(b.get(1).pos).to.be.eql([0, 5])
       b.update({'id': 1, 'angle': 45, 'pos': [0, 0]})
       b._updateView(1)
-      expect(b.get(1).pos[0]-7.07<0.01).to.be.ok()
-      expect(b.get(1).pos[1]-7.07<0.01).to.be.ok()
+      expect(b.get(1).pos).to.be.eql([7.07107, 7.07107])
 
     it 'update position stuck', ->
       b.add({'id': 1, 'object': 'benja', 'speed': 10, 'angle': 0, 'pos': [0, 0], 'stuck': 1})

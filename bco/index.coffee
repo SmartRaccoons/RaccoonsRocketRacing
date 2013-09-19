@@ -89,7 +89,6 @@ module.exports.Bco = class Bco extends BcoCore
       params['speed'] = 0
     else
       last_move = @_elements[tank_id]._keystokes[@_elements[tank_id]._keystokes.length - 1]
-      params['pos'] = [Math.round(@_elements[tank_id].pos[0]/8)*8, Math.round(@_elements[tank_id].pos[1]/8)*8]
       if last_move is 'up'
         params['angle'] = 270
       else if last_move is 'down'
@@ -98,6 +97,9 @@ module.exports.Bco = class Bco extends BcoCore
         params['angle'] = 180
       else if last_move is 'right'
         params['angle'] = 0
+      if @_elements[tank_id].angle isnt params['angle']
+        pr = 16
+        params['pos'] = [Math.round(@_elements[tank_id].pos[0]/pr)*pr, Math.round(@_elements[tank_id].pos[1]/pr)*pr]
     @update(params)
 
   _updateView: (dt)->
@@ -111,7 +113,7 @@ module.exports.Bco = class Bco extends BcoCore
       for id2, val2 of @_elements
         if id isnt id2 and @_collides(val.pos[0], val.pos[1], val.pos[0]+val.size[0], val.pos[1]+val.size[1],
                       val2.pos[0], val2.pos[1], val2.pos[0]+val2.size[0], val2.pos[1]+val2.size[1])
-          if val.destroy is 0 and val.speed > 0 and val.stuck isnt val2.over
+          if val.destroy is 0 and val2.destroy is 0 and val.speed > 0 and val.stuck isnt val2.over
             update = {'id': val.id, 'stuck': val2.over, 'pos': val.pos}
             if val.angle is 0
               update.pos[0] = val2.pos[0]-val.size[0]

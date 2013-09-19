@@ -118,16 +118,14 @@
           'pos': [0, 0]
         });
         b._updateView(0.5);
-        expect(b.get(1).pos[0] < 0.0001).to.be.ok();
-        expect(b.get(1).pos[1] - 5 < 0.0001).to.be.ok();
+        expect(b.get(1).pos).to.be.eql([0, 5]);
         b.update({
           'id': 1,
           'angle': 45,
           'pos': [0, 0]
         });
         b._updateView(1);
-        expect(b.get(1).pos[0] - 7.07 < 0.01).to.be.ok();
-        return expect(b.get(1).pos[1] - 7.07 < 0.01).to.be.ok();
+        return expect(b.get(1).pos).to.be.eql([7.07107, 7.07107]);
       });
       it('update position stuck', function() {
         b.add({

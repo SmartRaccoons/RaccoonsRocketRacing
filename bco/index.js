@@ -120,7 +120,7 @@
     };
 
     Bco.prototype._tank_move = function(tank_id, move, active) {
-      var last_move, params;
+      var last_move, params, pr;
       if (active == null) {
         active = false;
       }
@@ -141,7 +141,6 @@
         params['speed'] = 0;
       } else {
         last_move = this._elements[tank_id]._keystokes[this._elements[tank_id]._keystokes.length - 1];
-        params['pos'] = [Math.round(this._elements[tank_id].pos[0] / 8) * 8, Math.round(this._elements[tank_id].pos[1] / 8) * 8];
         if (last_move === 'up') {
           params['angle'] = 270;
         } else if (last_move === 'down') {
@@ -150,6 +149,10 @@
           params['angle'] = 180;
         } else if (last_move === 'right') {
           params['angle'] = 0;
+        }
+        if (this._elements[tank_id].angle !== params['angle']) {
+          pr = 16;
+          params['pos'] = [Math.round(this._elements[tank_id].pos[0] / pr) * pr, Math.round(this._elements[tank_id].pos[1] / pr) * pr];
         }
       }
       return this.update(params);
@@ -173,7 +176,7 @@
         for (id2 in _ref2) {
           val2 = _ref2[id2];
           if (id !== id2 && this._collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
-            if (val.destroy === 0 && val.speed > 0 && val.stuck !== val2.over) {
+            if (val.destroy === 0 && val2.destroy === 0 && val.speed > 0 && val.stuck !== val2.over) {
               update = {
                 'id': val.id,
                 'stuck': val2.over,

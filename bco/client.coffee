@@ -57,8 +57,8 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
     for id, val of @_elements
       rd = val.angle * Math.PI/180.0
       hypo = val.speed * val.stuck * dt
-      val.pos[0] += Math.round(hypo * Math.cos(rd))
-      val.pos[1] += Math.round(hypo * Math.sin(rd))
+      val.pos[0] += Math.round(hypo * Math.cos(rd) * 100000)/100000
+      val.pos[1] += Math.round(hypo * Math.sin(rd) * 100000)/100000
     @
 
 

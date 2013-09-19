@@ -170,26 +170,32 @@ describe 'Bco', ->
   describe 'collides', ->
     clock = null
     tank1 = null
-    tank2 = null
+    object = null
     spy = null
     beforeEach ->
       clock = sinon.useFakeTimers()
       b._elements = {}
       spy = sinon.spy(b, 'update')
       tank1 = b.add({'object': 'tank', 'speed': 10, 'angle': 0, 'pos': [0, 0]})
-      tank2 = b.add({'object': 'brick', 'speed': 0, 'angle': 0, 'pos': [0, 0]})
+      object = b.add({'object': 'brick', 'speed': 0, 'angle': 0, 'pos': [0, 0]})
     afterEach ->
       clock.restore()
 
     it 'over elements', ->
       b._updateView(0.8)
       assert.equal(0, b.get(tank1).stuck)
-      assert.equal(1, b.get(tank2).stuck)
+      assert.equal(1, b.get(object).stuck)
       assert.equal(1, spy.callCount)
       assert.equal(tank1, spy.getCall(0).args[0].id)
       assert.equal(0, spy.getCall(0).args[0].stuck)
       b._updateView(0.1)
       assert.equal(1, spy.callCount)
+
+    it 'bullets', ->
+      b.destroy(object)
+      b.add({'object': 'bullet', 'pos': [0, 0], 'params': {'owner': tank1}, 'destroy': 1, 'speed': 20})
+      b._updateView(0.1)
+      assert.equal(0, spy.callCount)
 
     it 'remove stuck', ->
       b.get(tank1).stuck = 0
@@ -197,7 +203,7 @@ describe 'Bco', ->
       assert.equal(1, b.get(tank1).stuck)
 
     it 'over element from left', ->
-      b.get(tank2).pos = [34, 0]
+      b.get(object).pos = [34, 0]
       b.get(tank1).pos = [0, 1]
       b._updateView(1)
       assert.deepEqual([2, 1], b.get(tank1).pos)
@@ -210,7 +216,7 @@ describe 'Bco', ->
 
     it 'over element from top', ->
       b.get(tank1).angle = 90
-      b.get(tank2).pos = [0, 34]
+      b.get(object).pos = [0, 34]
       b._updateView(1)
       assert.deepEqual([0, 2], b.get(tank1).pos)
 
@@ -265,12 +271,15 @@ describe 'Bco', ->
     it 'move round coors', ->
       spy = sinon.spy()
       b.on 'update', spy
-      b.get(id).pos = [3, 4]
+      b.get(id).pos = [7, 8]
+      b.get(id).angle = 0
       b.tank_start(id, 'right')
-      assert.deepEqual([0, 8], spy.getCall(0).args[0].pos)
-      b._elements[id].pos = [4, 12]
+      assert(!spy.getCall(0).args[0].pos)
+      b.tank_start(id, 'up')
+      assert.deepEqual([0, 16], spy.getCall(1).args[0].pos)
+      b._elements[id].pos = [24, 23]
       b.tank_start(id, 'left')
-      assert.deepEqual([8, 16], spy.getCall(1).args[0].pos)
+      assert.deepEqual([32, 16], spy.getCall(2).args[0].pos)
 
     it 'move stop', ->
       spy = sinon.spy()
