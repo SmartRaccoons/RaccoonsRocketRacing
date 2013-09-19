@@ -21,10 +21,6 @@ module.exports.Bco = class Bco extends BcoCore
         y++
     @
 
-  _collides: (x, y, r, b, x2, y2, r2, b2)->
-    !(r <= x2 || x >= r2 || b <= y2 || y >= b2)
-#    !(r < x2 || x > r2 || b < y2 || y > b2)
-
   __requestAnimFrame: (callback)-> setTimeout(callback, 1000 / 40)
 
   add: (pr)->
@@ -38,8 +34,7 @@ module.exports.Bco = class Bco extends BcoCore
       speed: pr.speed || 0
       angle: pr.angle || 0
       destroy: pr.destroy || 0
-      over: 0
-      stuck: 1
+      over: false
       hitpoints: pr.hitpoints || 1
       _keystokes: []
     if pr.object is 'tank'
@@ -84,7 +79,7 @@ module.exports.Bco = class Bco extends BcoCore
       if @_elements[tank_id]._keystokes[@_elements[tank_id]._keystokes.length - 1] isnt move
         return @_elements[tank_id]._keystokes.splice(@_elements[tank_id]._keystokes.indexOf(move), 1)
       @_elements[tank_id]._keystokes.splice(@_elements[tank_id]._keystokes.length-1, 1)
-    params = {'id': tank_id, 'speed': 100, 'stuck': 1}
+    params = {'id': tank_id, 'speed': 100}
     if @_elements[tank_id]._keystokes.length is 0
       params['speed'] = 0
     else
@@ -113,17 +108,6 @@ module.exports.Bco = class Bco extends BcoCore
       for id2, val2 of @_elements
         if id isnt id2 and @_collides(val.pos[0], val.pos[1], val.pos[0]+val.size[0], val.pos[1]+val.size[1],
                       val2.pos[0], val2.pos[1], val2.pos[0]+val2.size[0], val2.pos[1]+val2.size[1])
-          if val.destroy is 0 and val2.destroy is 0 and val.speed > 0 and val.stuck isnt val2.over
-            update = {'id': val.id, 'stuck': val2.over, 'pos': val.pos}
-            if val.angle is 0
-              update.pos[0] = val2.pos[0]-val.size[0]
-            else if val.angle is 90
-              update.pos[1] = val2.pos[1]-val.size[1]
-            else if val.angle is 180
-              update.pos[0] = val2.pos[0]+val2.size[0]
-            else if val.angle is 270
-              update.pos[1] = val2.pos[1]+val2.size[1]
-            @update(update)
           if val.destroy > 0 and val.params.owner isnt val2.id
             #bullet
             @update({'id': val2.id, 'hitpoints': val2.hitpoints - val.destroy})

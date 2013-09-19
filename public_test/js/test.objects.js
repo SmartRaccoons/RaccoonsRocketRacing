@@ -18,19 +18,22 @@
   })(App.Sprite);
 
   describe('Objects', function() {
-    var image, s, stub_image;
+    var Image, image, s;
     s = null;
     image = null;
-    stub_image = null;
+    Image = null;
     beforeEach(function() {
       image = {
         'onload': sinon.spy()
       };
-      stub_image = sinon.stub(window, 'Image').returns(image);
+      Image = window.Image;
+      window.Image = function() {
+        return image;
+      };
       return s = new TestSprite();
     });
     afterEach(function() {
-      return stub_image.restore();
+      return window.Image = Image;
     });
     describe('Sprite', function() {
       it('default', function() {

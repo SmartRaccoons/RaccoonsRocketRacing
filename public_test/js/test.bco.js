@@ -76,7 +76,7 @@
         return expect(b.get(id)).not.be.ok();
       });
     });
-    return describe('process', function() {
+    describe('process', function() {
       var clock;
       clock = null;
       beforeEach(function() {
@@ -127,30 +127,6 @@
         b._updateView(1);
         return expect(b.get(1).pos).to.be.eql([7.07107, 7.07107]);
       });
-      it('update position stuck', function() {
-        b.add({
-          'id': 1,
-          'object': 'benja',
-          'speed': 10,
-          'angle': 0,
-          'pos': [0, 0],
-          'stuck': 1
-        });
-        b._updateView(1);
-        expect(b.get(1).pos).to.be.eql([10, 0]);
-        b.update({
-          'id': 1,
-          'stuck': 0.5
-        });
-        b._updateView(1);
-        expect(b.get(1).pos).to.be.eql([15, 0]);
-        b.update({
-          'id': 1,
-          'stuck': 0.1
-        });
-        b._updateView(1);
-        return expect(b.get(1).pos).to.be.eql([16, 0]);
-      });
       return it('stop', function() {
         b._updateView = sinon.spy();
         b.start();
@@ -159,6 +135,114 @@
         expect(b._updateView.callCount).to.be(1);
         clock.tick(100);
         return expect(b._updateView.callCount).to.be(1);
+      });
+    });
+    describe('stop on collides', function() {
+      var clock, object;
+      clock = null;
+      object = 5;
+      beforeEach(function() {
+        clock = sinon.useFakeTimers();
+        b._elements = {};
+        b.add({
+          'id': 1,
+          'object': 'tank',
+          'speed': 10,
+          'destroy': 0,
+          'angle': 0,
+          'size': [32, 32],
+          'pos': [0, 0]
+        });
+        return b.add({
+          'id': 5,
+          'object': 'brick',
+          'speed': 0,
+          'destroy': 0,
+          'angle': 0,
+          'pos': [100, 100],
+          'size': [16, 16]
+        });
+      });
+      afterEach(function() {
+        return clock.restore();
+      });
+      it('over elements', function() {
+        b.add({
+          'id': 2,
+          'object': 'brick',
+          'speed': 0,
+          'destroy': 0,
+          'angle': 0,
+          'size': [16, 16],
+          'pos': [34, 0]
+        });
+        b._updateView(0.1);
+        expect(b.get(1).pos).to.be.eql([1, 0]);
+        b._updateView(0.4);
+        return expect(b.get(1).pos).to.be.eql([2, 0]);
+      });
+      it('destroy param', function() {
+        b.get(1).pos = [0, 0];
+        b.add({
+          'id': 3,
+          'object': 'bullet',
+          'speed': 20,
+          'angle': 0,
+          'size': [8, 8],
+          'pos': [0, 0],
+          'destroy': 1
+        });
+        b._updateView(0.2);
+        expect(b.get(1).pos).to.be.eql([2, 0]);
+        return expect(b.get(3).pos).to.be.eql([4, 0]);
+      });
+      it('over element from left', function() {
+        b.get(object).pos = [34, 0];
+        b.get(1).pos = [0, 1];
+        b._updateView(1);
+        return expect(b.get(1).pos).to.be.eql([2, 1]);
+      });
+      it('over element from right', function() {
+        b.get(1).angle = 180;
+        b.get(1).pos = [17, 1];
+        b.get(object).pos = [0, 0];
+        b._updateView(1);
+        return expect(b.get(1).pos).to.be.eql([16, 1]);
+      });
+      it('over element from top', function() {
+        b.get(1).angle = 90;
+        b.get(object).pos = [0, 34];
+        b._updateView(1);
+        return expect(b.get(1).pos).to.be.eql([0, 2]);
+      });
+      return it('over element from bottom', function() {
+        b.get(1).angle = 270;
+        b.get(1).pos = [0, 17];
+        b.get(object).pos = [0, 0];
+        b._updateView(1);
+        return expect(b.get(1).pos).to.be.eql([0, 16]);
+      });
+    });
+    return describe('collides', function() {
+      it('top', function() {
+        expect(b._collides(2, 0, 8, 9, 0, 10, 10, 20)).not.be.ok();
+        expect(b._collides(2, 0, 8, 10, 0, 10, 10, 20)).not.be.ok();
+        return expect(b._collides(2, 0, 8, 11, 0, 10, 10, 20)).be.ok();
+      });
+      it('bottom', function() {
+        expect(b._collides(2, 21, 8, 22, 0, 10, 10, 20)).not.be.ok();
+        expect(b._collides(2, 20, 8, 22, 0, 10, 10, 20)).not.be.ok();
+        return expect(b._collides(2, 19, 8, 22, 0, 10, 10, 20)).be.ok();
+      });
+      it('left', function() {
+        expect(b._collides(0, 2, 9, 8, 10, 0, 20, 10)).not.be.ok();
+        expect(b._collides(0, 2, 10, 8, 10, 0, 20, 10)).not.be.ok();
+        return expect(b._collides(0, 2, 11, 8, 10, 0, 20, 10)).be.ok();
+      });
+      return it('right', function() {
+        expect(b._collides(21, 2, 30, 8, 10, 0, 20, 10)).not.be.ok();
+        expect(b._collides(20, 2, 30, 8, 10, 0, 20, 10)).not.be.ok();
+        return expect(b._collides(19, 2, 30, 8, 10, 0, 20, 10)).be.ok();
       });
     });
   });

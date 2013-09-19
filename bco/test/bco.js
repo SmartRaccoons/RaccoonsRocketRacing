@@ -94,8 +94,7 @@
         assert.equal(2, b.get(id).speed);
         assert.equal(3, b.get(id).angle);
         assert.equal(10, b.get(id).hitpoints);
-        assert.equal(0, b.get(id).over);
-        return assert.equal(1, b.get(id).stuck);
+        return assert.equal(false, b.get(id).over);
       });
       return it('event add', function() {
         var id, spy;
@@ -298,87 +297,7 @@
         return assert(spy.withArgs(bullet, 'destroy').calledOnce);
       });
     });
-    describe('collides', function() {
-      var clock, object, spy, tank1;
-      clock = null;
-      tank1 = null;
-      object = null;
-      spy = null;
-      beforeEach(function() {
-        clock = sinon.useFakeTimers();
-        b._elements = {};
-        spy = sinon.spy(b, 'update');
-        tank1 = b.add({
-          'object': 'tank',
-          'speed': 10,
-          'angle': 0,
-          'pos': [0, 0]
-        });
-        return object = b.add({
-          'object': 'brick',
-          'speed': 0,
-          'angle': 0,
-          'pos': [0, 0]
-        });
-      });
-      afterEach(function() {
-        return clock.restore();
-      });
-      it('over elements', function() {
-        b._updateView(0.8);
-        assert.equal(0, b.get(tank1).stuck);
-        assert.equal(1, b.get(object).stuck);
-        assert.equal(1, spy.callCount);
-        assert.equal(tank1, spy.getCall(0).args[0].id);
-        assert.equal(0, spy.getCall(0).args[0].stuck);
-        b._updateView(0.1);
-        return assert.equal(1, spy.callCount);
-      });
-      it('bullets', function() {
-        b.destroy(object);
-        b.add({
-          'object': 'bullet',
-          'pos': [0, 0],
-          'params': {
-            'owner': tank1
-          },
-          'destroy': 1,
-          'speed': 20
-        });
-        b._updateView(0.1);
-        return assert.equal(0, spy.callCount);
-      });
-      it('remove stuck', function() {
-        b.get(tank1).stuck = 0;
-        b._tank_move(tank1, 'up', true);
-        return assert.equal(1, b.get(tank1).stuck);
-      });
-      it('over element from left', function() {
-        b.get(object).pos = [34, 0];
-        b.get(tank1).pos = [0, 1];
-        b._updateView(1);
-        return assert.deepEqual([2, 1], b.get(tank1).pos);
-      });
-      it('over element from right', function() {
-        b.get(tank1).angle = 180;
-        b.get(tank1).pos = [17, 1];
-        b._updateView(1);
-        return assert.deepEqual([16, 1], b.get(tank1).pos);
-      });
-      it('over element from top', function() {
-        b.get(tank1).angle = 90;
-        b.get(object).pos = [0, 34];
-        b._updateView(1);
-        return assert.deepEqual([0, 2], b.get(tank1).pos);
-      });
-      return it('over element from bottom', function() {
-        b.get(tank1).angle = 270;
-        b.get(tank1).pos = [0, 17];
-        b._updateView(1);
-        return assert.deepEqual([0, 16], b.get(tank1).pos);
-      });
-    });
-    describe('control', function() {
+    return describe('control', function() {
       var id;
       id = null;
       beforeEach(function() {
@@ -478,28 +397,6 @@
         b._tank_move = sinon.spy();
         b.tank_stop(id, 'ben');
         return assert.equal(0, b._tank_move.callCount);
-      });
-    });
-    return describe('collides', function() {
-      it('top', function() {
-        assert(!b._collides(2, 0, 8, 9, 0, 10, 10, 20));
-        assert(!b._collides(2, 0, 8, 10, 0, 10, 10, 20));
-        return assert(b._collides(2, 0, 8, 11, 0, 10, 10, 20));
-      });
-      it('bottom', function() {
-        assert(!b._collides(2, 21, 8, 22, 0, 10, 10, 20));
-        assert(!b._collides(2, 20, 8, 22, 0, 10, 10, 20));
-        return assert(b._collides(2, 19, 8, 22, 0, 10, 10, 20));
-      });
-      it('left', function() {
-        assert(!b._collides(0, 2, 9, 8, 10, 0, 20, 10));
-        assert(!b._collides(0, 2, 10, 8, 10, 0, 20, 10));
-        return assert(b._collides(0, 2, 11, 8, 10, 0, 20, 10));
-      });
-      return it('right', function() {
-        assert(!b._collides(21, 2, 30, 8, 10, 0, 20, 10));
-        assert(!b._collides(20, 2, 30, 8, 10, 0, 20, 10));
-        return assert(b._collides(19, 2, 30, 8, 10, 0, 20, 10));
       });
     });
   });

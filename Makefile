@@ -2,8 +2,9 @@ update :
 	npm install
 
 test :
-	mocha --reporter list ./bco/test/
-	mocha --reporter list ./router/test/
+	mocha --reporter dot ./bco/test/
+	mocha --reporter dot ./router/test/
+	mocha-phantomjs -R dot public_test/js/index.html
 
 production :
 	yui-compressor public/d/css/screen.css -o public/d/c.css

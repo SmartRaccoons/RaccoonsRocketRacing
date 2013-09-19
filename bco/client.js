@@ -17,6 +17,10 @@
       this._elements = {};
     }
 
+    BcoCore.prototype._collides = function(x, y, r, b, x2, y2, r2, b2) {
+      return !(r <= x2 || x >= r2 || b <= y2 || y >= b2);
+    };
+
     BcoCore.prototype.__requestAnimFrame = function(callback) {
       var fn;
       fn = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -78,14 +82,33 @@
     };
 
     BcoCore.prototype._updateView = function(dt) {
-      var hypo, id, rd, val, _ref;
+      var hypo, id, id2, rd, val, val2, _ref, _ref1;
       _ref = this._elements;
       for (id in _ref) {
         val = _ref[id];
-        rd = val.angle * Math.PI / 180.0;
-        hypo = val.speed * val.stuck * dt;
-        val.pos[0] += Math.round(hypo * Math.cos(rd) * 100000) / 100000;
-        val.pos[1] += Math.round(hypo * Math.sin(rd) * 100000) / 100000;
+        if (val.speed > 0) {
+          rd = val.angle * Math.PI / 180.0;
+          hypo = val.speed * dt;
+          val.pos[0] += Math.round(hypo * Math.cos(rd) * 100000) / 100000;
+          val.pos[1] += Math.round(hypo * Math.sin(rd) * 100000) / 100000;
+          if (val.destroy === 0) {
+            _ref1 = this._elements;
+            for (id2 in _ref1) {
+              val2 = _ref1[id2];
+              if (id !== id2 && val2.destroy === 0 && this._collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
+                if (val.angle === 0) {
+                  val.pos[0] = val2.pos[0] - val.size[0];
+                } else if (val.angle === 90) {
+                  val.pos[1] = val2.pos[1] - val.size[1];
+                } else if (val.angle === 180) {
+                  val.pos[0] = val2.pos[0] + val2.size[0];
+                } else if (val.angle === 270) {
+                  val.pos[1] = val2.pos[1] + val2.size[1];
+                }
+              }
+            }
+          }
+        }
       }
       return this;
     };

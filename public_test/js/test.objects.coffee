@@ -6,14 +6,15 @@ class TestSprite extends App.Sprite
 describe 'Objects', ->
   s = null
   image = null
-  stub_image = null
+  Image = null
   beforeEach ->
       image =
         'onload': sinon.spy()
-      stub_image = sinon.stub(window, 'Image').returns(image)
+      Image = window.Image
+      window.Image = -> image
       s = new TestSprite()
   afterEach ->
-    stub_image.restore()
+    window.Image = Image
 
 
   describe 'Sprite', ->
