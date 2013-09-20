@@ -2848,14 +2848,27 @@ f=typeof require!=="undefined"?require("backbone"):window.Backbone;
 (typeof module!=="undefined"?module.exports:window).BcoCore=d=(function(){b.extend(g.prototype,f.Events);
 g.prototype.size=[416,416];
 function g(){this._elements={}
-}g.prototype.__requestAnimFrame=function(i){var h;
+}g.prototype._collides=function(i,o,n,h,l,m,j,k){return !(n<=l||i>=j||h<=m||o>=k)
+};
+g.prototype._collides_ob=function(i,h){return this._collides(i.pos[0],i.pos[1],i.pos[0]+i.size[0],i.pos[1]+i.size[1],h.pos[0],h.pos[1],h.pos[0]+h.size[0],h.pos[1]+h.size[1])
+};
+g.prototype.__requestAnimFrame=function(i){var h;
 h=window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame;
 if(h){return h(i)
 }return window.setTimeout(i,1000/30)
 };
 g.prototype.add=function(h){return this._elements[h.id]=h
 };
-g.prototype.get=function(h){return this._elements[h]
+g.prototype.get=function(o){var j,n,l,m,k,i,h;
+if(typeof o==="number"){return this._elements[o]
+}j=[];
+h=this._elements;
+for(n in h){k=h[n];
+m=true;
+for(l in o){i=o[l];
+if(m&&k[l]!==i){m=false
+}}if(m){j.push(k)
+}}return j
 };
 g.prototype.update=function(k){var h,j,i;
 i=[];
@@ -2879,14 +2892,24 @@ if(i>0){this._updateView(i)
 return this.__requestAnimFrame(function(){if(!j._stop){return j._process()
 }})
 };
-g.prototype._updateView=function(i){var l,m,h,k,j;
-j=this._elements;
-for(m in j){k=j[m];
-h=k.angle*Math.PI/180;
-l=k.speed*i;
-k.pos[0]+=l*Math.cos(h);
-k.pos[1]+=l*Math.sin(h)
-}return this
+g.prototype._updateView=function(i){var l,h,o,p,j,n,m,k;
+m=this._elements;
+for(h in m){j=m[h];
+if(j.speed>0){p=j.angle*Math.PI/180;
+l=j.speed*i;
+j.pos[0]+=Math.round(l*Math.cos(p)*100000)/100000;
+j.pos[1]+=Math.round(l*Math.sin(p)*100000)/100000;
+if(j.destroy===0){k=this._elements;
+for(o in k){n=k[o];
+if(h!==o&&n.destroy===0&&this._collides_ob(j,n)){if(j.angle===0){j.pos[0]=n.pos[0]-j.size[0]
+}else{if(j.angle===90){j.pos[1]=n.pos[1]-j.size[1]
+}else{if(j.angle===180){j.pos[0]=n.pos[0]+n.size[0]
+}else{if(j.angle===270){j.pos[1]=n.pos[1]+n.size[1]
+}}}}}}if(j.angle===0&&j.pos[0]+j.size[0]>this.size[0]){j.pos[0]=this.size[0]-j.size[0]
+}else{if(j.angle===90&&j.pos[1]+j.size[1]>this.size[1]){j.pos[1]=this.size[1]-j.size[1]
+}else{if(j.angle===180&&j.pos[0]<0){j.pos[0]=0
+}else{if(j.angle===270&&j.pos[1]<0){j.pos[1]=0
+}}}}}}}return this
 };
 return g
 })();
@@ -2896,8 +2919,7 @@ function h(){h.__super__.constructor.apply(this,arguments);
 f.View.prototype.constructor.apply(this,arguments);
 this
 }h.prototype.add=function(i){h.__super__.add.apply(this,arguments);
-if(i.object==="tank"){this._elements[i.id]["sprite"]=new App.SpriteTank()
-}if(i.object==="bullet"){return this._elements[i.id]["sprite"]=new App.SpriteBullet()
+if(["tank","bullet","brick"].indexOf(i.object)!==-1){return this._elements[i.id]["sprite"]=new App["Sprite"+i.object[0].toUpperCase()+i.object.substr(1)]()
 }};
 h.prototype._updateView=function(i){var l,k,j;
 h.__super__._updateView.apply(this,arguments);
@@ -2927,44 +2949,51 @@ return this
 return h
 })(d)
 }).call(this);
-(function(){var e,c,a,b={}.hasOwnProperty,d=function(i,g){for(var f in g){if(b.call(g,f)){i[f]=g[f]
-}}function h(){this.constructor=i
-}h.prototype=g.prototype;
-i.prototype=new h();
-i.__super__=g.prototype;
-return i
+(function(){var f,e,c,a,b={}.hasOwnProperty,d=function(j,h){for(var g in h){if(b.call(h,g)){j[g]=h[g]
+}}function i(){this.constructor=j
+}i.prototype=h.prototype;
+j.prototype=new i();
+j.__super__=h.prototype;
+return j
 };
-App.Sprite=c=(function(){f.prototype.size=[0,0];
-f.prototype.pos=[0,0];
-f.prototype._frames=[0];
-f.prototype._frames_speed=0;
-f.prototype._frames_index=0;
-function f(){var g=this;
-this.img=new Image();
-this.img.onload=function(){return g._loaded=true
+App.Sprite=c=(function(){g.prototype.size=[0,0];
+g.prototype.pos=[0,0];
+g.prototype._frames=[0];
+g.prototype._frames_speed=0;
+g.prototype._frames_index=0;
+function g(){var h=this;
+if(this._name){this.url="d/img/"+this._name+".png"
+}this.img=new Image();
+this.img.onload=function(){return h._loaded=true
 };
 this.img.src=this.url
-}f.prototype.update=function(g){if(this._frames_speed>0){this._frames_index+=this._frames_speed*g;
+}g.prototype.update=function(h){if(this._frames_speed>0){this._frames_index+=this._frames_speed*h;
 if(this._frames_index>=this._frames.length){return this._frames_index=this._frames_index%this._frames.length
 }}};
-f.prototype.render=function(h){var g;
+g.prototype.render=function(i){var h;
 if(!this._loaded){return
-}g=this._frames[Math.floor(this._frames_index)];
-return h.drawImage(this.img,this.pos[0]+this.size[0]*g,this.pos[1],this.size[0],this.size[1],0,0,this.size[0],this.size[1])
+}h=this._frames[Math.floor(this._frames_index)];
+return i.drawImage(this.img,this.pos[0]+this.size[0]*h,this.pos[1],this.size[0],this.size[1],0,0,this.size[0],this.size[1])
 };
-return f
-})();
-App.SpriteTank=a=(function(g){d(f,g);
-function f(){return f.__super__.constructor.apply(this,arguments)
-}f.prototype.size=[32,32];
-f.prototype.url="d/img/tank.png";
-return f
-})(c);
-App.SpriteBullet=e=(function(f){d(g,f);
-function g(){return g.__super__.constructor.apply(this,arguments)
-}g.prototype.size=[8,8];
-g.prototype.url="d/img/bullet.png";
 return g
+})();
+App.SpriteTank=a=(function(h){d(g,h);
+function g(){return g.__super__.constructor.apply(this,arguments)
+}g.prototype.size=[32,32];
+g.prototype._name="tank";
+return g
+})(c);
+App.SpriteBullet=e=(function(g){d(h,g);
+function h(){return h.__super__.constructor.apply(this,arguments)
+}h.prototype.size=[8,8];
+h.prototype._name="bullet";
+return h
+})(c);
+App.SpriteBrick=f=(function(g){d(h,g);
+function h(){return h.__super__.constructor.apply(this,arguments)
+}h.prototype.size=[16,16];
+h.prototype._name="brick";
+return h
 })(c)
 }).call(this);
 (function(){var a,c,b={}.hasOwnProperty,e=function(i,g){for(var f in g){if(b.call(g,f)){i[f]=g[f]
