@@ -38,8 +38,27 @@
       return this._elements[pr.id] = pr;
     };
 
-    BcoCore.prototype.get = function(id) {
-      return this._elements[id];
+    BcoCore.prototype.get = function(pr) {
+      var elements, id, param, passed, val, value, _ref;
+      if (typeof pr === 'number') {
+        return this._elements[pr];
+      }
+      elements = [];
+      _ref = this._elements;
+      for (id in _ref) {
+        val = _ref[id];
+        passed = true;
+        for (param in pr) {
+          value = pr[param];
+          if (passed && val[param] !== value) {
+            passed = false;
+          }
+        }
+        if (passed) {
+          elements.push(val);
+        }
+      }
+      return elements;
     };
 
     BcoCore.prototype.update = function(pr) {

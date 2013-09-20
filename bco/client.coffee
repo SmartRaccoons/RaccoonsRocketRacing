@@ -33,8 +33,18 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
   add: (pr)->
     @_elements[pr.id] = pr
 
-  get: (id)->
-    @_elements[id]
+  get: (pr)->
+    if typeof pr is 'number'
+      return @_elements[pr]
+    elements = []
+    for id, val of @_elements
+      passed = true
+      for param, value of pr
+        if passed and val[param] isnt value
+          passed = false
+      if passed
+        elements.push(val)
+    return elements
 
   update: (pr)->
     for attr, val of pr

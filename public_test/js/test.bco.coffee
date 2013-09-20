@@ -20,6 +20,22 @@ describe 'BcoCore', ->
       b = new BcoCore()
       expect(b.size).to.be.eql([416, 416])
 
+  describe 'get', ->
+    it 'id', ->
+      b.add({'id': 1, 'name': 'ben'})
+      b.add({'id': 2, 'name': 'ban'})
+      expect(b.get(1).name).to.be('ben')
+      expect(b.get(2).name).to.be('ban')
+
+    it 'params', ->
+      b.add({'id': 1, 'name': 'ben'})
+      b.add({'id': 2, 'name': 'ban'})
+      b.add({'id': 3, 'name': 'ban', 's': 't'})
+      expect(b.get({'id': 1})[0].name).to.be('ben')
+      expect(b.get({'name': 'ban'})[0].name).to.be('ban')
+      expect(b.get({'name': 'ban', 's': 't'})[0].s).to.be('t')
+      expect(b.get({'name': 'ban', 's': 'z'})).to.be.eql([])
+
 
   describe 'add', ->
     it 'to elements', ->
