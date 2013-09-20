@@ -168,7 +168,7 @@
           'pos': [0, 0]
         });
         b._updateView(1);
-        return expect(b.get(1).pos).to.be.eql([7.07107, 7.07107]);
+        return expect(b.get(1).pos).to.be.eql([7.07, 7.07]);
       });
       return it('stop', function() {
         b._updateView = sinon.spy();

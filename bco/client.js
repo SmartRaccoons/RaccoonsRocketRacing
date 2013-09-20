@@ -112,8 +112,10 @@
         if (val.speed > 0) {
           rd = val.angle * Math.PI / 180.0;
           hypo = val.speed * dt;
-          val.pos[0] += Math.round(hypo * Math.cos(rd) * 100000) / 100000;
-          val.pos[1] += Math.round(hypo * Math.sin(rd) * 100000) / 100000;
+          val.pos[0] += hypo * Math.cos(rd);
+          val.pos[1] += hypo * Math.sin(rd);
+          val.pos[0] = Math.round(val.pos[0] * 100) / 100;
+          val.pos[1] = Math.round(val.pos[1] * 100) / 100;
           if (val.destroy === 0) {
             _ref1 = this._elements;
             for (id2 in _ref1) {

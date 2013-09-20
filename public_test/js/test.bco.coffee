@@ -95,7 +95,7 @@ describe 'BcoCore', ->
       expect(b.get(1).pos).to.be.eql([0, 5])
       b.update({'id': 1, 'angle': 45, 'pos': [0, 0]})
       b._updateView(1)
-      expect(b.get(1).pos).to.be.eql([7.07107, 7.07107])
+      expect(b.get(1).pos).to.be.eql([7.07, 7.07])
 
     it 'stop', ->
       b._updateView = sinon.spy()

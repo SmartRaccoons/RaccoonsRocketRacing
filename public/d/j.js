@@ -2897,8 +2897,10 @@ m=this._elements;
 for(h in m){j=m[h];
 if(j.speed>0){p=j.angle*Math.PI/180;
 l=j.speed*i;
-j.pos[0]+=Math.round(l*Math.cos(p)*100000)/100000;
-j.pos[1]+=Math.round(l*Math.sin(p)*100000)/100000;
+j.pos[0]+=l*Math.cos(p);
+j.pos[1]+=l*Math.sin(p);
+j.pos[0]=Math.round(j.pos[0]*100)/100;
+j.pos[1]=Math.round(j.pos[1]*100)/100;
 if(j.destroy===0){k=this._elements;
 for(o in k){n=k[o];
 if(h!==o&&n.destroy===0&&this._collides_ob(j,n)){if(j.angle===0){j.pos[0]=n.pos[0]-j.size[0]

@@ -76,8 +76,10 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
       if val.speed > 0
         rd = val.angle * Math.PI/180.0
         hypo = val.speed * dt
-        val.pos[0] += Math.round(hypo * Math.cos(rd) * 100000)/100000
-        val.pos[1] += Math.round(hypo * Math.sin(rd) * 100000)/100000
+        val.pos[0] += hypo * Math.cos(rd)
+        val.pos[1] += hypo * Math.sin(rd)
+        val.pos[0] = Math.round(val.pos[0] * 100)/100
+        val.pos[1] = Math.round(val.pos[1] * 100)/100
         if val.destroy is 0
           for id2, val2 of @_elements
             if id isnt id2 and val2.destroy is 0 and @_collides_ob(val, val2)
