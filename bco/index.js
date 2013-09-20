@@ -169,7 +169,7 @@
         _ref2 = this._elements;
         for (id2 in _ref2) {
           val2 = _ref2[id2];
-          if (id !== id2 && this._collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
+          if (id !== id2 && this._collides_ob(val, val2)) {
             if (val.destroy > 0 && val.params.owner !== val2.id) {
               this.update({
                 'id': val2.id,

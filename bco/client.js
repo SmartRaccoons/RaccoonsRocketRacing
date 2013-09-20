@@ -21,6 +21,10 @@
       return !(r <= x2 || x >= r2 || b <= y2 || y >= b2);
     };
 
+    BcoCore.prototype._collides_ob = function(val, val2) {
+      return this._collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1]);
+    };
+
     BcoCore.prototype.__requestAnimFrame = function(callback) {
       var fn;
       fn = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -95,7 +99,7 @@
             _ref1 = this._elements;
             for (id2 in _ref1) {
               val2 = _ref1[id2];
-              if (id !== id2 && val2.destroy === 0 && this._collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1])) {
+              if (id !== id2 && val2.destroy === 0 && this._collides_ob(val, val2)) {
                 if (val.angle === 0) {
                   val.pos[0] = val2.pos[0] - val.size[0];
                 } else if (val.angle === 90) {
@@ -106,6 +110,15 @@
                   val.pos[1] = val2.pos[1] + val2.size[1];
                 }
               }
+            }
+            if (val.angle === 0 && val.pos[0] + val.size[0] > this.size[0]) {
+              val.pos[0] = this.size[0] - val.size[0];
+            } else if (val.angle === 90 && val.pos[1] + val.size[1] > this.size[1]) {
+              val.pos[1] = this.size[1] - val.size[1];
+            } else if (val.angle === 180 && val.pos[0] < 0) {
+              val.pos[0] = 0;
+            } else if (val.angle === 270 && val.pos[1] < 0) {
+              val.pos[1] = 0;
             }
           }
         }

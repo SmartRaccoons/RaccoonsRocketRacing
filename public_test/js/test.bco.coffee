@@ -91,6 +91,43 @@ describe 'BcoCore', ->
       expect(b._updateView.callCount).to.be(1)
 
 
+  describe 'stop out of box', ->
+    beforeEach ->
+      b._elements = {}
+      b.add({'id': 1, 'object': 'tank', 'speed': 10, 'destroy': 0, 'angle': 0, 'size': [32, 32], 'pos': [0, 0]})
+      b.add({'id': 5, 'object': 'brick', 'speed': 0, 'destroy': 0, 'angle': 0, 'pos': [100, 100], 'size': [16, 16]})
+
+    it 'left', ->
+      b.get(1).angle = 180
+      b.get(1).pos = [1, 0]
+      b._updateView(1)
+      expect(b.get(1).pos).to.be.eql([0, 0])
+
+    it 'right', ->
+      b.get(1).pos = [b.size[0]-b.get(1).size[0]-1, 0]
+      b._updateView(1)
+      expect(b.get(1).pos).to.be.eql([b.size[0]-b.get(1).size[0], 0])
+
+    it 'up', ->
+      b.get(1).angle = 270
+      b.get(1).pos = [0, 1]
+      b._updateView(1)
+      expect(b.get(1).pos).to.be.eql([0, 0])
+
+    it 'down', ->
+      b.get(1).angle = 90
+      b.get(1).pos = [0, b.size[1]-b.get(1).size[1]-1]
+      b._updateView(1)
+      expect(b.get(1).pos).to.be.eql([0, b.size[1]-b.get(1).size[1]])
+
+    it 'destroy param', ->
+      b.get(1).destroy = 1
+      b.get(1).angle = 180
+      b.get(1).pos = [1, 0]
+      b._updateView(1)
+      expect(b.get(1).pos).to.be.eql([-9, 0])
+
+
   describe 'stop on collides', ->
     clock = null
     object = 5

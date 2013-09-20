@@ -16,6 +16,10 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
     !(r <= x2 || x >= r2 || b <= y2 || y >= b2)
 #    !(r < x2 || x > r2 || b < y2 || y > b2)
 
+  _collides_ob: (val, val2)->
+    @_collides(val.pos[0], val.pos[1], val.pos[0]+val.size[0], val.pos[1]+val.size[1],
+                        val2.pos[0], val2.pos[1], val2.pos[0]+val2.size[0], val2.pos[1]+val2.size[1])
+
   __requestAnimFrame: (callback)->
     fn = window.requestAnimationFrame ||
       window.webkitRequestAnimationFrame ||
@@ -66,8 +70,7 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
         val.pos[1] += Math.round(hypo * Math.sin(rd) * 100000)/100000
         if val.destroy is 0
           for id2, val2 of @_elements
-            if id isnt id2 and val2.destroy is 0 and @_collides(val.pos[0], val.pos[1], val.pos[0]+val.size[0], val.pos[1]+val.size[1],
-                          val2.pos[0], val2.pos[1], val2.pos[0]+val2.size[0], val2.pos[1]+val2.size[1])
+            if id isnt id2 and val2.destroy is 0 and @_collides_ob(val, val2)
               if val.angle is 0
                 val.pos[0] = val2.pos[0]-val.size[0]
               else if val.angle is 90
@@ -76,6 +79,14 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
                 val.pos[0] = val2.pos[0]+val2.size[0]
               else if val.angle is 270
                 val.pos[1] = val2.pos[1]+val2.size[1]
+          if val.angle is 0 and val.pos[0]+val.size[0]>@size[0]
+            val.pos[0] = @size[0]-val.size[0]
+          else if val.angle is 90 and val.pos[1]+val.size[1]>@size[1]
+            val.pos[1] = @size[1]-val.size[1]
+          else if val.angle is 180 and val.pos[0]<0
+            val.pos[0] = 0
+          else if val.angle is 270 and val.pos[1]<0
+            val.pos[1] = 0
     @
 
 

@@ -106,8 +106,7 @@ module.exports.Bco = class Bco extends BcoCore
     remove = []
     for id, val of @_elements
       for id2, val2 of @_elements
-        if id isnt id2 and @_collides(val.pos[0], val.pos[1], val.pos[0]+val.size[0], val.pos[1]+val.size[1],
-                      val2.pos[0], val2.pos[1], val2.pos[0]+val2.size[0], val2.pos[1]+val2.size[1])
+        if id isnt id2 and @_collides_ob(val, val2)
           if val.destroy > 0 and val.params.owner isnt val2.id
             #bullet
             @update({'id': val2.id, 'hitpoints': val2.hitpoints - val.destroy})
