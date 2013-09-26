@@ -131,7 +131,8 @@
         r.game = {
           'add': sinon.spy(),
           'update': sinon.spy(),
-          'destroy': sinon.spy()
+          'destroy': sinon.spy(),
+          'restart': sinon.spy()
         };
         App.socket.receive.trigger('add', {
           'id': 1,
@@ -146,7 +147,9 @@
         App.socket.receive.trigger('destroy', {
           'id': 1
         });
-        return expect(r.game.destroy.getCall(0).args[0].id).to.be(1);
+        expect(r.game.destroy.getCall(0).args[0].id).to.be(1);
+        App.socket.receive.trigger('restart');
+        return expect(r.game.restart.callCount).to.be(1);
       });
     });
   });

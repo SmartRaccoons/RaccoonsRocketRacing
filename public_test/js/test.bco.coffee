@@ -62,6 +62,10 @@ describe 'BcoCore', ->
       b.destroy({'id': id})
       expect(b.get(id)).not.be.ok()
 
+    it 'restart', ->
+      b.restart()
+      expect(b.get(id)).not.be.ok()
+
 
   describe 'process', ->
     clock = null

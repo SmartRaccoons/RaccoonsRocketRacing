@@ -57,6 +57,9 @@
       App.socket.receive.on('destroy', function(params) {
         return _this.game.destroy(params);
       });
+      App.socket.receive.on('restart', function() {
+        return _this.game.restart();
+      });
       this.game.start();
     }
 

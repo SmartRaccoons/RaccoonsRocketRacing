@@ -57,14 +57,14 @@
       });
       it('new tank', function() {
         r.add_tank(socket);
-        assert.equal('ben', r.game.get(socket.tank_id).params.socket_id);
-        return assert.equal('tank', r.game.get(socket.tank_id).object);
+        assert.equal('ben', r.game.get_tank(socket.id).params.tank_id);
+        return assert.equal('tank', r.game.get_tank(socket.id).object);
       });
       it('new tank in other 2. position', function() {
         var t;
         r.add_tank(socket);
         r.add_tank(socket2);
-        t = r.game.get(socket2.tank_id);
+        t = r.game.get_tank(socket2.id);
         return assert.deepEqual([r.game.size[0] - t.size[0], r.game.size[1] - t.size[1]], t.pos);
       });
       it('new tank in other 3. position', function() {
@@ -72,7 +72,7 @@
         r.add_tank(socket);
         r.add_tank(socket);
         r.add_tank(socket2);
-        t = r.game.get(socket2.tank_id);
+        t = r.game.get_tank(socket2.id);
         return assert.deepEqual([r.game.size[0] - t.size[0], 0], t.pos);
       });
       it('new tank in other 4. position', function() {
@@ -81,7 +81,7 @@
         r.add_tank(socket);
         r.add_tank(socket);
         r.add_tank(socket2);
-        t = r.game.get(socket2.tank_id);
+        t = r.game.get_tank(socket2.id);
         return assert.deepEqual([0, r.game.size[1] - t.size[1]], t.pos);
       });
       it('new tank in other 5. position', function() {
@@ -91,7 +91,7 @@
         r.add_tank(socket);
         r.add_tank(socket);
         r.add_tank(socket2);
-        t = r.game.get(socket2.tank_id);
+        t = r.game.get_tank(socket2.id);
         return assert.deepEqual([0, 0], t.pos);
       });
       it('new tank in other 6. position', function() {
@@ -102,7 +102,7 @@
         r.add_tank(socket);
         r.add_tank(socket);
         r.add_tank(socket2);
-        t = r.game.get(socket2.tank_id);
+        t = r.game.get_tank(socket2.id);
         return assert.deepEqual([r.game.size[0] - t.size[0], r.game.size[1] - t.size[1]], t.pos);
       });
       it('create tank', function() {
@@ -125,10 +125,12 @@
         return assert.equal(2, r.emit_socket.getCall(0).args[2]);
       });
       it('disconnect', function() {
+        var t;
         r.game.destroy = sinon.spy();
         r.connection(socket);
+        t = r.game.get_tank(socket.id);
         socket.emit('disconnect');
-        return assert.equal(socket.tank_id, r.game.destroy.getCall(0).args[0]);
+        return assert.equal(t.id, r.game.destroy.getCall(0).args[0]);
       });
       it('event: new element', function() {
         r.connection(socket);
@@ -169,21 +171,59 @@
       return it('on destroy tank add new', function() {
         r.connection(socket);
         r.game.update({
-          'id': socket.tank_id,
+          'id': r.game.get_tank(socket.id).id,
           'speed': 100
         });
         r.add_tank = sinon.spy();
-        r.game.destroy(socket.tank_id, 'destroy');
+        r.game.destroy(r.game.get_tank(socket.id).id, 'destroy');
         return assert.equal('ben', r.add_tank.getCall(0).args[0].id);
       });
     });
-    return describe('control', function() {
-      var socket;
+    describe('gameplay', function() {
+      var socket, socket2, t;
       socket = null;
+      socket2 = null;
+      t = null;
       beforeEach(function() {
         socket = new events.EventEmitter();
         socket.id = 'ben';
-        return r.connection(socket);
+        socket2 = new events.EventEmitter();
+        socket2.id = 'ban';
+        r.connection(socket);
+        r.connection(socket2);
+        return t = r.game.get_tank(socket.id);
+      });
+      it('destroy base', function() {
+        var id;
+        r.game.restart = sinon.spy();
+        id = r.game.add({
+          'object': 'ben'
+        });
+        r.game.destroy(id);
+        assert.equal(0, r.game.restart.callCount);
+        id = r.game.add({
+          'object': 'base'
+        });
+        r.game.destroy(id);
+        return assert.equal(1, r.game.restart.callCount);
+      });
+      return it('restart event', function() {
+        var stub;
+        stub = sinon.stub(r, 'emit_socket');
+        r.game.restart();
+        assert.equal(1, stub.withArgs(socket, 'restart').callCount);
+        return assert.equal(1, stub.withArgs(socket2, 'restart').callCount);
+      });
+    });
+    return describe('control', function() {
+      var socket, t;
+      socket = null;
+      t = null;
+      beforeEach(function() {
+        socket = new events.EventEmitter();
+        socket.id = 'ben';
+        r.connection(socket);
+        return t = r.game.get_tank(socket.id);
       });
       it('no tank', function() {
         socket.emit('disconnect');
@@ -201,13 +241,13 @@
           'move': 'up',
           'active': true
         });
-        assert.equal(socket.tank_id, r.game.tank_start.getCall(0).args[0]);
+        assert.equal(socket.id, r.game.tank_start.getCall(0).args[0]);
         assert.equal('up', r.game.tank_start.getCall(0).args[1]);
         socket.emit('control', {
           'move': 'up',
           'active': false
         });
-        assert.equal(socket.tank_id, r.game.tank_stop.getCall(0).args[0]);
+        assert.equal(socket.id, r.game.tank_stop.getCall(0).args[0]);
         return assert.equal('up', r.game.tank_stop.getCall(0).args[1]);
       });
     });

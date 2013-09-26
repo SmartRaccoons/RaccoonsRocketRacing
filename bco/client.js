@@ -34,6 +34,10 @@
       return window.setTimeout(callback, 1000 / 30);
     };
 
+    BcoCore.prototype.restart = function() {
+      return this._elements = {};
+    };
+
     BcoCore.prototype.add = function(pr) {
       return this._elements[pr.id] = pr;
     };

@@ -30,6 +30,9 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
       return fn(callback)
     window.setTimeout(callback, 1000 / 30)
 
+  restart: ->
+    @_elements = {}
+
   add: (pr)->
     @_elements[pr.id] = pr
 

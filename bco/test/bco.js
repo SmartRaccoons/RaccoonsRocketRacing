@@ -108,7 +108,7 @@
         assert.equal(10, b.get(id).hitpoints);
         return assert.equal(false, b.get(id).over);
       });
-      return it('event', function() {
+      it('event', function() {
         var id, spy;
         spy = sinon.spy();
         b.on('add', spy);
@@ -117,6 +117,51 @@
         });
         assert.equal(1, spy.getCall(0).args[0].id);
         return assert.equal('benja', spy.getCall(0).args[0].object);
+      });
+      return it('add/get_tank', function() {
+        var id;
+        id = b.add_tank('ser', {
+          'pos': [1, 2]
+        });
+        assert.equal('tank', b.get(id).object);
+        assert.deepEqual([1, 2], b.get(id).pos);
+        assert.equal('ser', b.get(id).params.tank_id);
+        return assert.equal(id, b.get_tank('ser').id);
+      });
+    });
+    describe('restart', function() {
+      it('same map', function() {
+        b = new Bco([[0, 1], [0, 1]]);
+        b.destroy(1);
+        assert.equal(1, b.get({}).length);
+        b.restart();
+        return assert.equal(2, b.get({}).length);
+      });
+      it('event', function() {
+        var spy;
+        b = new Bco();
+        spy = sinon.spy();
+        b.on('restart', spy);
+        b.restart();
+        return assert.equal(1, spy.callCount);
+      });
+      it('tanks', function() {
+        b = new Bco([[0, 1], [0, 1]]);
+        b.add_tank('ben');
+        b.restart();
+        return assert.notEqual(null, b.get_tank('ben'));
+      });
+      return it('tanks coors', function() {
+        b = new Bco();
+        b.add_tank('ben', {
+          'pos': [1, 2]
+        });
+        b.get_tank('ben').pos = [0, 1];
+        b.restart();
+        assert.deepEqual([1, 2], b.get_tank('ben').pos);
+        b.get_tank('ben').pos = [0, 1];
+        b.restart();
+        return assert.deepEqual([1, 2], b.get_tank('ben').pos);
       });
     });
     describe('update', function() {
@@ -310,20 +355,21 @@
       });
     });
     return describe('control', function() {
-      var id;
+      var id, socket_id;
       id = null;
+      socket_id = 'bob';
       beforeEach(function() {
-        return id = b.add({
-          'object': 'tank',
+        b.add_tank(socket_id, {
           'pos': [2, 3],
           'angle': 90
         });
+        return id = b.get_tank(socket_id).id;
       });
       it('fire', function() {
         var spy;
         spy = sinon.spy();
         b.on('add', spy);
-        b.tank_start(id, 'fire');
+        b.tank_start(socket_id, 'fire');
         assert.equal('bullet', spy.getCall(0).args[0].object);
         assert.equal(id, spy.getCall(0).args[0].params.owner);
         assert.deepEqual([14, 15], spy.getCall(0).args[0].pos);
@@ -335,7 +381,7 @@
         var spy;
         spy = sinon.spy();
         b.on('update', spy);
-        b.tank_start(id, 'up');
+        b.tank_start(socket_id, 'up');
         assert.equal(id, spy.getCall(0).args[0].id);
         assert.equal(270, spy.getCall(0).args[0].angle);
         return assert.equal(100, spy.getCall(0).args[0].speed);
@@ -344,57 +390,57 @@
         var spy;
         spy = sinon.spy();
         b.on('update', spy);
-        b.tank_start(id, 'down');
+        b.tank_start(socket_id, 'down');
         return assert.equal(90, spy.getCall(0).args[0].angle);
       });
       it('move left', function() {
         var spy;
         spy = sinon.spy();
         b.on('update', spy);
-        b.tank_start(id, 'left');
+        b.tank_start(socket_id, 'left');
         return assert.equal(180, spy.getCall(0).args[0].angle);
       });
       it('move right', function() {
         var spy;
         spy = sinon.spy();
         b.on('update', spy);
-        b.tank_start(id, 'right');
+        b.tank_start(socket_id, 'right');
         return assert.equal(0, spy.getCall(0).args[0].angle);
       });
       it('move round coors', function() {
         var spy;
         spy = sinon.spy();
         b.on('update', spy);
-        b.get(id).pos = [7, 8];
-        b.get(id).angle = 0;
-        b.tank_start(id, 'right');
+        b.get_tank(socket_id).pos = [7, 8];
+        b.get_tank(socket_id).angle = 0;
+        b.tank_start(socket_id, 'right');
         assert(!spy.getCall(0).args[0].pos);
-        b.tank_start(id, 'up');
+        b.tank_start(socket_id, 'up');
         assert.deepEqual([0, 16], spy.getCall(1).args[0].pos);
         b._elements[id].pos = [24, 23];
-        b.tank_start(id, 'left');
+        b.tank_start(socket_id, 'left');
         return assert.deepEqual([32, 16], spy.getCall(2).args[0].pos);
       });
       it('move stop', function() {
         var spy;
         spy = sinon.spy();
-        b.tank_start(id, 'up');
+        b.tank_start(socket_id, 'up');
         b.on('update', spy);
-        b.tank_stop(id, 'up');
+        b.tank_stop(socket_id, 'up');
         return assert.equal(0, spy.getCall(0).args[0].speed);
       });
       it('move with more keystokes', function() {
         var spy;
         spy = sinon.spy();
         b.on('update', spy);
-        b.tank_start(id, 'down');
-        b.tank_start(id, 'left');
-        b.tank_start(id, 'up');
-        b.tank_stop(id, 'up');
+        b.tank_start(socket_id, 'down');
+        b.tank_start(socket_id, 'left');
+        b.tank_start(socket_id, 'up');
+        b.tank_stop(socket_id, 'up');
         assert.equal(4, spy.callCount);
         assert.equal(180, spy.getCall(3).args[0].angle);
         assert.equal(100, spy.getCall(3).args[0].speed);
-        b.tank_stop(id, 'down');
+        b.tank_stop(socket_id, 'down');
         return assert.equal(4, spy.callCount);
       });
       return it('wrong move', function() {

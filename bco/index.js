@@ -15,39 +15,69 @@
 
     Bco.prototype.id = 0;
 
+    Bco.prototype._map = [];
+
+    Bco.prototype._tank_pos = {};
+
     function Bco(map) {
-      var l, object, r, x, y, _i, _j, _len, _len1;
-      Bco.__super__.constructor.apply(this, arguments);
-      if (map) {
-        y = 0;
-        for (_i = 0, _len = map.length; _i < _len; _i++) {
-          r = map[_i];
-          x = 0;
-          for (_j = 0, _len1 = r.length; _j < _len1; _j++) {
-            l = r[_j];
-            object = null;
-            if (l === 1) {
-              object = 'brick';
-            } else if (l === 10) {
-              object = 'base';
-            }
-            if (object) {
-              this.add({
-                'object': object,
-                pos: [x * 16, y * 16]
-              });
-            }
-            x++;
-          }
-          y++;
-        }
+      if (map == null) {
+        map = [];
       }
+      Bco.__super__.constructor.apply(this, arguments);
+      this._map = map;
+      this._draw_map();
       this;
 
     }
 
     Bco.prototype.__requestAnimFrame = function(callback) {
       return setTimeout(callback, 1000 / 40);
+    };
+
+    Bco.prototype._draw_map = function() {
+      var l, object, r, x, y, _i, _j, _len, _len1, _ref;
+      y = 0;
+      _ref = this._map;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        r = _ref[_i];
+        x = 0;
+        for (_j = 0, _len1 = r.length; _j < _len1; _j++) {
+          l = r[_j];
+          object = null;
+          if (l === 1) {
+            object = 'brick';
+          } else if (l === 10) {
+            object = 'base';
+          }
+          if (object) {
+            this.add({
+              'object': object,
+              pos: [x * 16, y * 16]
+            });
+          }
+          x++;
+        }
+        y++;
+      }
+      return this;
+    };
+
+    Bco.prototype.restart = function() {
+      var t, tanks, _i, _len, _results;
+      tanks = this.get({
+        'object': 'tank'
+      });
+      Bco.__super__.restart.apply(this, arguments);
+      this.trigger('restart');
+      this._draw_map();
+      _results = [];
+      for (_i = 0, _len = tanks.length; _i < _len; _i++) {
+        t = tanks[_i];
+        _results.push(this.add_tank(t.params.tank_id, {
+          'pos': t['pos_start']
+        }));
+      }
+      return _results;
     };
 
     Bco.prototype.add = function(pr) {
@@ -63,11 +93,13 @@
         angle: pr.angle || 0,
         destroy: pr.destroy || 0,
         over: false,
-        hitpoints: pr.hitpoints || 1,
-        _keystokes: []
+        hitpoints: pr.hitpoints || 1
       };
       if (pr.object === 'tank') {
         params['size'] = [32, 32];
+        if (!params['pos_start']) {
+          params['pos_start'] = params['pos'];
+        }
       }
       if (pr.object === 'bullet') {
         params['size'] = [8, 8];
@@ -81,6 +113,35 @@
       Bco.__super__.add.call(this, params);
       this.trigger('add', params);
       return this.id;
+    };
+
+    Bco.prototype.add_tank = function(tank_id, params) {
+      if (params == null) {
+        params = {};
+      }
+      params['object'] = 'tank';
+      params['params'] = {
+        'tank_id': tank_id
+      };
+      return this.add(params);
+    };
+
+    Bco.prototype.get_tank = function(tank_id) {
+      var id, val, _ref;
+      _ref = this._elements;
+      for (id in _ref) {
+        val = _ref[id];
+        if (val.params.tank_id === tank_id) {
+          return val;
+        }
+      }
+      return null;
+    };
+
+    Bco.prototype.destroy_tank = function(tank_id) {
+      var t;
+      t = this.get_tank(tank_id);
+      return this.destroy(t.id);
     };
 
     Bco.prototype.update = function(pr) {
@@ -100,14 +161,14 @@
 
     Bco.prototype.tank_start = function(tank_id, move) {
       var tank;
-      tank = this.get(tank_id);
+      tank = this.get_tank(tank_id);
       if (move === 'up' || move === 'down' || move === 'left' || move === 'right') {
         return this._tank_move(tank_id, move, true);
       } else if (move === 'fire') {
         return this.add({
           'object': 'bullet',
           'params': {
-            'owner': tank_id
+            'owner': tank.id
           },
           'pos': [tank.pos[0] + tank.size[0] / 2 - 4, tank.pos[1] + tank.size[1] / 2 - 4],
           'angle': tank.angle,
@@ -124,26 +185,30 @@
     };
 
     Bco.prototype._tank_move = function(tank_id, move, active) {
-      var last_move, params, pr;
+      var last_move, params, pr, t;
       if (active == null) {
         active = false;
       }
+      t = this.get_tank(tank_id);
+      if (!t._keystokes) {
+        t._keystokes = [];
+      }
       if (active) {
-        this._elements[tank_id]._keystokes.push(move);
+        t._keystokes.push(move);
       } else {
-        if (this._elements[tank_id]._keystokes[this._elements[tank_id]._keystokes.length - 1] !== move) {
-          return this._elements[tank_id]._keystokes.splice(this._elements[tank_id]._keystokes.indexOf(move), 1);
+        if (t._keystokes[t._keystokes.length - 1] !== move) {
+          return t._keystokes.splice(t._keystokes.indexOf(move), 1);
         }
-        this._elements[tank_id]._keystokes.splice(this._elements[tank_id]._keystokes.length - 1, 1);
+        t._keystokes.splice(t._keystokes.length - 1, 1);
       }
       params = {
-        'id': tank_id,
+        'id': t.id,
         'speed': 100
       };
-      if (this._elements[tank_id]._keystokes.length === 0) {
+      if (t._keystokes.length === 0) {
         params['speed'] = 0;
       } else {
-        last_move = this._elements[tank_id]._keystokes[this._elements[tank_id]._keystokes.length - 1];
+        last_move = t._keystokes[t._keystokes.length - 1];
         if (last_move === 'up') {
           params['angle'] = 270;
         } else if (last_move === 'down') {
@@ -153,9 +218,9 @@
         } else if (last_move === 'right') {
           params['angle'] = 0;
         }
-        if (this._elements[tank_id].angle !== params['angle']) {
+        if (t.angle !== params['angle']) {
           pr = 16;
-          params['pos'] = [Math.round(this._elements[tank_id].pos[0] / pr) * pr, Math.round(this._elements[tank_id].pos[1] / pr) * pr];
+          params['pos'] = [Math.round(t.pos[0] / pr) * pr, Math.round(t.pos[1] / pr) * pr];
         }
       }
       return this.update(params);

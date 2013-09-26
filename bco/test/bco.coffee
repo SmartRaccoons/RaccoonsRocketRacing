@@ -82,6 +82,46 @@ describe 'Bco', ->
       assert.equal(1, spy.getCall(0).args[0].id)
       assert.equal('benja', spy.getCall(0).args[0].object)
 
+    it 'add/get_tank', ->
+      id = b.add_tank('ser', {'pos': [1, 2]})
+      assert.equal('tank', b.get(id).object)
+      assert.deepEqual([1, 2], b.get(id).pos)
+      assert.equal('ser', b.get(id).params.tank_id)
+      assert.equal(id, b.get_tank('ser').id)
+
+
+  describe 'restart', ->
+    it 'same map', ->
+      b = new Bco([[0, 1], [0, 1]])
+      b.destroy(1)
+      assert.equal(1, b.get({}).length)
+      b.restart()
+      assert.equal(2, b.get({}).length)
+
+    it 'event', ->
+      b = new Bco()
+      spy = sinon.spy()
+      b.on 'restart', spy
+      b.restart()
+      assert.equal(1, spy.callCount)
+
+    it 'tanks', ->
+      b = new Bco([[0, 1], [0, 1]])
+      b.add_tank('ben')
+      b.restart()
+      assert.notEqual(null, b.get_tank('ben'))
+
+    it 'tanks coors', ->
+      b = new Bco()
+      b.add_tank('ben', {'pos': [1, 2]})
+      b.get_tank('ben').pos = [0, 1]
+      b.restart()
+      assert.deepEqual([1, 2], b.get_tank('ben').pos)
+      b.get_tank('ben').pos = [0, 1]
+      b.restart()
+      assert.deepEqual([1, 2], b.get_tank('ben').pos)
+
+
 
   describe 'update', ->
     id = null
@@ -179,13 +219,15 @@ describe 'Bco', ->
 
   describe 'control', ->
     id = null
+    socket_id = 'bob'
     beforeEach ->
-      id = b.add({'object': 'tank', 'pos': [2, 3], 'angle': 90})
+      b.add_tank(socket_id, {'pos': [2, 3], 'angle': 90})
+      id = b.get_tank(socket_id).id
 
     it 'fire', ->
       spy = sinon.spy()
       b.on 'add', spy
-      b.tank_start(id, 'fire')
+      b.tank_start(socket_id, 'fire')
       assert.equal('bullet', spy.getCall(0).args[0].object)
       assert.equal(id, spy.getCall(0).args[0].params.owner)
       assert.deepEqual([14, 15], spy.getCall(0).args[0].pos)
@@ -196,7 +238,7 @@ describe 'Bco', ->
     it 'move', ->
       spy = sinon.spy()
       b.on 'update', spy
-      b.tank_start(id, 'up')
+      b.tank_start(socket_id, 'up')
       assert.equal(id, spy.getCall(0).args[0].id)
       assert.equal(270, spy.getCall(0).args[0].angle)
       assert.equal(100, spy.getCall(0).args[0].speed)
@@ -204,52 +246,52 @@ describe 'Bco', ->
     it 'move down', ->
       spy = sinon.spy()
       b.on 'update', spy
-      b.tank_start(id, 'down')
+      b.tank_start(socket_id, 'down')
       assert.equal(90, spy.getCall(0).args[0].angle)
 
     it 'move left', ->
       spy = sinon.spy()
       b.on 'update', spy
-      b.tank_start(id, 'left')
+      b.tank_start(socket_id, 'left')
       assert.equal(180, spy.getCall(0).args[0].angle)
 
     it 'move right', ->
       spy = sinon.spy()
       b.on 'update', spy
-      b.tank_start(id, 'right')
+      b.tank_start(socket_id, 'right')
       assert.equal(0, spy.getCall(0).args[0].angle)
 
     it 'move round coors', ->
       spy = sinon.spy()
       b.on 'update', spy
-      b.get(id).pos = [7, 8]
-      b.get(id).angle = 0
-      b.tank_start(id, 'right')
+      b.get_tank(socket_id).pos = [7, 8]
+      b.get_tank(socket_id).angle = 0
+      b.tank_start(socket_id, 'right')
       assert(!spy.getCall(0).args[0].pos)
-      b.tank_start(id, 'up')
+      b.tank_start(socket_id, 'up')
       assert.deepEqual([0, 16], spy.getCall(1).args[0].pos)
       b._elements[id].pos = [24, 23]
-      b.tank_start(id, 'left')
+      b.tank_start(socket_id, 'left')
       assert.deepEqual([32, 16], spy.getCall(2).args[0].pos)
 
     it 'move stop', ->
       spy = sinon.spy()
-      b.tank_start(id, 'up')
+      b.tank_start(socket_id, 'up')
       b.on 'update', spy
-      b.tank_stop(id, 'up')
+      b.tank_stop(socket_id, 'up')
       assert.equal(0, spy.getCall(0).args[0].speed)
 
     it 'move with more keystokes', ->
       spy = sinon.spy()
       b.on 'update', spy
-      b.tank_start(id, 'down')
-      b.tank_start(id, 'left')
-      b.tank_start(id, 'up')
-      b.tank_stop(id, 'up')
+      b.tank_start(socket_id, 'down')
+      b.tank_start(socket_id, 'left')
+      b.tank_start(socket_id, 'up')
+      b.tank_stop(socket_id, 'up')
       assert.equal(4, spy.callCount)
       assert.equal(180, spy.getCall(3).args[0].angle)
       assert.equal(100, spy.getCall(3).args[0].speed)
-      b.tank_stop(id, 'down')
+      b.tank_stop(socket_id, 'down')
       assert.equal(4, spy.callCount)
 
     it 'wrong move', ->

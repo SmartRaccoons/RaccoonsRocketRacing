@@ -42,29 +42,31 @@ module.exports = class Router extends events.EventEmitter
     @game.on 'destroy', (params)=>
       element = @game.get(params.id)
       if element.object is 'tank' and params.reason is 'destroy'
-        @add_tank(@_sockets[element.params.socket_id])
+        @add_tank(@_sockets[element.params.tank_id])
+      if element.object is 'base'
+        @game.restart()
+    @game.on 'restart', => @emit_sockets('restart')
+    @game.on 'add', (pr)=> @emit_sockets('add', pr)
+    @game.on 'destroy', (pr)=> @emit_sockets('destroy', pr)
+    @game.on 'update', (pr)=> @emit_sockets('update', extend({'pos': @game.get(pr.id).pos}, pr))
 
   add_tank: (socket)->
     positions = [[0, 0], [@game.size[0]-32, @game.size[1]-32], [@.game.size[0]-32, 0], [0, @game.size[1]-32]]
-    socket.tank_id = @game.add({'object': 'tank', pos: positions[@game.get({'object': 'tank'}).length % 4], 'params': {'socket_id': socket.id}})
+    @game.add_tank(socket.id, {pos: positions[@game.get({'object': 'tank'}).length % 4]})
 
   connection: (socket)->
     @_sockets[socket.id] = socket
     socket.on 'control', (p)=>
-      if not @game.get(socket.tank_id)
+      if not @game.get_tank(socket.id)
         return
       if p.active
-        @game.tank_start(socket.tank_id, p.move)
+        @game.tank_start(socket.id, p.move)
       else
-        @game.tank_stop(socket.tank_id, p.move)
+        @game.tank_stop(socket.id, p.move)
 
     socket.on 'disconnect', =>
-      @game.destroy(socket.tank_id)
+      @game.destroy_tank(socket.id)
       delete @_sockets[socket.id]
-
-    @game.on 'add', (params)=> @emit_socket(socket, 'add', params)
-    @game.on 'destroy', (params)=> @emit_socket(socket, 'destroy', params)
-    @game.on 'update', (params)=> @emit_socket(socket, 'update', extend({'pos': @game.get(params.id).pos}, params))
 
     for id, val of @game._elements
       @emit_socket socket, 'add', val
@@ -72,4 +74,8 @@ module.exports = class Router extends events.EventEmitter
 
   emit_socket: (socket, event, args)->
     socket.emit event, args
+
+  emit_sockets: (event, args)->
+    for id, socket of @_sockets
+      @emit_socket(socket, event, args)
 

@@ -36,6 +36,7 @@ App.Router = class Router extends Backbone.View
     App.socket.receive.on 'add', (params)=> @game.add(params)
     App.socket.receive.on 'update', (params)=> @game.update(params)
     App.socket.receive.on 'destroy', (params)=> @game.destroy(params)
+    App.socket.receive.on 'restart', => @game.restart()
     @game.start()
 
   control: (code, active)->

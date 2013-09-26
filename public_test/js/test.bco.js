@@ -112,10 +112,14 @@
           'id': id
         });
       });
-      return it('from elements', function() {
+      it('from elements', function() {
         b.destroy({
           'id': id
         });
+        return expect(b.get(id)).not.be.ok();
+      });
+      return it('restart', function() {
+        b.restart();
         return expect(b.get(id)).not.be.ok();
       });
     });
