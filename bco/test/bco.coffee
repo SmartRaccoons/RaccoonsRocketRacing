@@ -15,33 +15,43 @@ describe 'Bco', ->
 
   afterEach ->
 
+
+  describe 'load map', ->
+    it 'brick', ->
+      b = new Bco([[0, 0, 1], [1, 0, 0]])
+      assert.deepEqual([32, 0], b.get(1).pos)
+      assert.equal('brick', b.get(1).object)
+      assert.deepEqual([0, 16], b.get(2).pos)
+
+    it 'base', ->
+      b = new Bco([[0, 10, 0], [0, 0, 0]])
+      assert.deepEqual([16, 0], b.get(1).pos)
+      assert.equal('base', b.get(1).object)
+
+
   describe 'add', ->
     it 'auto id', ->
       assert.equal(b.id, 0)
       b.add({'object': 'tank'})
       assert.equal(b.id, 1)
 
-    it 'add tank', ->
+    it 'tank', ->
       id = b.add({'object': 'tank'})
       assert.equal(1, id)
       assert.deepEqual(b.get(id).size, [32, 32])
 
-    it 'add bullet', ->
+    it 'bullet', ->
       id = b.add({'object': 'bullet'})
       assert.equal(1, id)
       assert.deepEqual(b.get(id).size, [8, 8])
 
-    it 'add brick', ->
+    it 'brick', ->
       id = b.add({'object': 'brick'})
       assert.equal(b.get(id).hitpoints, 2)
 
-  describe 'load map', ->
-    it 'elements', ->
-      b = new Bco([[0, 0, 1], [1, 0, 0]])
-      assert.deepEqual([32, 0], b.get(1).pos)
-      assert.equal('brick', b.get(1).object)
-      assert.deepEqual([0, 16], b.get(2).pos)
-
+    it 'base', ->
+      id = b.add({'object': 'base'})
+      assert.deepEqual(b.get(id).size, [32, 32])
 
     it 'default params', ->
       id = b.add({'object': 'benja'})
@@ -65,7 +75,7 @@ describe 'Bco', ->
       assert.equal(10, b.get(id).hitpoints)
       assert.equal(false, b.get(id).over)
 
-    it 'event add', ->
+    it 'event', ->
       spy = sinon.spy()
       b.on 'add', spy
       id = b.add({'object': 'benja'})

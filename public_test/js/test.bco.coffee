@@ -260,6 +260,11 @@ describe 'Bco', ->
       b.add({'id': 3, 'object': 'brick'})
       expect(b.get(3).sprite._name).to.be('brick')
 
+    it 'base', ->
+      b.add({'id': 2, 'object': 'base'})
+      expect(b.get(2).sprite._name).to.be('base')
+      expect(b.get(2).sprite.size).to.be.eql([32, 32])
+
 
   describe 'updateView', ->
     beforeEach ->

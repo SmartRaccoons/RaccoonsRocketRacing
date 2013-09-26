@@ -20,6 +20,19 @@
       return b = new Bco();
     });
     afterEach(function() {});
+    describe('load map', function() {
+      it('brick', function() {
+        b = new Bco([[0, 0, 1], [1, 0, 0]]);
+        assert.deepEqual([32, 0], b.get(1).pos);
+        assert.equal('brick', b.get(1).object);
+        return assert.deepEqual([0, 16], b.get(2).pos);
+      });
+      return it('base', function() {
+        b = new Bco([[0, 10, 0], [0, 0, 0]]);
+        assert.deepEqual([16, 0], b.get(1).pos);
+        return assert.equal('base', b.get(1).object);
+      });
+    });
     describe('add', function() {
       it('auto id', function() {
         assert.equal(b.id, 0);
@@ -28,7 +41,7 @@
         });
         return assert.equal(b.id, 1);
       });
-      it('add tank', function() {
+      it('tank', function() {
         var id;
         id = b.add({
           'object': 'tank'
@@ -36,7 +49,7 @@
         assert.equal(1, id);
         return assert.deepEqual(b.get(id).size, [32, 32]);
       });
-      it('add bullet', function() {
+      it('bullet', function() {
         var id;
         id = b.add({
           'object': 'bullet'
@@ -44,20 +57,19 @@
         assert.equal(1, id);
         return assert.deepEqual(b.get(id).size, [8, 8]);
       });
-      return it('add brick', function() {
+      it('brick', function() {
         var id;
         id = b.add({
           'object': 'brick'
         });
         return assert.equal(b.get(id).hitpoints, 2);
       });
-    });
-    describe('load map', function() {
-      it('elements', function() {
-        b = new Bco([[0, 0, 1], [1, 0, 0]]);
-        assert.deepEqual([32, 0], b.get(1).pos);
-        assert.equal('brick', b.get(1).object);
-        return assert.deepEqual([0, 16], b.get(2).pos);
+      it('base', function() {
+        var id;
+        id = b.add({
+          'object': 'base'
+        });
+        return assert.deepEqual(b.get(id).size, [32, 32]);
       });
       it('default params', function() {
         var id;
@@ -96,7 +108,7 @@
         assert.equal(10, b.get(id).hitpoints);
         return assert.equal(false, b.get(id).over);
       });
-      return it('event add', function() {
+      return it('event', function() {
         var id, spy;
         spy = sinon.spy();
         b.on('add', spy);

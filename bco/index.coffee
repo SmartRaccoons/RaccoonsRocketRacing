@@ -15,8 +15,12 @@ module.exports.Bco = class Bco extends BcoCore
       for r in map
         x = 0
         for l in r
+          object = null
           if l is 1
-            @add {'object': 'brick', pos: [x*16, y*16]}
+            object = 'brick'
+          else if l is 10
+            object = 'base'
+          @add {'object': object, pos: [x*16, y*16]} if object
           x++
         y++
     @
@@ -43,6 +47,8 @@ module.exports.Bco = class Bco extends BcoCore
       params['size'] = [8,  8]
     if pr.object is 'brick'
       params['hitpoints'] = 2
+    if pr.object is 'base'
+      params['size'] = [32, 32]
     super(params)
     @trigger 'add', params
     @id

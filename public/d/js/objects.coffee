@@ -43,3 +43,7 @@ App.SpriteBullet = class Bullet extends Sprite
 App.SpriteBrick = class Brick extends Sprite
   size: [16, 16]
   _name: 'brick'
+
+App.SpriteBase = class Base extends Sprite
+  size: [32, 32]
+  _name: 'base'

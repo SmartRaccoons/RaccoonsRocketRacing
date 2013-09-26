@@ -16,7 +16,7 @@
     Bco.prototype.id = 0;
 
     function Bco(map) {
-      var l, r, x, y, _i, _j, _len, _len1;
+      var l, object, r, x, y, _i, _j, _len, _len1;
       Bco.__super__.constructor.apply(this, arguments);
       if (map) {
         y = 0;
@@ -25,9 +25,15 @@
           x = 0;
           for (_j = 0, _len1 = r.length; _j < _len1; _j++) {
             l = r[_j];
+            object = null;
             if (l === 1) {
+              object = 'brick';
+            } else if (l === 10) {
+              object = 'base';
+            }
+            if (object) {
               this.add({
-                'object': 'brick',
+                'object': object,
                 pos: [x * 16, y * 16]
               });
             }
@@ -68,6 +74,9 @@
       }
       if (pr.object === 'brick') {
         params['hitpoints'] = 2;
+      }
+      if (pr.object === 'base') {
+        params['size'] = [32, 32];
       }
       Bco.__super__.add.call(this, params);
       this.trigger('add', params);
