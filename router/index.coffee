@@ -45,8 +45,8 @@ module.exports = class Router extends events.EventEmitter
         @add_tank(@_sockets[element.params.socket_id])
 
   add_tank: (socket)->
-    positions = [[0, 0], [@.game.size[0]-32, 0], [@game.size[0]-32, @game.size[1]-32], [0, @game.size[1]-32]]
-    socket.tank_id = @game.add({'object': 'tank', pos: positions[@game.get({'object': 'tank'}).length], 'params': {'socket_id': socket.id}})
+    positions = [[0, 0], [@game.size[0]-32, @game.size[1]-32], [@.game.size[0]-32, 0], [0, @game.size[1]-32]]
+    socket.tank_id = @game.add({'object': 'tank', pos: positions[@game.get({'object': 'tank'}).length % 4], 'params': {'socket_id': socket.id}})
 
   connection: (socket)->
     @_sockets[socket.id] = socket

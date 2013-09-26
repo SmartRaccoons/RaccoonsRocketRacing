@@ -31,12 +31,12 @@
 
     Router.prototype.add_tank = function(socket) {
       var positions;
-      positions = [[0, 0], [this.game.size[0] - 32, 0], [this.game.size[0] - 32, this.game.size[1] - 32], [0, this.game.size[1] - 32]];
+      positions = [[0, 0], [this.game.size[0] - 32, this.game.size[1] - 32], [this.game.size[0] - 32, 0], [0, this.game.size[1] - 32]];
       return socket.tank_id = this.game.add({
         'object': 'tank',
         pos: positions[this.game.get({
           'object': 'tank'
-        }).length],
+        }).length % 4],
         'params': {
           'socket_id': socket.id
         }

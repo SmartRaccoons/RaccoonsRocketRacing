@@ -30,9 +30,12 @@ describe 'router', ->
 
   describe 'connection', ->
     socket = null
+    socket2 = null
     beforeEach ->
       socket = new events.EventEmitter()
       socket.id = 'ben'
+      socket2 = new events.EventEmitter()
+      socket2.id = 'ban'
     it 'new tank', ->
       r.add_tank(socket)
       assert.equal('ben', r.game.get(socket.tank_id).params.socket_id)
@@ -40,27 +43,21 @@ describe 'router', ->
 
     it 'new tank in other 2. position', ->
       r.add_tank(socket)
-      socket2 = new events.EventEmitter()
-      socket2.id = 'ban'
       r.add_tank(socket2)
       t = r.game.get(socket2.tank_id)
-      assert.deepEqual([r.game.size[0]-t.size[0], 0], t.pos)
+      assert.deepEqual([r.game.size[0]-t.size[0], r.game.size[1]-t.size[1]], t.pos)
 
     it 'new tank in other 3. position', ->
       r.add_tank(socket)
       r.add_tank(socket)
-      socket2 = new events.EventEmitter()
-      socket2.id = 'ban'
       r.add_tank(socket2)
       t = r.game.get(socket2.tank_id)
-      assert.deepEqual([r.game.size[0]-t.size[0], r.game.size[1]-t.size[1]], t.pos)
+      assert.deepEqual([r.game.size[0]-t.size[0], 0], t.pos)
 
     it 'new tank in other 4. position', ->
       r.add_tank(socket)
       r.add_tank(socket)
       r.add_tank(socket)
-      socket2 = new events.EventEmitter()
-      socket2.id = 'ban'
       r.add_tank(socket2)
       t = r.game.get(socket2.tank_id)
       assert.deepEqual([0, r.game.size[1]-t.size[1]], t.pos)
@@ -70,11 +67,19 @@ describe 'router', ->
       r.add_tank(socket)
       r.add_tank(socket)
       r.add_tank(socket)
-      socket2 = new events.EventEmitter()
-      socket2.id = 'ban'
       r.add_tank(socket2)
       t = r.game.get(socket2.tank_id)
       assert.deepEqual([0, 0], t.pos)
+
+    it 'new tank in other 6. position', ->
+      r.add_tank(socket)
+      r.add_tank(socket)
+      r.add_tank(socket)
+      r.add_tank(socket)
+      r.add_tank(socket)
+      r.add_tank(socket2)
+      t = r.game.get(socket2.tank_id)
+      assert.deepEqual([r.game.size[0]-t.size[0], r.game.size[1]-t.size[1]], t.pos)
 
     it 'create tank', ->
       r.add_tank = sinon.spy()
