@@ -41,6 +41,7 @@ module.exports.Bco = class Bco extends BcoCore
     @_draw_map()
     for t in tanks
       @add_tank(t.params.tank_id, {'pos': t['pos_start']})
+    @
 
   add: (pr)->
     @id++
@@ -58,7 +59,7 @@ module.exports.Bco = class Bco extends BcoCore
     if pr.object is 'tank'
       params['size'] = [32, 32]
       if not params['pos_start']
-        params['pos_start'] = params['pos']
+        params['pos_start'] = [params['pos'][0], params['pos'][1]]
     if pr.object is 'bullet'
       params['size'] = [8,  8]
     if pr.object is 'brick'

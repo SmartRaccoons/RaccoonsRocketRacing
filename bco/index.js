@@ -63,21 +63,20 @@
     };
 
     Bco.prototype.restart = function() {
-      var t, tanks, _i, _len, _results;
+      var t, tanks, _i, _len;
       tanks = this.get({
         'object': 'tank'
       });
       Bco.__super__.restart.apply(this, arguments);
       this.trigger('restart');
       this._draw_map();
-      _results = [];
       for (_i = 0, _len = tanks.length; _i < _len; _i++) {
         t = tanks[_i];
-        _results.push(this.add_tank(t.params.tank_id, {
+        this.add_tank(t.params.tank_id, {
           'pos': t['pos_start']
-        }));
+        });
       }
-      return _results;
+      return this;
     };
 
     Bco.prototype.add = function(pr) {
@@ -98,7 +97,7 @@
       if (pr.object === 'tank') {
         params['size'] = [32, 32];
         if (!params['pos_start']) {
-          params['pos_start'] = params['pos'];
+          params['pos_start'] = [params['pos'][0], params['pos'][1]];
         }
       }
       if (pr.object === 'bullet') {

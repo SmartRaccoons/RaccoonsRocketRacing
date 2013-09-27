@@ -152,14 +152,20 @@
         return assert.notEqual(null, b.get_tank('ben'));
       });
       return it('tanks coors', function() {
+        var id;
         b = new Bco();
         b.add_tank('ben', {
-          'pos': [1, 2]
+          'pos': [1, 2],
+          'speed': 10
         });
-        b.get_tank('ben').pos = [0, 1];
+        b._updateView(1);
         b.restart();
         assert.deepEqual([1, 2], b.get_tank('ben').pos);
-        b.get_tank('ben').pos = [0, 1];
+        id = b.get_tank('ben').id;
+        b.update({
+          'id': id,
+          'pos': [0, 1]
+        });
         b.restart();
         return assert.deepEqual([1, 2], b.get_tank('ben').pos);
       });

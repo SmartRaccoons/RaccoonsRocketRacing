@@ -113,11 +113,12 @@ describe 'Bco', ->
 
     it 'tanks coors', ->
       b = new Bco()
-      b.add_tank('ben', {'pos': [1, 2]})
-      b.get_tank('ben').pos = [0, 1]
+      b.add_tank('ben', {'pos': [1, 2], 'speed': 10})
+      b._updateView(1)
       b.restart()
       assert.deepEqual([1, 2], b.get_tank('ben').pos)
-      b.get_tank('ben').pos = [0, 1]
+      id = b.get_tank('ben').id
+      b.update({'id': id, 'pos': [0, 1]})
       b.restart()
       assert.deepEqual([1, 2], b.get_tank('ben').pos)
 
