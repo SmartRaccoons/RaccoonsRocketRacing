@@ -2857,6 +2857,8 @@ h=window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRe
 if(h){return h(i)
 }return window.setTimeout(i,1000/30)
 };
+g.prototype.restart=function(){return this._elements={}
+};
 g.prototype.add=function(h){return this._elements[h.id]=h
 };
 g.prototype.get=function(o){var j,n,l,m,k,i,h;
@@ -2921,7 +2923,7 @@ function h(){h.__super__.constructor.apply(this,arguments);
 f.View.prototype.constructor.apply(this,arguments);
 this
 }h.prototype.add=function(i){h.__super__.add.apply(this,arguments);
-if(["tank","bullet","brick"].indexOf(i.object)!==-1){return this._elements[i.id]["sprite"]=new App["Sprite"+i.object[0].toUpperCase()+i.object.substr(1)]()
+if(["tank","bullet","brick","base"].indexOf(i.object)!==-1){return this._elements[i.id]["sprite"]=new App["Sprite"+i.object[0].toUpperCase()+i.object.substr(1)]()
 }};
 h.prototype._updateView=function(i){var l,k,j;
 h.__super__._updateView.apply(this,arguments);
@@ -2951,50 +2953,56 @@ return this
 return h
 })(d)
 }).call(this);
-(function(){var f,e,c,a,b={}.hasOwnProperty,d=function(j,h){for(var g in h){if(b.call(h,g)){j[g]=h[g]
-}}function i(){this.constructor=j
-}i.prototype=h.prototype;
-j.prototype=new i();
-j.__super__=h.prototype;
-return j
+(function(){var d,g,f,c,a,b={}.hasOwnProperty,e=function(k,i){for(var h in i){if(b.call(i,h)){k[h]=i[h]
+}}function j(){this.constructor=k
+}j.prototype=i.prototype;
+k.prototype=new j();
+k.__super__=i.prototype;
+return k
 };
-App.Sprite=c=(function(){g.prototype.size=[0,0];
-g.prototype.pos=[0,0];
-g.prototype._frames=[0];
-g.prototype._frames_speed=0;
-g.prototype._frames_index=0;
-function g(){var h=this;
+App.Sprite=c=(function(){h.prototype.size=[0,0];
+h.prototype.pos=[0,0];
+h.prototype._frames=[0];
+h.prototype._frames_speed=0;
+h.prototype._frames_index=0;
+function h(){var i=this;
 if(this._name){this.url="d/img/"+this._name+".png"
 }this.img=new Image();
-this.img.onload=function(){return h._loaded=true
+this.img.onload=function(){return i._loaded=true
 };
 this.img.src=this.url
-}g.prototype.update=function(h){if(this._frames_speed>0){this._frames_index+=this._frames_speed*h;
+}h.prototype.update=function(i){if(this._frames_speed>0){this._frames_index+=this._frames_speed*i;
 if(this._frames_index>=this._frames.length){return this._frames_index=this._frames_index%this._frames.length
 }}};
-g.prototype.render=function(i){var h;
+h.prototype.render=function(j){var i;
 if(!this._loaded){return
-}h=this._frames[Math.floor(this._frames_index)];
-return i.drawImage(this.img,this.pos[0]+this.size[0]*h,this.pos[1],this.size[0],this.size[1],0,0,this.size[0],this.size[1])
+}i=this._frames[Math.floor(this._frames_index)];
+return j.drawImage(this.img,this.pos[0]+this.size[0]*i,this.pos[1],this.size[0],this.size[1],0,0,this.size[0],this.size[1])
 };
-return g
+return h
 })();
-App.SpriteTank=a=(function(h){d(g,h);
-function g(){return g.__super__.constructor.apply(this,arguments)
-}g.prototype.size=[32,32];
-g.prototype._name="tank";
-return g
-})(c);
-App.SpriteBullet=e=(function(g){d(h,g);
+App.SpriteTank=a=(function(i){e(h,i);
 function h(){return h.__super__.constructor.apply(this,arguments)
-}h.prototype.size=[8,8];
-h.prototype._name="bullet";
+}h.prototype.size=[32,32];
+h.prototype._name="tank";
 return h
 })(c);
-App.SpriteBrick=f=(function(g){d(h,g);
+App.SpriteBullet=f=(function(h){e(i,h);
+function i(){return i.__super__.constructor.apply(this,arguments)
+}i.prototype.size=[8,8];
+i.prototype._name="bullet";
+return i
+})(c);
+App.SpriteBrick=g=(function(h){e(i,h);
+function i(){return i.__super__.constructor.apply(this,arguments)
+}i.prototype.size=[16,16];
+i.prototype._name="brick";
+return i
+})(c);
+App.SpriteBase=d=(function(i){e(h,i);
 function h(){return h.__super__.constructor.apply(this,arguments)
-}h.prototype.size=[16,16];
-h.prototype._name="brick";
+}h.prototype.size=[32,32];
+h.prototype._name="base";
 return h
 })(c)
 }).call(this);
@@ -3025,6 +3033,8 @@ App.socket.receive.on("add",function(i){return h.game.add(i)
 App.socket.receive.on("update",function(i){return h.game.update(i)
 });
 App.socket.receive.on("destroy",function(i){return h.game.destroy(i)
+});
+App.socket.receive.on("restart",function(){return h.game.restart()
 });
 this.game.start()
 }f.prototype.control=function(j,l){var h,m,k,i;
