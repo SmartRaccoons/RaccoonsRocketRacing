@@ -23,9 +23,6 @@
       this.game.on('destroy', function(params) {
         var element;
         element = _this.game.get(params.id);
-        if (element.object === 'tank' && params.reason === 'destroy') {
-          _this.add_tank(_this._sockets[element.params.tank_id]);
-        }
         if (element.object === 'base') {
           return _this.game.restart();
         }

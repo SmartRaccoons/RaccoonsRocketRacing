@@ -154,6 +154,15 @@ describe 'Bco', ->
       b.destroy(id, 'benja')
       assert.equal('benja', spy.getCall(0).args[0].reason)
 
+    it 'reappend tank', ->
+      id = b.add_tank('ben')
+      b.destroy(id)
+      assert.equal(null, b.get_tank('ben'))
+      id = b.add_tank('ben', {'pos': [1, 2]})
+      b.destroy(id, 'destroy')
+      assert.equal(null, b.get(id))
+      assert.deepEqual([1, 2], b.get_tank('ben').pos)
+
 
   describe 'process', ->
     clock = null

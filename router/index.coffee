@@ -41,8 +41,6 @@ module.exports = class Router extends events.EventEmitter
     @game.start()
     @game.on 'destroy', (params)=>
       element = @game.get(params.id)
-      if element.object is 'tank' and params.reason is 'destroy'
-        @add_tank(@_sockets[element.params.tank_id])
       if element.object is 'base'
         @game.restart()
     @game.on 'restart', => @emit_sockets('restart')

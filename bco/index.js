@@ -149,13 +149,21 @@
     };
 
     Bco.prototype.destroy = function(id, reason) {
+      var ob;
       this.trigger('destroy', {
         'id': id,
         'reason': reason
       });
-      return Bco.__super__.destroy.call(this, {
+      ob = this.get(id);
+      Bco.__super__.destroy.call(this, {
         'id': id
       });
+      if (ob.object === 'tank' && reason === 'destroy') {
+        this.add_tank(ob.params.tank_id, {
+          'pos': ob['pos_start']
+        });
+      }
+      return this;
     };
 
     Bco.prototype.tank_start = function(tank_id, move) {

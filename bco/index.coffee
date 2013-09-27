@@ -91,7 +91,11 @@ module.exports.Bco = class Bco extends BcoCore
 
   destroy: (id, reason)->
     @trigger 'destroy', {'id': id, 'reason': reason}
+    ob = @get(id)
     super({'id': id})
+    if ob.object is 'tank' and reason is 'destroy'
+      @add_tank(ob.params.tank_id, {'pos': ob['pos_start']})
+    @
 
   tank_start: (tank_id, move)->
     tank = @get_tank(tank_id)

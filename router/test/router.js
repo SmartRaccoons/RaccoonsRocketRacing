@@ -152,7 +152,7 @@
         assert.equal('destroy', r.emit_socket.getCall(0).args[1]);
         return assert.equal(id, r.emit_socket.getCall(0).args[2].id);
       });
-      it('event: update element', function() {
+      return it('event: update element', function() {
         var id;
         r.connection(socket);
         id = r.game.add({
@@ -167,16 +167,6 @@
         assert.equal(id, r.emit_socket.getCall(0).args[2].id);
         assert.equal(10, r.emit_socket.getCall(0).args[2].speed);
         return assert.deepEqual([0, 0], r.emit_socket.getCall(0).args[2].pos);
-      });
-      return it('on destroy tank add new', function() {
-        r.connection(socket);
-        r.game.update({
-          'id': r.game.get_tank(socket.id).id,
-          'speed': 100
-        });
-        r.add_tank = sinon.spy();
-        r.game.destroy(r.game.get_tank(socket.id).id, 'destroy');
-        return assert.equal('ben', r.add_tank.getCall(0).args[0].id);
       });
     });
     describe('gameplay', function() {

@@ -206,12 +206,23 @@
         b.destroy(id);
         return assert.equal(id, spy.getCall(0).args[0].id);
       });
-      return it('reason', function() {
+      it('reason', function() {
         var spy;
         spy = sinon.spy();
         b.on('destroy', spy);
         b.destroy(id, 'benja');
         return assert.equal('benja', spy.getCall(0).args[0].reason);
+      });
+      return it('reappend tank', function() {
+        id = b.add_tank('ben');
+        b.destroy(id);
+        assert.equal(null, b.get_tank('ben'));
+        id = b.add_tank('ben', {
+          'pos': [1, 2]
+        });
+        b.destroy(id, 'destroy');
+        assert.equal(null, b.get(id));
+        return assert.deepEqual([1, 2], b.get_tank('ben').pos);
       });
     });
     describe('process', function() {
