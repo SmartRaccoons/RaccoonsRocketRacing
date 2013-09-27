@@ -44,13 +44,13 @@ io.set('log level', config.io.loglevel)
 io.set('transports', config.io.transports)
 io.set('polling duration', config.io.duration)
 
-r = new Router({}, db)
-r.send.emit = (event, socket)->
-  args = Array.prototype.slice.apply(arguments).splice(2)
-  args.unshift(event)
-  socket.emit.apply(socket, args)
+r = new Router({}, db, io)
+#r.send.emit = (event, socket)->
+#  args = Array.prototype.slice.apply(arguments).splice(2)
+#  args.unshift(event)
+#  socket.emit.apply(socket, args)
 
 io.sockets.on 'connection', (socket)-> r.connection(socket)
 
 
-console.log('http://127.0.0.1:'+config.port+' version:'+pjson.version)
+console.log('http://127.0.0.1:'+config.port+'/-bco version:'+pjson.version)

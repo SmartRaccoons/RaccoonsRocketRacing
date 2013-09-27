@@ -50,19 +50,12 @@
 
   io.set('polling duration', config.io.duration);
 
-  r = new Router({}, db);
-
-  r.send.emit = function(event, socket) {
-    var args;
-    args = Array.prototype.slice.apply(arguments).splice(2);
-    args.unshift(event);
-    return socket.emit.apply(socket, args);
-  };
+  r = new Router({}, db, io);
 
   io.sockets.on('connection', function(socket) {
     return r.connection(socket);
   });
 
-  console.log('http://127.0.0.1:' + config.port + ' version:' + pjson.version);
+  console.log('http://127.0.0.1:' + config.port + '/-bco version:' + pjson.version);
 
 }).call(this);

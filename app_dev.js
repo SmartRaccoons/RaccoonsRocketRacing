@@ -12,6 +12,9 @@
     app.get('/backbone/backbone.js', function(req, res) {
       return res.sendfile(__dirname + '/node_modules/backbone/backbone.js');
     });
+    app.get('/bco/client.js', function(req, res) {
+      return res.sendfile(__dirname + '/bco/client.js');
+    });
     return app.get('/-bco', function(req, res) {
       return res.sendfile(__dirname + '/public/dev.html');
     });
