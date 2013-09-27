@@ -158,7 +158,7 @@
       Bco.__super__.destroy.call(this, {
         'id': id
       });
-      if (ob.object === 'tank' && reason === 'destroy') {
+      if (ob && ob.object === 'tank' && reason === 'destroy') {
         this.add_tank(ob.params.tank_id, {
           'pos': ob['pos_start']
         });

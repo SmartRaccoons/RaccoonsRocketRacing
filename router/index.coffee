@@ -41,7 +41,7 @@ module.exports = class Router extends events.EventEmitter
     @game.start()
     @game.on 'destroy', (params)=>
       element = @game.get(params.id)
-      if element.object is 'base'
+      if element and element.object is 'base'
         @game.restart()
     @game.on 'restart', => @emit_sockets('restart')
     @game.on 'add', (pr)=> @emit_sockets('add', pr)

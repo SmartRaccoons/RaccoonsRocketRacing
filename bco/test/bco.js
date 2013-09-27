@@ -213,7 +213,7 @@
         b.destroy(id, 'benja');
         return assert.equal('benja', spy.getCall(0).args[0].reason);
       });
-      return it('reappend tank', function() {
+      it('reappend tank', function() {
         id = b.add_tank('ben');
         b.destroy(id);
         assert.equal(null, b.get_tank('ben'));
@@ -223,6 +223,14 @@
         b.destroy(id, 'destroy');
         assert.equal(null, b.get(id));
         return assert.deepEqual([1, 2], b.get_tank('ben').pos);
+      });
+      return it('reappend tank on restart', function() {
+        b.on('destroy', function() {
+          return b._elements = {};
+        });
+        id = b.add_tank('ben');
+        b.destroy(id, 'destroy');
+        return assert.equal(null, b.get_tank('ben'));
       });
     });
     describe('process', function() {

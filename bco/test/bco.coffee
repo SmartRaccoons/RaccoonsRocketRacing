@@ -163,6 +163,14 @@ describe 'Bco', ->
       assert.equal(null, b.get(id))
       assert.deepEqual([1, 2], b.get_tank('ben').pos)
 
+    it 'reappend tank on restart', ->
+      b.on 'destroy', ->
+        b._elements = {}
+      id = b.add_tank('ben')
+      b.destroy(id, 'destroy')
+      assert.equal(null, b.get_tank('ben'))
+
+
 
   describe 'process', ->
     clock = null

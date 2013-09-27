@@ -23,7 +23,7 @@
       this.game.on('destroy', function(params) {
         var element;
         element = _this.game.get(params.id);
-        if (element.object === 'base') {
+        if (element && element.object === 'base') {
           return _this.game.restart();
         }
       });
