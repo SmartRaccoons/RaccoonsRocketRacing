@@ -365,13 +365,6 @@
       });
     });
     describe('objects', function() {
-      it('none', function() {
-        b.add({
-          'id': 2,
-          'object': 'none'
-        });
-        return expect(b.get(2).sprite).not.be.ok();
-      });
       it('tank', function() {
         b.add({
           'id': 2,
@@ -412,11 +405,6 @@
         return b.draw = null;
       });
       it('update', function() {
-        b.add({
-          'id': 1,
-          'object': 'none',
-          'pos': [0, 0]
-        });
         b.add({
           'id': 2,
           'object': 'tank',
@@ -459,12 +447,6 @@
         b.add({
           'id': 2,
           'object': 'bullet',
-          'pos': [10, 10],
-          'size': [30, 30]
-        });
-        b.add({
-          'id': 3,
-          'object': 'none',
           'pos': [10, 10],
           'size': [30, 30]
         });

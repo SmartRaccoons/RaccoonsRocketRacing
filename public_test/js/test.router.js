@@ -136,7 +136,8 @@
         };
         App.socket.receive.trigger('add', {
           'id': 1,
-          'pos': [0, 0]
+          'pos': [0, 0],
+          'object': 'bullet'
         });
         expect(r.game.add.getCall(0).args[0].id).to.be(1);
         App.socket.receive.trigger('update', {

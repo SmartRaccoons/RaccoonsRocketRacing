@@ -115,8 +115,7 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
 
   add: (pr)->
     super
-    if ['tank', 'bullet', 'brick', 'base'].indexOf(pr.object) isnt -1
-      @_elements[pr.id]['sprite'] = new App['Sprite'+pr.object[0].toUpperCase()+pr.object.substr(1)]()
+    @_elements[pr.id]['sprite'] = new App['Sprite'+pr.object[0].toUpperCase()+pr.object.substr(1)]()
 
   _updateView: (dt)->
     super

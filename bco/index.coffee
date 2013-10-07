@@ -28,6 +28,8 @@ module.exports.Bco = class Bco extends BcoCore
           object = 'brick'
         else if l is 10
           object = 'base'
+        else if l is 2
+          object = 'iron'
         @add {'object': object, pos: [x*16, y*16]} if object
         x++
       y++
@@ -64,6 +66,8 @@ module.exports.Bco = class Bco extends BcoCore
       params['size'] = [8,  8]
     if pr.object is 'brick'
       params['hitpoints'] = 2
+    if pr.object is 'iron'
+      params['hitpoints'] = 20
     if pr.object is 'base'
       params['size'] = [32, 32]
     super(params)

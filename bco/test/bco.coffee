@@ -23,6 +23,10 @@ describe 'Bco', ->
       assert.equal('brick', b.get(1).object)
       assert.deepEqual([0, 16], b.get(2).pos)
 
+    it 'iron', ->
+      b = new Bco([[0, 0, 2]])
+      assert.equal('iron', b.get(1).object)
+
     it 'base', ->
       b = new Bco([[0, 10, 0], [0, 0, 0]])
       assert.deepEqual([16, 0], b.get(1).pos)
@@ -48,6 +52,10 @@ describe 'Bco', ->
     it 'brick', ->
       id = b.add({'object': 'brick'})
       assert.equal(b.get(id).hitpoints, 2)
+
+    it 'iron', ->
+      id = b.add({'object': 'iron'})
+      assert.equal(b.get(id).hitpoints, 20)
 
     it 'base', ->
       id = b.add({'object': 'base'})

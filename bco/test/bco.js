@@ -27,6 +27,10 @@
         assert.equal('brick', b.get(1).object);
         return assert.deepEqual([0, 16], b.get(2).pos);
       });
+      it('iron', function() {
+        b = new Bco([[0, 0, 2]]);
+        return assert.equal('iron', b.get(1).object);
+      });
       return it('base', function() {
         b = new Bco([[0, 10, 0], [0, 0, 0]]);
         assert.deepEqual([16, 0], b.get(1).pos);
@@ -63,6 +67,13 @@
           'object': 'brick'
         });
         return assert.equal(b.get(id).hitpoints, 2);
+      });
+      it('iron', function() {
+        var id;
+        id = b.add({
+          'object': 'iron'
+        });
+        return assert.equal(b.get(id).hitpoints, 20);
       });
       it('base', function() {
         var id;

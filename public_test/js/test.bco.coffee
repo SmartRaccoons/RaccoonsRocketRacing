@@ -246,9 +246,6 @@ describe 'Bco', ->
       expect(b.$('canvas').height()).to.be(416)
 
   describe 'objects', ->
-    it 'none', ->
-      b.add({'id': 2, 'object': 'none'})
-      expect(b.get(2).sprite).not.be.ok()
 
     it 'tank', ->
       b.add({'id': 2, 'object': 'tank'})
@@ -278,7 +275,6 @@ describe 'Bco', ->
       b.draw = null
 
     it 'update', ->
-      b.add({'id': 1, 'object': 'none', 'pos': [0, 0]})
       b.add({'id': 2, 'object': 'tank', 'pos': [0, 0]})
       b.get(2).sprite.update = sinon.spy()
       b._updateView(1)
@@ -302,7 +298,6 @@ describe 'Bco', ->
     it 'position', ->
       b.add({'id': 1, 'object': 'tank', 'pos': [10, 10], 'size': [20, 20]})
       b.add({'id': 2, 'object': 'bullet', 'pos': [10, 10], 'size': [30, 30]})
-      b.add({'id': 3, 'object': 'none', 'pos': [10, 10], 'size': [30, 30]})
       b.draw()
       expect(b.c.save.callCount).to.be(2)
       expect(b.c.restore.callCount).to.be(2)
