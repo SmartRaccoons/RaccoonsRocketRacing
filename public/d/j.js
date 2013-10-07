@@ -2923,8 +2923,8 @@ function h(){h.__super__.constructor.apply(this,arguments);
 f.View.prototype.constructor.apply(this,arguments);
 this
 }h.prototype.add=function(i){h.__super__.add.apply(this,arguments);
-if(["tank","bullet","brick","base"].indexOf(i.object)!==-1){return this._elements[i.id]["sprite"]=new App["Sprite"+i.object[0].toUpperCase()+i.object.substr(1)]()
-}};
+return this._elements[i.id]["sprite"]=new App["Sprite"+i.object[0].toUpperCase()+i.object.substr(1)]()
+};
 h.prototype._updateView=function(i){var l,k,j;
 h.__super__._updateView.apply(this,arguments);
 j=this._elements;
@@ -2953,57 +2953,63 @@ return this
 return h
 })(d)
 }).call(this);
-(function(){var d,g,f,c,a,b={}.hasOwnProperty,e=function(k,i){for(var h in i){if(b.call(i,h)){k[h]=i[h]
-}}function j(){this.constructor=k
-}j.prototype=i.prototype;
-k.prototype=new j();
-k.__super__=i.prototype;
-return k
+(function(){var d,h,g,f,c,a,b={}.hasOwnProperty,e=function(l,j){for(var i in j){if(b.call(j,i)){l[i]=j[i]
+}}function k(){this.constructor=l
+}k.prototype=j.prototype;
+l.prototype=new k();
+l.__super__=j.prototype;
+return l
 };
-App.Sprite=c=(function(){h.prototype.size=[0,0];
-h.prototype.pos=[0,0];
-h.prototype._frames=[0];
-h.prototype._frames_speed=0;
-h.prototype._frames_index=0;
-function h(){var i=this;
+App.Sprite=c=(function(){i.prototype.size=[0,0];
+i.prototype.pos=[0,0];
+i.prototype._frames=[0];
+i.prototype._frames_speed=0;
+i.prototype._frames_index=0;
+function i(){var j=this;
 if(this._name){this.url="d/img/"+this._name+".png"
 }this.img=new Image();
-this.img.onload=function(){return i._loaded=true
+this.img.onload=function(){return j._loaded=true
 };
 this.img.src=this.url
-}h.prototype.update=function(i){if(this._frames_speed>0){this._frames_index+=this._frames_speed*i;
+}i.prototype.update=function(j){if(this._frames_speed>0){this._frames_index+=this._frames_speed*j;
 if(this._frames_index>=this._frames.length){return this._frames_index=this._frames_index%this._frames.length
 }}};
-h.prototype.render=function(j){var i;
+i.prototype.render=function(k){var j;
 if(!this._loaded){return
-}i=this._frames[Math.floor(this._frames_index)];
-return j.drawImage(this.img,this.pos[0]+this.size[0]*i,this.pos[1],this.size[0],this.size[1],0,0,this.size[0],this.size[1])
+}j=this._frames[Math.floor(this._frames_index)];
+return k.drawImage(this.img,this.pos[0]+this.size[0]*j,this.pos[1],this.size[0],this.size[1],0,0,this.size[0],this.size[1])
 };
-return h
+return i
 })();
-App.SpriteTank=a=(function(i){e(h,i);
-function h(){return h.__super__.constructor.apply(this,arguments)
-}h.prototype.size=[32,32];
-h.prototype._name="tank";
-return h
-})(c);
-App.SpriteBullet=f=(function(h){e(i,h);
+App.SpriteTank=a=(function(j){e(i,j);
 function i(){return i.__super__.constructor.apply(this,arguments)
-}i.prototype.size=[8,8];
-i.prototype._name="bullet";
+}i.prototype.size=[32,32];
+i.prototype._name="tank";
 return i
 })(c);
-App.SpriteBrick=g=(function(h){e(i,h);
-function i(){return i.__super__.constructor.apply(this,arguments)
-}i.prototype.size=[16,16];
-i.prototype._name="brick";
-return i
+App.SpriteBullet=g=(function(i){e(j,i);
+function j(){return j.__super__.constructor.apply(this,arguments)
+}j.prototype.size=[8,8];
+j.prototype._name="bullet";
+return j
 })(c);
-App.SpriteBase=d=(function(i){e(h,i);
-function h(){return h.__super__.constructor.apply(this,arguments)
-}h.prototype.size=[32,32];
-h.prototype._name="base";
-return h
+App.SpriteBrick=h=(function(i){e(j,i);
+function j(){return j.__super__.constructor.apply(this,arguments)
+}j.prototype.size=[16,16];
+j.prototype._name="brick";
+return j
+})(c);
+App.SpriteIron=f=(function(i){e(j,i);
+function j(){return j.__super__.constructor.apply(this,arguments)
+}j.prototype.size=[16,16];
+j.prototype._name="iron";
+return j
+})(c);
+App.SpriteBase=d=(function(j){e(i,j);
+function i(){return i.__super__.constructor.apply(this,arguments)
+}i.prototype.size=[32,32];
+i.prototype._name="base";
+return i
 })(c)
 }).call(this);
 (function(){var a,c,b={}.hasOwnProperty,e=function(i,g){for(var f in g){if(b.call(g,f)){i[f]=g[f]
