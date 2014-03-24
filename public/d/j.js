@@ -3030,7 +3030,7 @@ f.prototype.events={keydown:function(h){return this.control(h.keyCode,true)
 },keyup:function(h){return this.control(h.keyCode,false)
 }};
 function f(){var h=this;
-this._keys={up:{active:false,code:[38]},down:{active:false,code:[40]},left:{active:false,code:[37]},right:{active:false,code:[39]},fire:{active:false,code:[32]}};
+this._keys={up:{active:false,code:[38,74]},down:{active:false,code:[40,77]},left:{active:false,code:[37,78]},right:{active:false,code:[39,188]},fire:{active:false,code:[32]}};
 f.__super__.constructor.apply(this,arguments);
 this.game=new window.Bco();
 this.game.render().$el.appendTo(this.$el);

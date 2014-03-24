@@ -17,16 +17,16 @@ App.Router = class Router extends Backbone.View
     @_keys =
       'up':
         'active': false
-        'code': [38]
+        'code': [38, 74]
       'down':
         'active': false
-        'code': [40]
+        'code': [40, 77]
       'left':
         'active': false
-        'code': [37]
+        'code': [37, 78]
       'right':
         'active': false
-        'code': [39]
+        'code': [39, 188]
       'fire':
         'active': false
         'code': [32]
