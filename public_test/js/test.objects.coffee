@@ -95,3 +95,9 @@ describe 'Objects', ->
       expect(t.size).to.be.eql([16, 16])
       expect(t.url).to.be('d/img/brick.png')
 
+  describe 'Iron', ->
+    it 'params', ->
+      t = new App.SpriteIron()
+      expect(t.size).to.be.eql([16, 16])
+      expect(t.url).to.be('d/img/iron.png')
+

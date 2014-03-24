@@ -11,7 +11,7 @@ Router = require('./router')
 #    ssl: true
 #})
 
-db = require('mysql').createConnection(config.db)
+#db = require('mysql').createConnection(config.db)
 
 app = express()
 server = app.listen(config.port)
@@ -33,7 +33,7 @@ if config.development
 #  process.on 'uncaughtException', (err)->
 #    console.log err.message, err.stack
 #    email.send({
-#      subject: '[zolite] server error: '+err.message
+#      subject: '[bco] server error: '+err.message
 #      text: err.stack+''
 #      from: 'Zolīte <zolite@raccoons.lv>'
 #      to: '<zolite@raccoons.lv>'
@@ -44,7 +44,7 @@ io.set('log level', config.io.loglevel)
 io.set('transports', config.io.transports)
 io.set('polling duration', config.io.duration)
 
-r = new Router({}, db, io)
+r = new Router({}, io)
 #r.send.emit = (event, socket)->
 #  args = Array.prototype.slice.apply(arguments).splice(2)
 #  args.unshift(event)

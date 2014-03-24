@@ -170,9 +170,7 @@
 
     Bco.prototype.add = function(pr) {
       Bco.__super__.add.apply(this, arguments);
-      if (['tank', 'bullet', 'brick', 'base'].indexOf(pr.object) !== -1) {
-        return this._elements[pr.id]['sprite'] = new App['Sprite' + pr.object[0].toUpperCase() + pr.object.substr(1)]();
-      }
+      return this._elements[pr.id]['sprite'] = new App['Sprite' + pr.object[0].toUpperCase() + pr.object.substr(1)]();
     };
 
     Bco.prototype._updateView = function(dt) {

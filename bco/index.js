@@ -48,6 +48,8 @@
             object = 'brick';
           } else if (l === 10) {
             object = 'base';
+          } else if (l === 2) {
+            object = 'iron';
           }
           if (object) {
             this.add({
@@ -105,6 +107,9 @@
       }
       if (pr.object === 'brick') {
         params['hitpoints'] = 2;
+      }
+      if (pr.object === 'iron') {
+        params['hitpoints'] = 20;
       }
       if (pr.object === 'base') {
         params['size'] = [32, 32];

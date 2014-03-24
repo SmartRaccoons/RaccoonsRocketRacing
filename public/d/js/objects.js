@@ -1,5 +1,5 @@
 (function() {
-  var Base, Brick, Bullet, Sprite, Tank,
+  var Base, Brick, Bullet, Iron, Sprite, Tank,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -94,6 +94,22 @@
     Brick.prototype._name = 'brick';
 
     return Brick;
+
+  })(Sprite);
+
+  App.SpriteIron = Iron = (function(_super) {
+
+    __extends(Iron, _super);
+
+    function Iron() {
+      return Iron.__super__.constructor.apply(this, arguments);
+    }
+
+    Iron.prototype.size = [16, 16];
+
+    Iron.prototype._name = 'iron';
+
+    return Iron;
 
   })(Sprite);
 

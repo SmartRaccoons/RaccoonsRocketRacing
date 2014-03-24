@@ -119,12 +119,20 @@
         return expect(t.url).to.be('d/img/bullet.png');
       });
     });
-    return describe('Brick', function() {
+    describe('Brick', function() {
       return it('params', function() {
         var t;
         t = new App.SpriteBrick();
         expect(t.size).to.be.eql([16, 16]);
         return expect(t.url).to.be('d/img/brick.png');
+      });
+    });
+    return describe('Iron', function() {
+      return it('params', function() {
+        var t;
+        t = new App.SpriteIron();
+        expect(t.size).to.be.eql([16, 16]);
+        return expect(t.url).to.be('d/img/iron.png');
       });
     });
   });
