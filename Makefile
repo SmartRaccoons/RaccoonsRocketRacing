@@ -11,6 +11,7 @@ production :
 	cat node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js \
 	node_modules/lodash/lodash.js \
 	node_modules/backbone/backbone.js \
+	public/d/js/source/pixi.dev.js \
 	public/d/js/locale.js \
 	public/d/js/init.js \
 	bco/client.js \

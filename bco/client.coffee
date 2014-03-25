@@ -107,39 +107,88 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
 
 (if typeof module isnt 'undefined' then module.exports else window).Bco = class Bco extends BcoCore
   _.extend @prototype, Backbone.View.prototype
+  options:
+    path: ''
 
   constructor: ->
     super
     Backbone.View.prototype.constructor.apply(this, arguments)
     @
 
+  restart: ->
+    for id, val of @_elements
+      if val.sprite
+        @stage.removeChild(val.sprite)
+    super
+
   add: (pr)->
     super
-    @_elements[pr.id]['sprite'] = new App['Sprite'+pr.object[0].toUpperCase()+pr.object.substr(1)]()
+    sprite = new PIXI.Sprite(PIXI.Texture.fromImage(@options.path+'d/img/'+pr.object+'.png'))
+    sprite.anchor.x = 0.5
+    sprite.anchor.y = 0.5
+    @_elements[pr.id]['sprite'] = sprite
+    @stage.addChild(sprite)
+
+  destroy: (pr)->
+    if @_elements[pr.id].sprite
+      @stage.removeChild(@_elements[pr.id].sprite)
+    super
 
   _updateView: (dt)->
     super
-    for id, val of @_elements
-      if val.sprite
-        val.sprite.update(dt)
     @draw()
 
   draw: ->
-    @c.fillStyle = "rgb(0,0,0)"
-    @c.fillRect(0, 0, @canvas.width(), @canvas.height())
     for id, val of @_elements
       if val.sprite
-        @c.save()
-        @c.translate(val.pos[0]+val.size[0]/2, val.pos[1]+val.size[1]/2)
-        @c.rotate(val.angle * Math.PI/180.0)
-        @c.translate(-val.size[0]/2, -val.size[1]/2)
-        val.sprite.render(@c)
-        @c.restore()
-    @
+        val.sprite.position.x = val.pos[0] + val.size[0]/2
+        val.sprite.position.y = val.pos[1] + val.size[1]/2
+        val.sprite.rotation = val.angle * Math.PI/180.0
+    @renderer.render(@stage)
 
   render: ->
-    @canvas = $('<canvas width=416 height=416>')
-    @$el.append(@canvas)
-    @c = @canvas[0].getContext('2d')
+    @stage = new PIXI.Stage
+    @renderer = PIXI.autoDetectRenderer(416, 416)
+    @$el.append(@renderer.view)
     @
+
+
+
+#(if typeof module isnt 'undefined' then module.exports else window).Bco = class Bco extends BcoCore
+#  _.extend @prototype, Backbone.View.prototype
+#
+#  constructor: ->
+#    super
+#    Backbone.View.prototype.constructor.apply(this, arguments)
+#    @
+#
+#  add: (pr)->
+#    super
+#    @_elements[pr.id]['sprite'] = new App['Sprite'+pr.object[0].toUpperCase()+pr.object.substr(1)]()
+#
+#  _updateView: (dt)->
+#    super
+#    for id, val of @_elements
+#      if val.sprite
+#        val.sprite.update(dt)
+#    @draw()
+#
+#  draw: ->
+#    @c.fillStyle = "rgb(0,0,0)"
+#    @c.fillRect(0, 0, @canvas.width(), @canvas.height())
+#    for id, val of @_elements
+#      if val.sprite
+#        @c.save()
+#        @c.translate(val.pos[0]+val.size[0]/2, val.pos[1]+val.size[1]/2)
+#        @c.rotate(val.angle * Math.PI/180.0)
+#        @c.translate(-val.size[0]/2, -val.size[1]/2)
+#        val.sprite.render(@c)
+#        @c.restore()
+#    @
+#
+#  render: ->
+#    @canvas = $('<canvas width=416 height=416>')
+#    @$el.append(@canvas)
+#    @c = @canvas[0].getContext('2d')
+#    @
 
