@@ -33,10 +33,10 @@ App.Router = class Router extends Backbone.View
     super
     @game = new window.Bco()
     @game.render().$el.appendTo(@$el)
-    App.socket.receive.on 'add', (params)=> @game.add(params)
-    App.socket.receive.on 'update', (params)=> @game.update(params)
-    App.socket.receive.on 'destroy', (params)=> @game.destroy(params)
-    App.socket.receive.on 'restart', => @game.restart()
+    @listenTo App.socket.receive, 'add', (params)=> @game.add(params)
+    @listenTo App.socket.receive, 'update', (params)=> @game.update(params)
+    @listenTo App.socket.receive, 'destroy', (params)=> @game.destroy(params)
+    @listenTo App.socket.receive, 'restart', => @game.restart()
     @game.start()
 
   control: (code, active)->
