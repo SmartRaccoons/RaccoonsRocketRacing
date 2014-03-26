@@ -48,16 +48,16 @@
       Router.__super__.constructor.apply(this, arguments);
       this.game = new window.Bco();
       this.game.render().$el.appendTo(this.$el);
-      App.socket.receive.on('add', function(params) {
+      this.listenTo(App.socket.receive, 'add', function(params) {
         return _this.game.add(params);
       });
-      App.socket.receive.on('update', function(params) {
+      this.listenTo(App.socket.receive, 'update', function(params) {
         return _this.game.update(params);
       });
-      App.socket.receive.on('destroy', function(params) {
+      this.listenTo(App.socket.receive, 'destroy', function(params) {
         return _this.game.destroy(params);
       });
-      App.socket.receive.on('restart', function() {
+      this.listenTo(App.socket.receive, 'restart', function() {
         return _this.game.restart();
       });
       this.game.start();
