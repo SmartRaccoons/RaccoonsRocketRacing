@@ -4,6 +4,7 @@ update :
 test :
 	mocha --reporter dot ./bco/test/
 	mocha --reporter dot ./router/test/
+	mocha --reporter dot ./room/test/
 	mocha-phantomjs -R dot public_test/js/index.html
 
 production :
