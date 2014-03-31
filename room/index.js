@@ -92,7 +92,7 @@
     };
 
     Room.prototype._add_user = function(u) {
-      return u.room = this;
+      return u.set('room', this);
     };
 
     Room.prototype.join_user = function(user) {
@@ -112,7 +112,7 @@
         }
       }
       this.set('users', users);
-      user.room = null;
+      u.set('room', null);
       return this.collection.trigger('user:left', this, user);
     };
 
@@ -145,7 +145,7 @@
       this._max = opt && opt['max'] || 2;
       this.on('remove', function(r) {
         return r.get('users').forEach(function(u) {
-          return u.room = null;
+          return u.set('room', null);
         });
       });
       return this;

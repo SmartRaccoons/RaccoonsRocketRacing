@@ -54,8 +54,8 @@ primus.on 'connection', (spark)->
   socket.id = spark.id
   spark.socket = socket
   socket.spark = spark
-  socket.disconnect = -> spark.end()
-  spark.on 'end', -> socket.emit 'disconnect'
+  socket.end = -> spark.end()
+  spark.on 'end', -> socket.emit 'end'
   spark.on 'data', (data)-> socket.emit.apply(socket, data)
   r.connection(socket)
 

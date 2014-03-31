@@ -82,11 +82,11 @@
     socket.id = spark.id;
     spark.socket = socket;
     socket.spark = spark;
-    socket.disconnect = function() {
+    socket.end = function() {
       return spark.end();
     };
     spark.on('end', function() {
-      return socket.emit('disconnect');
+      return socket.emit('end');
     });
     spark.on('data', function(data) {
       return socket.emit.apply(socket, data);

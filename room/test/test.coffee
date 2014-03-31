@@ -55,9 +55,9 @@ describe 'Rooms', ->
       spy = sinon.spy()
       rooms.on 'user:join', spy
       rooms.add({'id': 'bena', 'users': [@users.models[0]], 'creator': @users.models[0]})
-      assert.equal(rooms.models[0].id, @users.models[0].room.id)
+      assert.equal(rooms.models[0].id, @users.models[0].get('room').id)
       rooms.join_user('bena', @users.models[1])
-      assert.equal(rooms.models[0].id, @users.models[1].room.id)
+      assert.equal(rooms.models[0].id, @users.models[1].get('room').id)
       assert.equal('bena', spy.getCall(0).args[0].get('id'))
       assert.equal('unique 2', spy.getCall(0).args[1].get('id'))
       assert.equal(1, spy.callCount)
@@ -74,7 +74,7 @@ describe 'Rooms', ->
       assert.equal('unique 2', spy.getCall(0).args[1].get('id'))
       assert.equal(1, spy.callCount)
       assert.equal(rooms.get('bena').get('users').length, 1)
-      assert.equal(null, @users.models[1].room)
+      assert.equal(null, @users.models[1].get('room'))
 
     it 'left last user and destroy room', ->
       rooms = new Rooms()

@@ -35,7 +35,7 @@ class Room extends root.Backbone.Model
   is_full: -> @get('users').length is @get('max')
 
   _add_user: (u)->
-    u.room = @
+    u.set('room', @)
 
   join_user: (user)->
     @_add_user(user)
@@ -48,7 +48,7 @@ class Room extends root.Backbone.Model
       if u.id isnt user.id
         users.push(u)
     @set('users', users)
-    user.room = null
+    u.set('room', null)
     @collection.trigger('user:left', @, user)
 
   toJSON: ->
@@ -63,7 +63,7 @@ root.Rooms = class Rooms extends root.Backbone.Collection
     @_id = 1
     @_max = opt&&opt['max'] || 2
     @on 'remove', (r)->
-      r.get('users').forEach (u)-> u.room = null
+      r.get('users').forEach (u)-> u.set('room', null)
     @
 
   add: ->
