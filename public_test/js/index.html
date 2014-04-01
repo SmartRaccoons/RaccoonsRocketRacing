@@ -5,32 +5,47 @@
     <title>Zolite Tests</title>
     <link href='../../public/d/css/screen.css' rel='stylesheet' />
     <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
+    <script src="http://192.168.1.102:35729/livereload.js?snipver=1"></script>
 </head>
 <body>
 <div id="mocha"></div>
-<script src="../../public/d/js/jquery-1.10.0.min.js"></script>
-<script src="lib/sinon-1.6.0.js"></script>
-<script src="lib/sinon-ie-1.6.0.js"></script>
+<script src="lib/jquery-1.10.2.min.js"></script>
+<script src="lib/sinon-1.7.3.js"></script>
+<script src="lib/sinon-ie-1.7.1.js"></script>
 
 <script src="../../node_modules/lodash/lodash.js"></script>
 <script src="../../node_modules/backbone/backbone.js"></script>
+<script src="../../public/d/js/backbone-patch.js"></script>
 
 <script src="../../public/d/js/source/pixi.dev.js"></script>
 
-<script src="../../public/d/js/locale.js"></script>
 <script src="../../public/d/js/init.js"></script>
+<script src="../../public/d/js/lv.js"></script>
 
 <script src="../../bco/client.js"></script>
 
 <script src="../../public/d/js/objects.js"></script>
+<script src="../../public/d/js/rooms.js"></script>
 <script src="../../public/d/js/router.js"></script>
 
 <script src="../../node_modules/expect.js/expect.js"></script>
 <script src="../../node_modules/mocha/mocha.js"></script>
+<script>
+    var _lPrev = window._l;
+    window._l = function(key, params){
+        var r = _lPrev(key, params);
+        if(!r){
+            console.info('translate: '+key+' ; params: '+params);
+        }
+        return r;
+    }
+
+</script>
 <script>mocha.setup({'ui': 'bdd', ignoreLeaks: true})</script>
 
 <script src="test.objects.js"></script>
 <script src="test.bco.js"></script>
+<script src="test.rooms.js"></script>
 <script src="test.router.js"></script>
 
 <script>

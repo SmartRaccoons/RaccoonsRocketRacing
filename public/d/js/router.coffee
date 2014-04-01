@@ -1,19 +1,10 @@
-requestAnimFrame =
-  window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame ||
-    window.oRequestAnimationFrame ||
-    window.msRequestAnimationFrame ||
-  (callback)->
-    window.setTimeout(callback, 1000 / 30)
-
 
 App.Router = class Router extends Backbone.View
   'events':
     'keydown': (e)-> @control(e.keyCode, true)
     'keyup': (e)-> @control(e.keyCode, false)
 
-  constructor: ->
+  initialize: ->
     @_keys =
       'up':
         'active': false
@@ -38,6 +29,7 @@ App.Router = class Router extends Backbone.View
     @listenTo App.socket.receive, 'destroy', (params)=> @game.destroy(params)
     @listenTo App.socket.receive, 'restart', => @game.restart()
     @game.start()
+    @
 
   control: (code, active)->
     for attr, val of @_keys
