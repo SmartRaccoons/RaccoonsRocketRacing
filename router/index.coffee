@@ -14,7 +14,10 @@ module.exports = class Router extends events.EventEmitter
       if u.get('room')
         @rooms.left_user(u)
     @users.on 'change:room', (u)=>
-      @emit_user(u, 'room:list', @rooms.toJSON())
+      if u.get('room') is null
+        @emit_user(u, 'room:list', @rooms.toJSON())
+      else
+        @emit_user(u, 'game:start')
 
     @rooms = new Rooms()
     @rooms.on 'add', (r)=>

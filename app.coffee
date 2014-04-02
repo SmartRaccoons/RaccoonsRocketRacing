@@ -52,6 +52,7 @@ r = new Router()
 r.emit_socket = (socket, event)->
   args = Array.prototype.slice.apply(arguments).splice(2)
   args.unshift(event)
+#  console.info 'emit', socket.id, event, args
   socket.spark.write(args)
 
 primus.on 'connection', (spark)->
@@ -61,7 +62,9 @@ primus.on 'connection', (spark)->
   socket.spark = spark
   socket.end = -> spark.end()
   spark.on 'end', -> socket.emit 'end'
-  spark.on 'data', (data)-> socket.emit.apply(socket, data)
+  spark.on 'data', (data)->
+#    console.info 'data', socket.id, data
+    socket.emit.apply(socket, data)
   r.connection(socket)
 
 

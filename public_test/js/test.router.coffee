@@ -118,6 +118,15 @@ describe 'Router', ->
 
 
   describe 'game', ->
+    it 'start', ->
+      r.game = {'start': sinon.spy(), 'stop': sinon.spy()}
+      expect(r.$el.hasClass('user-in-room')).not.be.ok()
+      App.socket.receive.trigger 'game:start'
+      expect(r.$el.hasClass('user-in-room')).to.be.ok()
+      App.socket.receive.trigger 'room:list'
+      expect(r.game.stop.callCount).to.be(1)
+      expect(r.$el.hasClass('user-in-room')).not.be.ok()
+
 #    it 'init', ->
 #      expect(r.$('canvas').length>0).to.be.ok()
 

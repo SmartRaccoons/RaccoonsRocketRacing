@@ -26,7 +26,11 @@
         }
       });
       this.users.on('change:room', function(u) {
-        return _this.emit_user(u, 'room:list', _this.rooms.toJSON());
+        if (u.get('room') === null) {
+          return _this.emit_user(u, 'room:list', _this.rooms.toJSON());
+        } else {
+          return _this.emit_user(u, 'game:start');
+        }
       });
       this.rooms = new Rooms();
       this.rooms.on('add', function(r) {

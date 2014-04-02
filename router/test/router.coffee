@@ -105,17 +105,22 @@ describe 'router', ->
       r.users.add({'id': 1})
       r.rooms.add({})
       r.emit_user = sinon.spy()
-      r.users.models[0].set('room', {})
+      r.users.models[0].set('room', null)
       s = r.emit_user.withArgs(r.users.models[0], 'room:list')
+      s_game = r.emit_user.withArgs(r.users.models[0], 'game:start')
       assert.equal(s.callCount, 1)
       assert.deepEqual(s.getCall(0).args[2], [{'id': 1, 'max': 2, 'users': []}])
+      assert.equal(s_game.callCount, 0)
 
-    it 'change room, send room list (no lobby)', ->
+    it 'cheng room, game start', ->
       r.users.add({'id': 1})
       r.rooms.add({})
       r.emit_user = sinon.spy()
+      r.users.models[0].set('room', {})
       s = r.emit_user.withArgs(r.users.models[0], 'room:list')
+      s_game = r.emit_user.withArgs(r.users.models[0], 'game:start')
       assert.equal(s.callCount, 0)
+      assert.equal(s_game.callCount, 1)
 
     it 'add', ->
       r.rooms.add({})
@@ -137,7 +142,7 @@ describe 'router', ->
       r.rooms.join_user(1, r.users.models[0])
       s = spy.withArgs('room:user_join')
       assert.equal(s.callCount, 1)
-      assert.deepEqual(s.getCall(0).args[1], {'room_id': 1, 'user': {'id': 1}})
+      assert.deepEqual(s.getCall(0).args[1], {'room_id': 1, 'user': {'id': 1, 'name': ''}})
 
     it 'user:left', ->
       r.users.add({'id': 1})

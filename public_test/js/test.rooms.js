@@ -34,7 +34,9 @@
         expect(r.$('>li:eq(1)').attr('data-pk')).to.be('1');
         expect(r.$('>li:eq(0)>ul>li').length).to.be(0);
         expect(r.$('>li:eq(1)>ul>li').length).to.be(1);
-        r.room_remove(1);
+        r.room_remove({
+          'id': 1
+        });
         expect(r.$('>li').length).to.be(1);
         return expect(r.rooms[1]).to.be(void 0);
       });
@@ -46,19 +48,28 @@
           'users': []
         });
         expect(r.$('>li:eq(0)>ul>li')).to.have.length(0);
-        r.user_join(1, {
-          'id': 3,
-          'name': 'Ze'
+        r.user_join({
+          'room_id': 1,
+          'user': {
+            'id': 3,
+            'name': 'Ze'
+          }
         });
         expect(r.$('>li:eq(0)>ul>li')).to.have.length(1);
-        r.user_join(1, {
-          'id': 4,
-          'name': 'Zebra'
+        r.user_join({
+          'room_id': 1,
+          'user': {
+            'id': 4,
+            'name': 'Zebra'
+          }
         });
         expect(r.$('>li:eq(0)>ul>li')).to.have.length(2);
         expect(r.$('>li:eq(0)>ul>li:eq(0)').attr('data-pk')).to.be('3');
         expect(r.$('>li:eq(0)>ul>li:eq(0) strong').html()).to.be('Ze');
-        r.user_left(1, 4);
+        r.user_left({
+          'room_id': 1,
+          'user_id': 4
+        });
         return expect(r.$('>li:eq(0)>ul>li')).to.have.length(1);
       });
       it('change full', function() {
@@ -75,13 +86,22 @@
         ]);
         expect(r.$('>li')).to.have.length(1);
         expect(r.$('>li:eq(0) button').is(':disabled')).not.be.ok();
-        r.user_join(1, {
-          'id': 11
+        r.user_join({
+          'room_id': 1,
+          'user': {
+            'id': 11
+          }
         });
         expect(r.$('>li:eq(0) button').is(':disabled')).to.be.ok();
-        r.user_left(1, 10);
+        r.user_left({
+          'room_id': 1,
+          'user_id': 10
+        });
         expect(r.$('>li:eq(0) button').is(':disabled')).not.be.ok();
-        r.user_left(1, 11);
+        r.user_left({
+          'room_id': 1,
+          'user_id': 11
+        });
         return expect(r.$('>li:eq(0) button').is(':disabled')).not.be.ok();
       });
       it('trigger join', function() {
@@ -119,9 +139,12 @@
             ]
           }
         ]);
-        r.user_join(1, {
-          'id': 2,
-          'name': ''
+        r.user_join({
+          'room_id': 1,
+          'user': {
+            'id': 2,
+            'name': ''
+          }
         });
         return expect(spy.callCount).to.be(1);
       });
@@ -144,8 +167,14 @@
             ]
           }
         ]);
-        r.user_left(1, 2);
-        r.user_left(1, 1);
+        r.user_left({
+          'room_id': 1,
+          'user_id': 2
+        });
+        r.user_left({
+          'room_id': 1,
+          'user_id': 1
+        });
         return expect(spy.callCount).to.be(1);
       });
       it('monitor id on remove room', function() {
@@ -167,8 +196,12 @@
             'users': []
           }
         ]);
-        r.room_remove(2);
-        r.room_remove(1);
+        r.room_remove({
+          'id': 2
+        });
+        r.room_remove({
+          'id': 1
+        });
         return expect(spy.callCount).to.be(1);
       });
       return it('monitor id on remove room and user', function() {
@@ -186,8 +219,15 @@
             ]
           }
         ]);
-        r.user_join(1, 1);
-        r.room_remove(1);
+        r.user_join({
+          'room_id': 1,
+          'user': {
+            'id': 1
+          }
+        });
+        r.room_remove({
+          'id': 1
+        });
         return expect(spy.callCount).to.be(1);
       });
     });

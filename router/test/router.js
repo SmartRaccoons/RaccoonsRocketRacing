@@ -138,7 +138,27 @@
         return r.emit_user = sinon.spy();
       });
       it('change room, send room list', function() {
-        var s;
+        var s, s_game;
+        r.users.add({
+          'id': 1
+        });
+        r.rooms.add({});
+        r.emit_user = sinon.spy();
+        r.users.models[0].set('room', null);
+        s = r.emit_user.withArgs(r.users.models[0], 'room:list');
+        s_game = r.emit_user.withArgs(r.users.models[0], 'game:start');
+        assert.equal(s.callCount, 1);
+        assert.deepEqual(s.getCall(0).args[2], [
+          {
+            'id': 1,
+            'max': 2,
+            'users': []
+          }
+        ]);
+        return assert.equal(s_game.callCount, 0);
+      });
+      it('cheng room, game start', function() {
+        var s, s_game;
         r.users.add({
           'id': 1
         });
@@ -146,24 +166,9 @@
         r.emit_user = sinon.spy();
         r.users.models[0].set('room', {});
         s = r.emit_user.withArgs(r.users.models[0], 'room:list');
-        assert.equal(s.callCount, 1);
-        return assert.deepEqual(s.getCall(0).args[2], [
-          {
-            'id': 1,
-            'max': 2,
-            'users': []
-          }
-        ]);
-      });
-      it('change room, send room list (no lobby)', function() {
-        var s;
-        r.users.add({
-          'id': 1
-        });
-        r.rooms.add({});
-        r.emit_user = sinon.spy();
-        s = r.emit_user.withArgs(r.users.models[0], 'room:list');
-        return assert.equal(s.callCount, 0);
+        s_game = r.emit_user.withArgs(r.users.models[0], 'game:start');
+        assert.equal(s.callCount, 0);
+        return assert.equal(s_game.callCount, 1);
       });
       it('add', function() {
         var s;
@@ -205,7 +210,8 @@
         return assert.deepEqual(s.getCall(0).args[1], {
           'room_id': 1,
           'user': {
-            'id': 1
+            'id': 1,
+            'name': ''
           }
         });
       });

@@ -17,7 +17,7 @@ describe 'Rooms', ->
       expect(r.$('>li:eq(1)').attr('data-pk')).to.be('1')
       expect(r.$('>li:eq(0)>ul>li').length).to.be(0)
       expect(r.$('>li:eq(1)>ul>li').length).to.be(1)
-      r.room_remove(1)
+      r.room_remove({'id': 1})
       expect(r.$('>li').length).to.be(1)
       expect(r.rooms[1]).to.be(undefined)
 
@@ -26,24 +26,24 @@ describe 'Rooms', ->
       expect(r.$('>li')).to.have.length(0)
       r.room_add({'id': 1, 'users': []})
       expect(r.$('>li:eq(0)>ul>li')).to.have.length(0)
-      r.user_join(1, {'id': 3, 'name': 'Ze'})
+      r.user_join({'room_id': 1, 'user': {'id': 3, 'name': 'Ze'}})
       expect(r.$('>li:eq(0)>ul>li')).to.have.length(1)
-      r.user_join(1, {'id': 4, 'name': 'Zebra'})
+      r.user_join({'room_id': 1, 'user': {'id': 4, 'name': 'Zebra'}})
       expect(r.$('>li:eq(0)>ul>li')).to.have.length(2)
       expect(r.$('>li:eq(0)>ul>li:eq(0)').attr('data-pk')).to.be('3')
       expect(r.$('>li:eq(0)>ul>li:eq(0) strong').html()).to.be('Ze')
-      r.user_left(1, 4)
+      r.user_left({'room_id': 1, 'user_id': 4})
       expect(r.$('>li:eq(0)>ul>li')).to.have.length(1)
 
     it 'change full', ->
       r.render([{'id': 1, max: 2, 'users': [{'id': 10}]}])
       expect(r.$('>li')).to.have.length(1)
       expect(r.$('>li:eq(0) button').is(':disabled')).not.be.ok()
-      r.user_join(1, {'id': 11})
+      r.user_join({'room_id': 1, 'user': {'id': 11}})
       expect(r.$('>li:eq(0) button').is(':disabled')).to.be.ok()
-      r.user_left(1, 10)
+      r.user_left({'room_id': 1, 'user_id': 10})
       expect(r.$('>li:eq(0) button').is(':disabled')).not.be.ok()
-      r.user_left(1, 11)
+      r.user_left({'room_id': 1, 'user_id': 11})
       expect(r.$('>li:eq(0) button').is(':disabled')).not.be.ok()
 
     it 'trigger join', ->
@@ -61,7 +61,7 @@ describe 'Rooms', ->
       spy = sinon.spy()
       r.on 'monitor:add', spy
       r.render([{'id': 1, 'users': [{'id': 1, 'name': ''}]}])
-      r.user_join(1, {'id': 2, 'name': ''})
+      r.user_join({'room_id': 1, 'user': {'id': 2, 'name': ''}})
       expect(spy.callCount).to.be(1)
 
     it 'monitor id on remove user', ->
@@ -69,24 +69,24 @@ describe 'Rooms', ->
       spy = sinon.spy()
       r.on 'monitor:remove', spy
       r.render([{'id': 1, 'users': [{'id': 1, 'name': ''}, {'id': 2, 'name': ''}]}])
-      r.user_left(1, 2)
-      r.user_left(1, 1)
+      r.user_left({'room_id': 1, 'user_id': 2})
+      r.user_left({'room_id': 1, 'user_id': 1})
       expect(spy.callCount).to.be(1)
 
     it 'monitor id on remove room', ->
       spy = sinon.spy()
       r.on 'monitor:remove', spy
       r.render([{'id': 1, 'users': [{'id': 1, 'name': ''}]}, {'id': 2, 'is_full': false, 'users': []}])
-      r.room_remove(2)
-      r.room_remove(1)
+      r.room_remove({'id': 2})
+      r.room_remove({'id': 1})
       expect(spy.callCount).to.be(1)
 
     it 'monitor id on remove room and user', ->
       spy = sinon.spy()
       r.on 'monitor:remove', spy
       r.render([{'id': 1, 'users': [{'id': 1, 'name': ''}]}])
-      r.user_join(1, 1)
-      r.room_remove(1)
+      r.user_join({'room_id': 1, 'user': {'id': 1}})
+      r.room_remove({'id': 1})
       expect(spy.callCount).to.be(1)
 
 

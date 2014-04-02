@@ -4,7 +4,7 @@ if not root.Backbone and exports?
 
 
 class User extends root.Backbone.Model
-  _main_attr: ['id']
+  _main_attr: ['id', 'name']
   _main_own_attr: ['id', 'name']
   defaults:
     'name': ''

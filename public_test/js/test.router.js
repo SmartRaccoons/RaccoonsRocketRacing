@@ -174,6 +174,18 @@
       });
     });
     return describe('game', function() {
+      it('start', function() {
+        r.game = {
+          'start': sinon.spy(),
+          'stop': sinon.spy()
+        };
+        expect(r.$el.hasClass('user-in-room')).not.be.ok();
+        App.socket.receive.trigger('game:start');
+        expect(r.$el.hasClass('user-in-room')).to.be.ok();
+        App.socket.receive.trigger('room:list');
+        expect(r.game.stop.callCount).to.be(1);
+        return expect(r.$el.hasClass('user-in-room')).not.be.ok();
+      });
       return it('events', function() {
         r.game = {
           'add': sinon.spy(),

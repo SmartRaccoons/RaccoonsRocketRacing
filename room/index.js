@@ -18,7 +18,7 @@
       return _ref;
     }
 
-    User.prototype._main_attr = ['id'];
+    User.prototype._main_attr = ['id', 'name'];
 
     User.prototype._main_own_attr = ['id', 'name'];
 

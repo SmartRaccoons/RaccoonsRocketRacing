@@ -35,17 +35,17 @@
       return this.rooms[data.id] = r;
     };
 
-    Rooms.prototype.room_remove = function(id) {
-      this.rooms[id].remove();
-      return delete this.rooms[id];
+    Rooms.prototype.room_remove = function(data) {
+      this.rooms[data.id].remove();
+      return delete this.rooms[data.id];
     };
 
-    Rooms.prototype.user_join = function(room, user) {
-      return this.rooms[room].user_add(user);
+    Rooms.prototype.user_join = function(data) {
+      return this.rooms[data.room_id].user_add(data.user);
     };
 
-    Rooms.prototype.user_left = function(room, user) {
-      return this.rooms[room].user_left(user);
+    Rooms.prototype.user_left = function(data) {
+      return this.rooms[data.room_id].user_left(data.user_id);
     };
 
     Rooms.prototype.list = function(rooms) {
@@ -55,7 +55,9 @@
     Rooms.prototype.render = function(rooms) {
       var _this = this;
       _.each(this.rooms, function(r, i) {
-        return _this.room_remove(i);
+        return _this.room_remove({
+          'id': i
+        });
       });
       return _.each(rooms, _.bind(this.room_add, this));
     };

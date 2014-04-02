@@ -12,18 +12,18 @@ App.Rooms = class Rooms extends Backbone.View
     r.$el.prependTo(@$el)
     @rooms[data.id] = r
 
-  room_remove: (id)->
-    @rooms[id].remove()
-    delete @rooms[id]
+  room_remove: (data)->
+    @rooms[data.id].remove()
+    delete @rooms[data.id]
 
-  user_join: (room, user)-> @rooms[room].user_add(user)
+  user_join: (data)-> @rooms[data.room_id].user_add(data.user)
 
-  user_left: (room, user)-> @rooms[room].user_left(user)
+  user_left: (data)-> @rooms[data.room_id].user_left(data.user_id)
 
   list: (rooms)-> @render(rooms)
 
   render: (rooms)->
-    _.each @rooms, (r, i)=> @room_remove(i)
+    _.each @rooms, (r, i)=> @room_remove({'id': i})
     _.each rooms, _.bind(@room_add, @)
 
 

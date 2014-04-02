@@ -59,10 +59,14 @@ App.Router = class Router extends Backbone.View
 
     @game = new window.Bco()
     @game.render()
-    #    @game.start()
 
     @listenTo App.socket.receive, 'login:success', (user)=>
       @room.options.monitor = user.id
+
+    @listenTo App.socket.receive, 'room:list', =>
+      @game.stop()
+      @$el.removeClass('user-in-room')
+    @listenTo App.socket.receive, 'game:start', => @$el.addClass('user-in-room')
 
     o = new Order()
     @listenTo App.socket.receive, 'all', =>

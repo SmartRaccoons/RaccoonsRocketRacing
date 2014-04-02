@@ -24,7 +24,8 @@
       it('user_data', function() {
         this.users.add(this.authorize_data);
         assert.deepEqual({
-          'id': 2
+          'id': 2,
+          'name': 'Beni'
         }, this.users.models[0].user_data());
         return assert.deepEqual({
           'id': 2,
@@ -175,7 +176,8 @@
           'max': 3,
           'users': [
             {
-              'id': 'unique'
+              'id': 'unique',
+              'name': 'lietotajs 1'
             }
           ]
         }, rooms.toJSON()[0]);
@@ -183,11 +185,14 @@
         assert.deepEqual(2, rooms.toJSON()[1]['id']);
         return assert.deepEqual([
           {
-            'id': 'unique 2'
+            'id': 'unique 2',
+            'name': 'lietotajs 2'
           }, {
-            'id': 'unique 3'
+            'id': 'unique 3',
+            'name': 'lietotajs 3'
           }, {
-            'id': 'unique 4'
+            'id': 'unique 4',
+            'name': 'lietotajs 4'
           }
         ], rooms.toJSON()[1]['users']);
       });

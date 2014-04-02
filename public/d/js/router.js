@@ -115,6 +115,13 @@
       this.listenTo(App.socket.receive, 'login:success', function(user) {
         return _this.room.options.monitor = user.id;
       });
+      this.listenTo(App.socket.receive, 'room:list', function() {
+        _this.game.stop();
+        return _this.$el.removeClass('user-in-room');
+      });
+      this.listenTo(App.socket.receive, 'game:start', function() {
+        return _this.$el.addClass('user-in-room');
+      });
       o = new Order();
       this.listenTo(App.socket.receive, 'all', function() {
         var args, delay, event, params, _ref1;
