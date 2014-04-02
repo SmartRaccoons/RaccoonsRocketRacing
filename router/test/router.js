@@ -330,7 +330,7 @@
         assert.equal(r.rooms.models[0].get('users').length, 1);
         return assert.equal(r.rooms.models[1].get('users').length, 0);
       });
-      return it('join full', function() {
+      it('join full', function() {
         r.users.add({
           'id': 1
         });
@@ -343,6 +343,22 @@
         socket.emit('login:try');
         socket.emit('room:join', 1);
         return assert.equal(r.rooms.models[0].get('users').length, 2);
+      });
+      it('left', function() {
+        r.rooms.add({
+          'users': []
+        });
+        socket.emit('login:try');
+        socket.emit('room:join', 1);
+        socket.emit('room:left');
+        return assert.equal(r.rooms.models.length, 0);
+      });
+      return it('left not authorize', function() {
+        r.rooms.add({
+          'users': []
+        });
+        socket.emit('room:left');
+        return assert.equal(r.rooms.models.length, 1);
       });
     });
   });

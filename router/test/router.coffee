@@ -234,6 +234,18 @@ describe 'router', ->
       socket.emit('room:join', 1)
       assert.equal(r.rooms.models[0].get('users').length, 2)
 
+    it 'left', ->
+      r.rooms.add({'users': []})
+      socket.emit('login:try')
+      socket.emit('room:join', 1)
+      socket.emit('room:left')
+      assert.equal(r.rooms.models.length, 0)
+
+    it 'left not authorize', ->
+      r.rooms.add({'users': []})
+      socket.emit('room:left')
+      assert.equal(r.rooms.models.length, 1)
+
 
 
 

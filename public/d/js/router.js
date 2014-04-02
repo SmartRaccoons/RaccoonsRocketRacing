@@ -62,9 +62,12 @@
       return _ref;
     }
 
-    Router.prototype['template'] = _.template("<div class=\"room-list\"></div>\n<section class=\"game\"></section>");
+    Router.prototype['template'] = _.template("<div class=\"room-list\"></div>\n<div class=\"room-new\"></div>\n<div class=\"room-left\"><button data-role=\"room-left\"><%=_l('Left room')%></button></div>\n<section class=\"game\"></section>");
 
     Router.prototype['events'] = {
+      'click .room-left button': function() {
+        return App.socket.send.trigger('room:left');
+      },
       'keydown': function(e) {
         return this.control(e.keyCode, true);
       },
@@ -100,6 +103,13 @@
       };
       Router.__super__.initialize.apply(this, arguments);
       this.room = new App.Rooms();
+      this.listenTo(this.room, 'join', function(id) {
+        return App.socket.send.trigger('room:join', id);
+      });
+      this.room_new = new App.CreateRoom();
+      this.listenTo(this.room_new, 'create', function() {
+        return App.socket.send.trigger('room:create');
+      });
       this.game = new window.Bco();
       this.game.render();
       this.listenTo(App.socket.receive, 'login:success', function(user) {
@@ -147,6 +157,7 @@
     Router.prototype.render = function() {
       Router.__super__.render.apply(this, arguments);
       this.room.$el.appendTo(this.$('.room-list'));
+      this.room_new.render().$el.appendTo(this.$('.room-new'));
       return this.game.$el.appendTo(this.$('.game'));
     };
 

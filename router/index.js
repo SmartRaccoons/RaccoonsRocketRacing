@@ -89,13 +89,25 @@
           e = _error;
         }
       });
+      socket.on('room:left', function() {
+        var e;
+        try {
+          return _this.rooms.left_user(user);
+        } catch (_error) {
+          e = _error;
+        }
+      });
       return socket.on('end', function() {
         return _this.users.remove(user);
       });
     };
 
     Router.prototype.emit_user = function(user, event, args) {
-      return user.get('socket').emit(event, args);
+      return this.emit_socket(user.get('socket'), event, args);
+    };
+
+    Router.prototype.emit_socket = function(socket, event, args) {
+      return socket.emit(event, args);
     };
 
     Router.prototype.emit_room = function(room, event, args) {

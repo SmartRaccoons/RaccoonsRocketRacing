@@ -3,6 +3,8 @@ express = require('express')
 _ = require('lodash')
 fs = require('fs')
 Primus = require('primus')
+jsp = require("uglify-js").parser
+pro = require("uglify-js").uglify
 events = require('events')
 pjson = require('./package.json')
 Router = require('./router')
@@ -42,7 +44,10 @@ else
     }, -> process.exit(1))
 
 
-primus = new Primus(server, { transformer: 'socket.io' })
+primus = new Primus(server, { transformer: 'browserchannel' })
+primus_client = pro.gen_code(pro.ast_squeeze(pro.ast_mangle(jsp.parse(primus.library()))))
+app.get '/pr.js', (req, res)-> res.send primus_client
+
 r = new Router()
 r.emit_socket = (socket, event)->
   args = Array.prototype.slice.apply(arguments).splice(2)

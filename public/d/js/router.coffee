@@ -22,10 +22,13 @@ App.Router = class Router extends Backbone.View
 
   'template': _.template """
                 <div class="room-list"></div>
+                <div class="room-new"></div>
+                <div class="room-left"><button data-role="room-left"><%=_l('Left room')%></button></div>
                 <section class="game"></section>
               """
 
   'events':
+    'click .room-left button': -> App.socket.send.trigger 'room:left'
     'keydown': (e)-> @control(e.keyCode, true)
     'keyup': (e)-> @control(e.keyCode, false)
 
@@ -49,6 +52,10 @@ App.Router = class Router extends Backbone.View
     super
 
     @room = new App.Rooms()
+    @listenTo @room, 'join', (id)=> App.socket.send.trigger 'room:join', id
+
+    @room_new = new App.CreateRoom()
+    @listenTo @room_new, 'create', => App.socket.send.trigger 'room:create'
 
     @game = new window.Bco()
     @game.render()
@@ -82,4 +89,5 @@ App.Router = class Router extends Backbone.View
   render: ->
     super
     @room.$el.appendTo(@$('.room-list'))
+    @room_new.render().$el.appendTo(@$('.room-new'))
     @game.$el.appendTo(@$('.game'))

@@ -96,9 +96,25 @@ describe 'Router', ->
       App.socket.receive.trigger 'room:room_add', {'id': 2}
       expect($('.room-list ol>li').length).to.be(2)
 
-    it 'room:create'
-    it 'room:join'
-    it 'room:left'
+    it 'room:create', ->
+      spy = sinon.spy()
+      App.socket.send.on 'room:create', spy
+      r.$('.room-new button').click()
+      expect(spy.callCount).to.be(1)
+
+    it 'room:join', ->
+      spy = sinon.spy()
+      App.socket.send.on 'room:join', spy
+      App.socket.receive.trigger 'room:list', [{'id': 1}, {'id': 2}]
+      r.$('.room-list ol>li:first-child button').click()
+      expect(spy.callCount).to.be(1)
+      expect(spy.getCall(0).args[0]).to.be(2)
+
+    it 'room:left', ->
+      spy = sinon.spy()
+      App.socket.send.on 'room:left', spy
+      r.$('.room-left button').click()
+      expect(spy.callCount).to.be(1)
 
 
   describe 'game', ->

@@ -47,12 +47,18 @@ module.exports = class Router extends events.EventEmitter
         @rooms.join_user(room, user)
       catch e
 
+    socket.on 'room:left', =>
+      try
+        @rooms.left_user(user)
+      catch e
+
     socket.on 'end', =>
       @users.remove(user)
 
 
-  emit_user: (user, event, args)-> user.get('socket').emit event, args
+  emit_user: (user, event, args)-> @emit_socket user.get('socket'), event, args
 
+  emit_socket: (socket, event, args)-> socket.emit event, args
 
   emit_room: (room, event, args)->
     room.get('users').forEach (u)=> @emit_user(u, event, args)

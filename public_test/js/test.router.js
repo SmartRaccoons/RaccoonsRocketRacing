@@ -143,9 +143,35 @@
         });
         return expect($('.room-list ol>li').length).to.be(2);
       });
-      it('room:create');
-      it('room:join');
-      return it('room:left');
+      it('room:create', function() {
+        var spy;
+        spy = sinon.spy();
+        App.socket.send.on('room:create', spy);
+        r.$('.room-new button').click();
+        return expect(spy.callCount).to.be(1);
+      });
+      it('room:join', function() {
+        var spy;
+        spy = sinon.spy();
+        App.socket.send.on('room:join', spy);
+        App.socket.receive.trigger('room:list', [
+          {
+            'id': 1
+          }, {
+            'id': 2
+          }
+        ]);
+        r.$('.room-list ol>li:first-child button').click();
+        expect(spy.callCount).to.be(1);
+        return expect(spy.getCall(0).args[0]).to.be(2);
+      });
+      return it('room:left', function() {
+        var spy;
+        spy = sinon.spy();
+        App.socket.send.on('room:left', spy);
+        r.$('.room-left button').click();
+        return expect(spy.callCount).to.be(1);
+      });
     });
     return describe('game', function() {
       return it('events', function() {
