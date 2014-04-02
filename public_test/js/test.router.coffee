@@ -81,22 +81,42 @@ describe 'Router', ->
       $('#wrap').trigger(keyboard_up.up)
       expect(spy.callCount).to.be(1)
 
-  describe 'game', ->
-    it 'init', ->
-      expect(r.$('canvas').length>0).to.be.ok()
 
-    it 'start', ->
-      expect(r.game._lastTime).to.be.ok()
+  describe 'authorize', ->
+    it 'login:success', ->
+      App.socket.receive.trigger 'login:success', {'id': 1, 'name': 'beni'}
+      expect(r.room.options.monitor).to.be(1)
+
+
+  describe 'rooms', ->
+    it 'room:functions', ->
+      expect(r.$('.room-list ol>li').length).to.be(0)
+      App.socket.receive.trigger 'room:list', [{'id': 1}]
+      expect(r.$('.room-list ol>li').length).to.be(1)
+      App.socket.receive.trigger 'room:room_add', {'id': 2}
+      expect($('.room-list ol>li').length).to.be(2)
+
+    it 'room:create'
+    it 'room:join'
+    it 'room:left'
+
+
+  describe 'game', ->
+#    it 'init', ->
+#      expect(r.$('canvas').length>0).to.be.ok()
+
+#    it 'start', ->
+#      expect(r.game._lastTime).to.be.ok()
 
     it 'events', ->
       r.game = {'add': sinon.spy(), 'update': sinon.spy(), 'destroy': sinon.spy(), 'restart': sinon.spy()}
-      App.socket.receive.trigger 'add', {'id': 1, 'pos': [0, 0], 'object': 'bullet'}
+      App.socket.receive.trigger 'game:add', {'id': 1, 'pos': [0, 0], 'object': 'bullet'}
       expect(r.game.add.getCall(0).args[0].id).to.be(1)
-      App.socket.receive.trigger 'update', {'id': 1, 'size': 2}
+      App.socket.receive.trigger 'game:update', {'id': 1, 'size': 2}
       expect(r.game.update.getCall(0).args[0].size).to.be(2)
-      App.socket.receive.trigger 'destroy', {'id': 1}
+      App.socket.receive.trigger 'game:destroy', {'id': 1}
       expect(r.game.destroy.getCall(0).args[0].id).to.be(1)
-      App.socket.receive.trigger 'restart'
+      App.socket.receive.trigger 'game:restart'
       expect(r.game.restart.callCount).to.be(1)
 
       

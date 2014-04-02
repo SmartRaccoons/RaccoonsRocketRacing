@@ -119,7 +119,7 @@
     Room.prototype.toJSON = function() {
       return {
         'id': this.id,
-        'is_full': this.is_full(),
+        'max': this.get('max'),
         'users': this.get('users').map(function(u) {
           return u.user_data();
         })

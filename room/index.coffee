@@ -53,7 +53,7 @@ class Room extends root.Backbone.Model
 
   toJSON: ->
       'id': @id
-      'is_full': @is_full()
+      'max': @get('max')
       'users': @get('users').map (u)-> u.user_data()
 
 

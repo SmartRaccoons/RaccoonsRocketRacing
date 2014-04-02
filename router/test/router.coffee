@@ -108,7 +108,7 @@ describe 'router', ->
       r.users.models[0].set('room', {})
       s = r.emit_user.withArgs(r.users.models[0], 'room:list')
       assert.equal(s.callCount, 1)
-      assert.deepEqual(s.getCall(0).args[2], [{'id': 1, 'is_full': false, 'users': []}])
+      assert.deepEqual(s.getCall(0).args[2], [{'id': 1, 'max': 2, 'users': []}])
 
     it 'change room, send room list (no lobby)', ->
       r.users.add({'id': 1})
@@ -119,15 +119,15 @@ describe 'router', ->
 
     it 'add', ->
       r.rooms.add({})
-      s = spy.withArgs('room:add')
+      s = spy.withArgs('room:room_add')
       assert.equal(s.callCount, 1)
-      assert.deepEqual(s.getCall(0).args[1], {'id': 1, 'users': [], 'is_full': false})
+      assert.deepEqual(s.getCall(0).args[1], {'id': 1, 'max': 2, 'users': []})
 
     it 'remove', ->
       r.users.add({'id': 1})
       r.rooms.add({'users': [r.users.models[0]]})
       r.rooms.left_user(r.users.models[0])
-      s = spy.withArgs('room:remove')
+      s = spy.withArgs('room:room_remove')
       assert.equal(s.callCount, 1)
       assert.deepEqual(s.getCall(0).args[1], {'id': 1})
 

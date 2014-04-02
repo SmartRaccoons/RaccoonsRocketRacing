@@ -120,13 +120,34 @@
         return expect(spy.callCount).to.be(1);
       });
     });
+    describe('authorize', function() {
+      return it('login:success', function() {
+        App.socket.receive.trigger('login:success', {
+          'id': 1,
+          'name': 'beni'
+        });
+        return expect(r.room.options.monitor).to.be(1);
+      });
+    });
+    describe('rooms', function() {
+      it('room:functions', function() {
+        expect(r.$('.room-list ol>li').length).to.be(0);
+        App.socket.receive.trigger('room:list', [
+          {
+            'id': 1
+          }
+        ]);
+        expect(r.$('.room-list ol>li').length).to.be(1);
+        App.socket.receive.trigger('room:room_add', {
+          'id': 2
+        });
+        return expect($('.room-list ol>li').length).to.be(2);
+      });
+      it('room:create');
+      it('room:join');
+      return it('room:left');
+    });
     return describe('game', function() {
-      it('init', function() {
-        return expect(r.$('canvas').length > 0).to.be.ok();
-      });
-      it('start', function() {
-        return expect(r.game._lastTime).to.be.ok();
-      });
       return it('events', function() {
         r.game = {
           'add': sinon.spy(),
@@ -134,22 +155,22 @@
           'destroy': sinon.spy(),
           'restart': sinon.spy()
         };
-        App.socket.receive.trigger('add', {
+        App.socket.receive.trigger('game:add', {
           'id': 1,
           'pos': [0, 0],
           'object': 'bullet'
         });
         expect(r.game.add.getCall(0).args[0].id).to.be(1);
-        App.socket.receive.trigger('update', {
+        App.socket.receive.trigger('game:update', {
           'id': 1,
           'size': 2
         });
         expect(r.game.update.getCall(0).args[0].size).to.be(2);
-        App.socket.receive.trigger('destroy', {
+        App.socket.receive.trigger('game:destroy', {
           'id': 1
         });
         expect(r.game.destroy.getCall(0).args[0].id).to.be(1);
-        App.socket.receive.trigger('restart');
+        App.socket.receive.trigger('game:restart');
         return expect(r.game.restart.callCount).to.be(1);
       });
     });

@@ -30,10 +30,10 @@
       });
       this.rooms = new Rooms();
       this.rooms.on('add', function(r) {
-        return _this.emit_lobby('room:add', r.toJSON());
+        return _this.emit_lobby('room:room_add', r.toJSON());
       });
       this.rooms.on('remove', function(r) {
-        return _this.emit_lobby('room:remove', {
+        return _this.emit_lobby('room:room_remove', {
           'id': r.id
         });
       });

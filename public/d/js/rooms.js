@@ -16,7 +16,7 @@
 
     Rooms.prototype.rooms = {};
 
-    Rooms.prototype.add = function(data) {
+    Rooms.prototype.room_add = function(data) {
       var r,
         _this = this;
       r = new Room();
@@ -40,15 +40,15 @@
       return delete this.rooms[id];
     };
 
-    Rooms.prototype.user_add = function(room, user) {
+    Rooms.prototype.user_join = function(room, user) {
       return this.rooms[room].user_add(user);
     };
 
-    Rooms.prototype.user_remove = function(room, user) {
-      return this.rooms[room].user_remove(user);
+    Rooms.prototype.user_left = function(room, user) {
+      return this.rooms[room].user_left(user);
     };
 
-    Rooms.prototype.all = function(rooms) {
+    Rooms.prototype.list = function(rooms) {
       return this.render(rooms);
     };
 
@@ -57,7 +57,7 @@
       _.each(this.rooms, function(r, i) {
         return _this.room_remove(i);
       });
-      return _.each(rooms, _.bind(this.add, this));
+      return _.each(rooms, _.bind(this.room_add, this));
     };
 
     return Rooms;
@@ -94,7 +94,7 @@
       return this.$ul.append('<li data-pk="' + user.id + '"><strong>' + user.name + '</strong></li>');
     };
 
-    Room.prototype.user_remove = function(user) {
+    Room.prototype.user_left = function(user) {
       this._users -= 1;
       if (this._users < this._max) {
         this.$button.removeAttr('disabled');

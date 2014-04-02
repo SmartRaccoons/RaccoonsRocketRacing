@@ -2,7 +2,7 @@ App.Rooms = class Rooms extends Backbone.View
   tagName: 'ol'
   rooms: {}
 
-  add: (data)->
+  room_add: (data)->
     r = new Room()
     r.rooms = @
     @listenTo r, 'join', => @trigger 'join', data.id
@@ -16,15 +16,15 @@ App.Rooms = class Rooms extends Backbone.View
     @rooms[id].remove()
     delete @rooms[id]
 
-  user_add: (room, user)-> @rooms[room].user_add(user)
+  user_join: (room, user)-> @rooms[room].user_add(user)
 
-  user_remove: (room, user)-> @rooms[room].user_remove(user)
+  user_left: (room, user)-> @rooms[room].user_left(user)
 
-  all: (rooms)-> @render(rooms)
+  list: (rooms)-> @render(rooms)
 
   render: (rooms)->
     _.each @rooms, (r, i)=> @room_remove(i)
-    _.each rooms, _.bind(@add, @)
+    _.each rooms, _.bind(@room_add, @)
 
 
 class Room extends Backbone.View
@@ -46,7 +46,7 @@ class Room extends Backbone.View
       @_monitor = true
     @$ul.append('<li data-pk="'+user.id+'"><strong>'+user.name+'</strong></li>')
 
-  user_remove: (user)->
+  user_left: (user)->
     @_users -= 1
     if @_users < @_max
       @$button.removeAttr('disabled')

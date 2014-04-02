@@ -172,14 +172,14 @@
         });
         assert.deepEqual({
           'id': 1,
-          'is_full': false,
+          'max': 3,
           'users': [
             {
               'id': 'unique'
             }
           ]
         }, rooms.toJSON()[0]);
-        assert.equal(true, rooms.toJSON()[1]['is_full']);
+        assert.equal(3, rooms.toJSON()[1]['max']);
         assert.deepEqual(2, rooms.toJSON()[1]['id']);
         return assert.deepEqual([
           {

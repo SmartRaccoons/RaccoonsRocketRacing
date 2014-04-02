@@ -18,9 +18,9 @@ module.exports = class Router extends events.EventEmitter
 
     @rooms = new Rooms()
     @rooms.on 'add', (r)=>
-      @emit_lobby('room:add', r.toJSON())
+      @emit_lobby('room:room_add', r.toJSON())
     @rooms.on 'remove', (r)=>
-      @emit_lobby('room:remove', {'id': r.id})
+      @emit_lobby('room:room_remove', {'id': r.id})
     @rooms.on 'user:join', (r, user)=>
       @emit_lobby('room:user_join', {'room_id': r.id, 'user': user.user_data()})
     @rooms.on 'user:left', (r, user)=>

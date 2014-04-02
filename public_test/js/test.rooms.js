@@ -16,7 +16,7 @@
       it('add/remove room', function() {
         r.render();
         expect(r.$('>li')).to.have.length(0);
-        r.add({
+        r.room_add({
           'id': 1,
           'users': [
             {
@@ -25,7 +25,7 @@
             }
           ]
         });
-        r.add({
+        r.room_add({
           'id': 2,
           'users': []
         });
@@ -41,25 +41,24 @@
       it('add/remove user', function() {
         r.render();
         expect(r.$('>li')).to.have.length(0);
-        r.add({
+        r.room_add({
           'id': 1,
-          'is_full': false,
           'users': []
         });
         expect(r.$('>li:eq(0)>ul>li')).to.have.length(0);
-        r.user_add(1, {
+        r.user_join(1, {
           'id': 3,
           'name': 'Ze'
         });
         expect(r.$('>li:eq(0)>ul>li')).to.have.length(1);
-        r.user_add(1, {
+        r.user_join(1, {
           'id': 4,
           'name': 'Zebra'
         });
         expect(r.$('>li:eq(0)>ul>li')).to.have.length(2);
         expect(r.$('>li:eq(0)>ul>li:eq(0)').attr('data-pk')).to.be('3');
         expect(r.$('>li:eq(0)>ul>li:eq(0) strong').html()).to.be('Ze');
-        r.user_remove(1, 4);
+        r.user_left(1, 4);
         return expect(r.$('>li:eq(0)>ul>li')).to.have.length(1);
       });
       it('change full', function() {
@@ -76,13 +75,13 @@
         ]);
         expect(r.$('>li')).to.have.length(1);
         expect(r.$('>li:eq(0) button').is(':disabled')).not.be.ok();
-        r.user_add(1, {
+        r.user_join(1, {
           'id': 11
         });
         expect(r.$('>li:eq(0) button').is(':disabled')).to.be.ok();
-        r.user_remove(1, 10);
+        r.user_left(1, 10);
         expect(r.$('>li:eq(0) button').is(':disabled')).not.be.ok();
-        r.user_remove(1, 11);
+        r.user_left(1, 11);
         return expect(r.$('>li:eq(0) button').is(':disabled')).not.be.ok();
       });
       it('trigger join', function() {
@@ -90,13 +89,11 @@
         r.render([
           {
             'id': 1,
-            'is_full': false,
             'users': []
           }
         ]);
-        r.add({
+        r.room_add({
           'id': 2,
-          'is_full': false,
           'users': []
         });
         spy = sinon.spy();
@@ -114,7 +111,6 @@
         r.render([
           {
             'id': 1,
-            'is_full': false,
             'users': [
               {
                 'id': 1,
@@ -123,7 +119,7 @@
             ]
           }
         ]);
-        r.user_add(1, {
+        r.user_join(1, {
           'id': 2,
           'name': ''
         });
@@ -137,7 +133,6 @@
         r.render([
           {
             'id': 1,
-            'is_full': false,
             'users': [
               {
                 'id': 1,
@@ -149,8 +144,8 @@
             ]
           }
         ]);
-        r.user_remove(1, 2);
-        r.user_remove(1, 1);
+        r.user_left(1, 2);
+        r.user_left(1, 1);
         return expect(spy.callCount).to.be(1);
       });
       it('monitor id on remove room', function() {
@@ -160,7 +155,6 @@
         r.render([
           {
             'id': 1,
-            'is_full': false,
             'users': [
               {
                 'id': 1,
@@ -184,7 +178,6 @@
         r.render([
           {
             'id': 1,
-            'is_full': false,
             'users': [
               {
                 'id': 1,
@@ -193,7 +186,7 @@
             ]
           }
         ]);
-        r.user_remove(1, 1);
+        r.user_join(1, 1);
         r.room_remove(1);
         return expect(spy.callCount).to.be(1);
       });

@@ -91,8 +91,8 @@ describe 'Rooms', ->
       rooms = new Rooms(null, {'max': 3})
       rooms.add({'users': [@users.models[0]]})
       rooms.add({'users': [@users.models[1], @users.models[2], @users.models[3]], 'type': ['d']})
-      assert.deepEqual({'id': 1, 'is_full': false, 'users': [{'id': 'unique'}]}, rooms.toJSON()[0])
-      assert.equal(true, rooms.toJSON()[1]['is_full'])
+      assert.deepEqual({'id': 1, 'max': 3, 'users': [{'id': 'unique'}]}, rooms.toJSON()[0])
+      assert.equal(3, rooms.toJSON()[1]['max'])
       assert.deepEqual(2, rooms.toJSON()[1]['id'])
       assert.deepEqual([{'id': 'unique 2'},
                           {'id': 'unique 3'},
