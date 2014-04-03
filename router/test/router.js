@@ -270,7 +270,7 @@
         return assert.equal(r.rooms.models[0].left_user.callCount, 0);
       });
     });
-    return describe('rooms user action', function() {
+    describe('rooms user action', function() {
       var socket, spy;
       spy = null;
       socket = null;
@@ -365,6 +365,220 @@
         });
         socket.emit('room:left');
         return assert.equal(r.rooms.models.length, 1);
+      });
+    });
+    describe('game', function() {
+      beforeEach(function() {
+        r.users.add({
+          'id': 'ben'
+        });
+        r.users.add({
+          'id': 'zed'
+        });
+        r.emit_user = sinon.spy();
+        return r.emit_room = sinon.spy();
+      });
+      it('create/start on new room', function() {
+        var room;
+        r.rooms.add({});
+        room = r.rooms.models[0];
+        room.game._updateView = sinon.spy();
+        clock.tick(100);
+        return assert(room.game._updateView.callCount > 0);
+      });
+      it('emit user', function() {
+        var add, add2;
+        r.rooms.add({
+          'users': [r.users.models[0], r.users.models[1]]
+        });
+        add = r.emit_user.withArgs(r.users.models[0], 'game:elements');
+        add2 = r.emit_user.withArgs(r.users.models[1], 'game:elements');
+        assert.equal(add.callCount, 1);
+        assert.equal(add2.callCount, 1);
+        assert.deepEqual(add.getCall(0).args[2], r.rooms.models[0].game._elements);
+        return assert.deepEqual(add2.getCall(0).args[2], r.rooms.models[0].game._elements);
+      });
+      it('join user', function() {
+        var add;
+        r.rooms.add({
+          'users': [r.users.models[0]]
+        });
+        r.rooms.join_user(1, r.users.models[1]);
+        add = r.emit_user.withArgs(r.users.models[1], 'game:elements');
+        assert.equal(add.callCount, 1);
+        return assert.deepEqual(add.getCall(0).args[2], r.rooms.models[0].game._elements);
+      });
+      it('add tank', function() {
+        var g;
+        r.rooms.add({});
+        g = r.rooms.models[0].game;
+        g.add_tank = sinon.spy();
+        r.rooms.join_user(1, r.users.models[0]);
+        assert.equal(g.add_tank.callCount, 1);
+        assert.equal(g.add_tank.getCall(0).args[0], 'ben');
+        return assert.deepEqual(g.add_tank.getCall(0).args[1], [0, 0]);
+      });
+      it('add tank 2. position', function() {
+        var g;
+        r.rooms.add({
+          'users': [r.users.models[1]]
+        });
+        g = r.rooms.models[0].game;
+        g.add_tank = sinon.spy();
+        r.rooms.join_user(1, r.users.models[0]);
+        assert.equal(g.add_tank.callCount, 1);
+        assert.equal(g.add_tank.getCall(0).args[0], 'ben');
+        g.add_tank.getCall(0).args[1];
+        return assert.deepEqual(g.add_tank.getCall(0).args[1], [g.size[0] - 32, g.size[1] - 32]);
+      });
+      it('destroy tank', function() {
+        var spy;
+        r.rooms.add({
+          'users': [r.users.models[1]]
+        });
+        spy = sinon.spy();
+        r.rooms.models[0].game.destroy_tank = spy;
+        r.rooms.left_user(r.users.models[1]);
+        assert.equal(spy.callCount, 1);
+        return assert.equal(spy.getCall(0).args[0], 'zed');
+      });
+      it('destroy room', function() {
+        var spy;
+        r.rooms.add({
+          'users': [r.users.models[1]]
+        });
+        spy = sinon.spy();
+        r.rooms.models[0].game.stop = spy;
+        r.rooms.remove(r.rooms.models[0]);
+        return assert.equal(spy.callCount, 1);
+      });
+      it('event add', function() {
+        var add;
+        r.rooms.add({});
+        r.emit_room = sinon.spy();
+        add = r.emit_room.withArgs(r.rooms.models[0], 'game:add');
+        r.rooms.models[0].game.add({
+          'object': 'brick'
+        });
+        assert.equal(add.callCount, 1);
+        return assert.equal(add.getCall(0).args[2].object, 'brick');
+      });
+      it('event destroy', function() {
+        var destroy;
+        r.rooms.add({});
+        r.emit_room = sinon.spy();
+        destroy = r.emit_room.withArgs(r.rooms.models[0], 'game:destroy');
+        r.rooms.models[0].game.destroy(1, 'f');
+        assert.equal(destroy.callCount, 1);
+        assert.equal(destroy.getCall(0).args[2].id, 1);
+        return assert.equal(destroy.getCall(0).args[2].reason, 'f');
+      });
+      it('event update', function() {
+        var id, update;
+        r.rooms.add({});
+        r.emit_room = sinon.spy();
+        update = r.emit_room.withArgs(r.rooms.models[0], 'game:update');
+        id = r.rooms.models[0].game.add({
+          'object': 'ret'
+        });
+        r.rooms.models[0].game.update({
+          'id': id,
+          'speed': 10
+        });
+        assert.equal(update.callCount, 1);
+        assert.equal(update.getCall(0).args[2].id, id);
+        assert.equal(update.getCall(0).args[2].speed, 10);
+        return assert.deepEqual(update.getCall(0).args[2].pos, [0, 0]);
+      });
+      it('event restart', function() {
+        var restart;
+        r.rooms.add({});
+        r.emit_room = sinon.spy();
+        restart = r.emit_room.withArgs(r.rooms.models[0], 'game:restart');
+        r.rooms.models[0].game.restart();
+        return assert.equal(restart.callCount, 1);
+      });
+      return it('event destroy base', function() {
+        var base, destroy, fake, spy;
+        spy = sinon.spy();
+        r.rooms.add({});
+        r.emit_room = sinon.spy();
+        destroy = r.emit_room.withArgs(r.rooms.models[0], 'game:destroy');
+        r.rooms.models[0].game.restart = spy;
+        fake = r.rooms.models[0].game.add({
+          'object': 'bana'
+        });
+        base = r.rooms.models[0].game.add({
+          'object': 'base'
+        });
+        r.rooms.models[0].game.destroy(fake);
+        assert.equal(spy.callCount, 0);
+        r.rooms.models[0].game.destroy(base);
+        return assert.equal(spy.callCount, 1);
+      });
+    });
+    return describe('game control', function() {
+      var socket, start, stop;
+      socket = null;
+      start = null;
+      stop = null;
+      beforeEach(function() {
+        start = sinon.spy();
+        stop = sinon.spy();
+        socket = new events.EventEmitter();
+        socket.id = '1';
+        r.users.add({
+          'id': 'ben'
+        });
+        r.users.add({
+          'id': 'zed'
+        });
+        r.emit_user = sinon.spy();
+        r.emit_room = sinon.spy();
+        return r.connection(socket);
+      });
+      it('control active:true', function() {
+        socket.emit('login:try');
+        socket.emit('room:create');
+        r.rooms.models[0].game.tank_start = start;
+        r.rooms.models[0].game.tank_stop = stop;
+        socket.emit('control', {
+          'active': true,
+          'move': 'up'
+        });
+        assert.equal(start.callCount, 1);
+        assert.equal(stop.callCount, 0);
+        assert.equal(start.getCall(0).args[0], '1');
+        return assert.equal(start.getCall(0).args[1], 'up');
+      });
+      it('control active:false', function() {
+        socket.emit('login:try');
+        socket.emit('room:create');
+        r.rooms.models[0].game.tank_start = start;
+        r.rooms.models[0].game.tank_stop = stop;
+        socket.emit('control', {
+          'active': false,
+          'move': 'down'
+        });
+        assert.equal(start.callCount, 0);
+        assert.equal(stop.callCount, 1);
+        assert.equal(stop.getCall(0).args[0], '1');
+        return assert.equal(stop.getCall(0).args[1], 'down');
+      });
+      it('not login', function() {
+        socket.emit('control', {
+          'active': true,
+          'move': 'up'
+        });
+        return assert.equal(r.emit_room.callCount, 0);
+      });
+      return it('not room', function() {
+        socket.emit('login:try');
+        socket.emit('control', {
+          'active': true,
+          'move': 'up'
+        });
+        return assert.equal(r.emit_room.callCount, 0);
       });
     });
   });

@@ -6,6 +6,36 @@ Rooms = require('../room').Rooms
 Bco = require('../bco').Bco
 
 
+map = [
+    [0,0,0,0,0,0,0,0,0,0,0,1,10,0,1,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,1,1,0,0,1,1,0,0,0,1,1,1,1,0,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,2,2,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,2,2,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0],
+    [2,2,0,0,1,1,1,1,2,2,0,0,0,0,0,0,2,2,1,1,1,1,0,0,2,2],
+    [2,2,0,0,1,1,1,1,2,2,0,0,0,0,0,0,2,2,1,1,1,1,0,0,2,2],
+    [0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,2,2,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,2,2,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0],
+    [0,0,1,1,0,0,1,1,0,0,0,1,1,1,1,0,0,0,1,1,0,0,1,1,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,1,10,0,1,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0]
+]
+
+
 module.exports = class Router extends events.EventEmitter
 
   constructor: ->
@@ -20,13 +50,35 @@ module.exports = class Router extends events.EventEmitter
         @emit_user(u, 'game:start')
 
     @rooms = new Rooms()
+    join_user = (u)=>
+      r = u.get('room')
+      @emit_user(u, 'game:elements', r.game._elements)
+      positions = [[0, 0], [r.game.size[0]-32, r.game.size[1]-32], [r.game.size[0]-32, 0], [0, r.game.size[1]-32]]
+      r.game.add_tank(u.id, positions[(r.get('users').length-1) % 4])
+
     @rooms.on 'add', (r)=>
       @emit_lobby('room:room_add', r.toJSON())
+      r.game = new Bco(map)
+      r.game.on 'add', (pr)=> @emit_room(r, 'game:add', pr)
+      r.game.on 'update', (pr)=>
+        @emit_room(r, 'game:update', extend({'pos': r.game.get(pr.id).pos}, pr))
+      r.game.on 'restart', => @emit_room(r, 'game:restart')
+      r.game.on 'destroy', (pr)=>
+        @emit_room(r, 'game:destroy', pr)
+        element = r.game.get(pr.id)
+        if element and element.object is 'base'
+          r.game.restart()
+      r.game.start()
+      r.get('users').forEach join_user
+
     @rooms.on 'remove', (r)=>
+      r.game.stop()
       @emit_lobby('room:room_remove', {'id': r.id})
     @rooms.on 'user:join', (r, user)=>
       @emit_lobby('room:user_join', {'room_id': r.id, 'user': user.user_data()})
+      join_user(user)
     @rooms.on 'user:left', (r, user)=>
+      r.game.destroy_tank(user.id)
       if r.get('users').length > 0
         @emit_lobby('room:user_left', {'room_id': r.id, 'user_id': user.id})
 
@@ -58,6 +110,10 @@ module.exports = class Router extends events.EventEmitter
     socket.on 'end', =>
       @users.remove(user)
 
+    socket.on 'control', (p)=>
+      if not user.get('room')
+        return
+      user.get('room').game[if p.active then 'tank_start' else 'tank_stop'](user.id, p.move)
 
   emit_user: (user, event, args)-> @emit_socket user.get('socket'), event, args
 
@@ -71,73 +127,4 @@ module.exports = class Router extends events.EventEmitter
     @users.each (u)=>
       if not u.get('room') and u.is_authenticated()
         @emit_user(u, event, args)
-
-#  emit_users: (event, args)-> @users.each (u)=> @emit_user(u, event, args)
-
-
-
-#    @game = new Bco()
-#    @game = new Bco([
-#            [0,0,0,0,0,0,0,0,0,0,0,1,10,0,1,0,0,0,0,0,0,0,0,0,0,0],
-#            [0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,0,1,1,1,1,0,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,2,2,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,2,2,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0],
-#            [2,2,0,0,1,1,1,1,2,2,0,0,0,0,0,0,2,2,1,1,1,1,0,0,2,2],
-#            [2,2,0,0,1,1,1,1,2,2,0,0,0,0,0,0,2,2,1,1,1,1,0,0,2,2],
-#            [0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,2,2,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,2,2,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,1,1,0,0,1,1,0,0,0,1,1,1,1,0,0,0,1,1,0,0,1,1,0,0],
-#            [0,0,0,0,0,0,0,0,0,0,0,1,10,0,1,0,0,0,0,0,0,0,0,0,0,0],
-#            [0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0]
-#        ])
-#    @game.start()
-#    @game.on 'destroy', (params)=>
-#      element = @game.get(params.id)
-#      if element and element.object is 'base'
-#        @game.restart()
-#    @game.on 'restart', => @emit_users('restart')
-#    @game.on 'add', (pr)=> @emit_users('add', pr)
-#    @game.on 'destroy', (pr)=> @emit_users('destroy', pr)
-#    @game.on 'update', (pr)=> @emit_users('update', extend({'pos': @game.get(pr.id).pos}, pr))
-#
-#  add_tank: (socket)->
-#    positions = [[0, 0], [@game.size[0]-32, @game.size[1]-32], [@.game.size[0]-32, 0], [0, @game.size[1]-32]]
-#    @game.add_tank(socket.id, {pos: positions[@game.get({'object': 'tank'}).length % 4]})
-#
-#  connection: (socket)->
-#    user = @users.add({'id': socket.id, 'socket': socket})
-#    socket.on 'control', (p)=>
-#      if not @game.get_tank(socket.id)
-#        return
-#      if p.active
-#        @game.tank_start(socket.id, p.move)
-#      else
-#        @game.tank_stop(socket.id, p.move)
-#
-#    socket.on 'disconnect', =>
-#      @game.destroy_tank(socket.id)
-#      @users.remove(user)
-#
-#    for id, val of @game._elements
-#      @emit_user user, 'add', val
-#    @add_tank(socket)
-#
-#  emit_user: (user, event, args)-> user.get('socket').emit event, args
-#
-#  emit_users: (event, args)-> @users.each (u)=> @emit_user(u, event, args)
 
