@@ -109,6 +109,9 @@ describe 'BcoCore', ->
       expect(b._updateView.callCount).to.be(1)
       clock.tick(100)
       expect(b._updateView.callCount).to.be(1)
+      b.start()
+      clock.tick(25)
+      expect(b._updateView.callCount).to.be(2)
 
 
   describe 'stop out of box', ->

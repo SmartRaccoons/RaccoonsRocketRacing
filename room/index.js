@@ -112,7 +112,7 @@
         }
       }
       this.set('users', users);
-      u.set('room', null);
+      user.set('room', null);
       return this.collection.trigger('user:left', this, user);
     };
 

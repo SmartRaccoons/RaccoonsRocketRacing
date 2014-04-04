@@ -48,7 +48,7 @@ class Room extends root.Backbone.Model
       if u.id isnt user.id
         users.push(u)
     @set('users', users)
-    u.set('room', null)
+    user.set('room', null)
     @collection.trigger('user:left', @, user)
 
   toJSON: ->

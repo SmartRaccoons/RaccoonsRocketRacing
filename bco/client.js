@@ -84,6 +84,7 @@
     };
 
     BcoCore.prototype.start = function() {
+      this._stop = false;
       this._lastTime = Date.now();
       return this._process();
     };
@@ -190,6 +191,24 @@
       sprite.anchor.y = 0.5;
       this._elements[pr.id]['sprite'] = sprite;
       return this.stage.addChild(sprite);
+    };
+
+    Bco.prototype.elements = function(data) {
+      var el, id, val, _ref, _results;
+      _ref = this._elements;
+      for (id in _ref) {
+        el = _ref[id];
+        if (el.sprite) {
+          this.stage.removeChild(el.sprite);
+        }
+      }
+      this._elements = {};
+      _results = [];
+      for (id in data) {
+        val = data[id];
+        _results.push(this.add(val));
+      }
+      return _results;
     };
 
     Bco.prototype.destroy = function(pr) {

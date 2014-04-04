@@ -289,7 +289,7 @@ describe 'router', ->
       r.rooms.join_user(1, r.users.models[0])
       assert.equal(g.add_tank.callCount, 1)
       assert.equal(g.add_tank.getCall(0).args[0], 'ben')
-      assert.deepEqual(g.add_tank.getCall(0).args[1], [0, 0])
+      assert.deepEqual(g.add_tank.getCall(0).args[1], {'pos': [0, 0]})
 
     it 'add tank 2. position', ->
       r.rooms.add({'users': [r.users.models[1]]})
@@ -299,7 +299,7 @@ describe 'router', ->
       assert.equal(g.add_tank.callCount, 1)
       assert.equal(g.add_tank.getCall(0).args[0], 'ben')
       g.add_tank.getCall(0).args[1]
-      assert.deepEqual(g.add_tank.getCall(0).args[1], [g.size[0]-32, g.size[1]-32])
+      assert.deepEqual(g.add_tank.getCall(0).args[1], {'pos': [g.size[0]-32, g.size[1]-32]})
 
     it 'destroy tank', ->
       r.rooms.add({'users': [r.users.models[1]]})

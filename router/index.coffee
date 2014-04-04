@@ -54,7 +54,7 @@ module.exports = class Router extends events.EventEmitter
       r = u.get('room')
       @emit_user(u, 'game:elements', r.game._elements)
       positions = [[0, 0], [r.game.size[0]-32, r.game.size[1]-32], [r.game.size[0]-32, 0], [0, r.game.size[1]-32]]
-      r.game.add_tank(u.id, positions[(r.get('users').length-1) % 4])
+      r.game.add_tank(u.id, {'pos': positions[(r.get('users').length-1) % 4]})
 
     @rooms.on 'add', (r)=>
       @emit_lobby('room:room_add', r.toJSON())

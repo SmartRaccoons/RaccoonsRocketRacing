@@ -136,12 +136,12 @@
           'creator': this.users.models[0]
         });
         rooms.join_user('bena', this.users.models[1]);
-        rooms.left_user(this.users.models[1]);
+        rooms.left_user(this.users.models[0]);
         assert.equal('bena', spy.getCall(0).args[0].get('id'));
-        assert.equal('unique 2', spy.getCall(0).args[1].get('id'));
+        assert.equal('unique', spy.getCall(0).args[1].get('id'));
         assert.equal(1, spy.callCount);
         assert.equal(rooms.get('bena').get('users').length, 1);
-        return assert.equal(null, this.users.models[1].get('room'));
+        return assert.equal(null, this.users.models[0].get('room'));
       });
       return it('left last user and destroy room', function() {
         var rooms, spy;

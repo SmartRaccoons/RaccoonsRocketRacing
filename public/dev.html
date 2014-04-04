@@ -36,5 +36,13 @@
         <script src="d/js/router.js"></script>
 
         <script src='d/js/run.js'></script>
+        <script>
+            (function(){
+               console.info('log enable');
+               App.socket.receive.on('all', function(){console.info('receive', arguments);});
+               App.socket.send.on('all', function(){console.info('send', arguments);});
+            })();
+
+        </script>
     </body>
 </html>

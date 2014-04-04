@@ -41,7 +41,9 @@
         r = u.get('room');
         _this.emit_user(u, 'game:elements', r.game._elements);
         positions = [[0, 0], [r.game.size[0] - 32, r.game.size[1] - 32], [r.game.size[0] - 32, 0], [0, r.game.size[1] - 32]];
-        return r.game.add_tank(u.id, positions[(r.get('users').length - 1) % 4]);
+        return r.game.add_tank(u.id, {
+          'pos': positions[(r.get('users').length - 1) % 4]
+        });
       };
       this.rooms.on('add', function(r) {
         _this.emit_lobby('room:room_add', r.toJSON());
