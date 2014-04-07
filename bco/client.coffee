@@ -58,6 +58,7 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
     delete @_elements[pr.id]
 
   start: ->
+    @_stop = false
     @_lastTime = Date.now()
     @_process()
 
@@ -121,6 +122,9 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
         @stage.removeChild(val.sprite)
     super
 
+#  start: ->
+#    super
+
   add: (pr)->
     super
     sprite = new PIXI.Sprite(PIXI.Texture.fromImage(@options.path+'d/img/'+pr.object+'.png'))
@@ -128,6 +132,14 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
     sprite.anchor.y = 0.5
     @_elements[pr.id]['sprite'] = sprite
     @stage.addChild(sprite)
+
+  elements: (data)->
+    for id, el of @_elements
+      if el.sprite
+        @stage.removeChild(el.sprite)
+    @_elements = {}
+    for id, val of data
+      @add(val)
 
   destroy: (pr)->
     if @_elements[pr.id].sprite

@@ -3,6 +3,8 @@ express = require('express')
 _ = require('lodash')
 fs = require('fs')
 Primus = require('primus')
+jsp = require("uglify-js").parser
+pro = require("uglify-js").uglify
 events = require('events')
 pjson = require('./package.json')
 Router = require('./router')
@@ -42,11 +44,15 @@ else
     }, -> process.exit(1))
 
 
-primus = new Primus(server, { transformer: 'socket.io' })
+primus = new Primus(server, { transformer: 'browserchannel' })
+primus_client = pro.gen_code(pro.ast_squeeze(pro.ast_mangle(jsp.parse(primus.library()))))
+app.get '/pr.js', (req, res)-> res.send primus_client
+
 r = new Router()
 r.emit_socket = (socket, event)->
   args = Array.prototype.slice.apply(arguments).splice(2)
   args.unshift(event)
+#  console.info 'emit', socket.id, event, args
   socket.spark.write(args)
 
 primus.on 'connection', (spark)->
@@ -54,9 +60,11 @@ primus.on 'connection', (spark)->
   socket.id = spark.id
   spark.socket = socket
   socket.spark = spark
-  socket.disconnect = -> spark.end()
-  spark.on 'end', -> socket.emit 'disconnect'
-  spark.on 'data', (data)-> socket.emit.apply(socket, data)
+  socket.end = -> spark.end()
+  spark.on 'end', -> socket.emit 'end'
+  spark.on 'data', (data)->
+#    console.info 'data', socket.id, data
+    socket.emit.apply(socket, data)
   r.connection(socket)
 
 

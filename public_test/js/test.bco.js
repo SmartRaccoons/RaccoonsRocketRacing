@@ -182,7 +182,10 @@
         b.stop();
         expect(b._updateView.callCount).to.be(1);
         clock.tick(100);
-        return expect(b._updateView.callCount).to.be(1);
+        expect(b._updateView.callCount).to.be(1);
+        b.start();
+        clock.tick(25);
+        return expect(b._updateView.callCount).to.be(2);
       });
     });
     describe('stop out of box', function() {

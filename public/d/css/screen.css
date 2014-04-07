@@ -1,4 +1,21 @@
+/* line 1, ../sass/screen.sass */
 body, html {
   margin: 0;
   padding: 0;
-  height: 100%; }
+  height: 100%;
+}
+
+/* line 7, ../sass/screen.sass */
+.room-left {
+  display: none;
+}
+
+/* line 11, ../sass/screen.sass */
+.user-in-room .room-new, .user-in-room .room-list {
+  display: none;
+}
+
+/* line 14, ../sass/screen.sass */
+.user-in-room .room-left {
+  display: block;
+}
