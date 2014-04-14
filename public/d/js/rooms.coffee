@@ -32,12 +32,8 @@ App.Rooms = class Rooms extends Backbone.View
 class Room extends Backbone.View
   tagName: 'li'
   template: _.template """
-                       <ul>
-                        <li><%=name%></li>
-                        <li></li>
-                        <li><%=self.rooms.options.stages[stage]%></li>
-                       </ul>
-                       <button type='button'><%=_l('Play')%></button>
+                       <strong><%=name%></strong>
+                       <span><%=self.rooms.options.stages[stage]%></span>
                        """
 
   user_add: (user)->
@@ -56,7 +52,6 @@ class Room extends Backbone.View
 
   _update_users: ->
     @$el.attr('data-users', @_users)
-    @$('ul>li:nth-child(2)').html(@_users+'/'+@_max)
 
   render: (data)->
     super

@@ -46,12 +46,10 @@
         expect(r.$('>li:eq(1)').attr('data-pk')).to.be('1');
         expect(r.$('>li:eq(1)').attr('data-max')).to.be('2');
         expect(r.$('>li:eq(1)').attr('data-users')).to.be('1');
-        expect(r.$('>li:eq(0)>ul>li:nth-child(1)').html()).to.be('Bon');
-        expect(r.$('>li:eq(1)>ul>li:nth-child(1)').html()).to.be('Beni');
-        expect(r.$('>li:eq(0)>ul>li:nth-child(2)').text()).to.be('0/10');
-        expect(r.$('>li:eq(1)>ul>li:nth-child(2)').text()).to.be('1/2');
-        expect(r.$('>li:eq(0)>ul>li:nth-child(3)').text()).to.be('stage 2');
-        expect(r.$('>li:eq(1)>ul>li:nth-child(3)').text()).to.be('stage 1');
+        expect(r.$('>li:eq(0) strong').html()).to.be('Bon');
+        expect(r.$('>li:eq(1) strong').html()).to.be('Beni');
+        expect(r.$('>li:eq(0) span').text()).to.be('stage 2');
+        expect(r.$('>li:eq(1) span').text()).to.be('stage 1');
         r.room_remove({
           'id': 1
         });
@@ -67,7 +65,6 @@
           'users': []
         });
         expect(r.$('>li:eq(0)').attr('data-users')).to.be('0');
-        expect(r.$('>li:eq(0)>ul>li:nth-child(2)').text()).to.be('0/2');
         r.user_join({
           'room_id': 1,
           'user': {
@@ -76,13 +73,11 @@
           }
         });
         expect(r.$('>li:eq(0)').attr('data-users')).to.be('1');
-        expect(r.$('>li:eq(0)>ul>li:nth-child(2)').text()).to.be('1/2');
         r.user_left({
           'room_id': 1,
           'user_id': 4
         });
-        expect(r.$('>li:eq(0)').attr('data-users')).to.be('0');
-        return expect(r.$('>li:eq(0)>ul>li:nth-child(2)').text()).to.be('0/2');
+        return expect(r.$('>li:eq(0)').attr('data-users')).to.be('0');
       });
       it('trigger open', function() {
         var spy;

@@ -89,9 +89,9 @@ describe 'Rooms', ->
   describe 'toJSON', ->
     it 'attributes', ->
       rooms = new Rooms(null, {'max': 3})
-      rooms.add({'users': [@users.models[0]]})
-      rooms.add({'users': [@users.models[1], @users.models[2], @users.models[3]], 'type': ['d']})
-      assert.deepEqual({'id': 1, 'max': 3, 'users': [{'id': 'unique', 'name': 'lietotajs 1'}]}, rooms.toJSON()[0])
+      rooms.add({'stage': 1, 'users': [@users.models[0]]})
+      rooms.add({'stage': 1, 'users': [@users.models[1], @users.models[2], @users.models[3]], 'type': ['d']})
+      assert.deepEqual({'id': 1, 'max': 3, 'stage': 1, 'users': [{'id': 'unique', 'name': 'lietotajs 1'}]}, rooms.toJSON()[0])
       assert.equal(3, rooms.toJSON()[1]['max'])
       assert.deepEqual(2, rooms.toJSON()[1]['id'])
       assert.deepEqual([{'id': 'unique 2', 'name': 'lietotajs 2'},

@@ -142,7 +142,9 @@
         r.users.add({
           'id': 1
         });
-        r.rooms.add({});
+        r.rooms.add({
+          'stage': 2
+        });
         r.emit_user = sinon.spy();
         r.users.models[0].set('room', null);
         s = r.emit_user.withArgs(r.users.models[0], 'room:list');
@@ -151,6 +153,7 @@
         assert.deepEqual(s.getCall(0).args[2], [
           {
             'id': 1,
+            'stage': 2,
             'max': 2,
             'users': []
           }
@@ -172,11 +175,14 @@
       });
       it('add', function() {
         var s;
-        r.rooms.add({});
+        r.rooms.add({
+          'stage': 1
+        });
         s = spy.withArgs('room:room_add');
         assert.equal(s.callCount, 1);
         return assert.deepEqual(s.getCall(0).args[1], {
           'id': 1,
+          'stage': 1,
           'max': 2,
           'users': []
         });
@@ -286,7 +292,8 @@
         socket.emit('login:try');
         socket.emit('room:create');
         assert.equal(r.rooms.models.length, 1);
-        return assert.equal(r.rooms.models[0].get('users')[0].id, r.users.models[0].id);
+        assert.equal(r.rooms.models[0].get('users')[0].id, r.users.models[0].id);
+        return assert.equal(r.rooms.models[0].get('stage'), 1);
       });
       it('create not authenticated', function() {
         socket.emit('room:create');

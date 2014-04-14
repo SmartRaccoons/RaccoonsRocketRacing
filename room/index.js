@@ -120,6 +120,7 @@
       return {
         'id': this.id,
         'max': this.get('max'),
+        'stage': this.get('stage'),
         'users': this.get('users').map(function(u) {
           return u.user_data();
         })

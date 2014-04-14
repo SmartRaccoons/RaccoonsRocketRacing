@@ -165,15 +165,18 @@
           'max': 3
         });
         rooms.add({
+          'stage': 1,
           'users': [this.users.models[0]]
         });
         rooms.add({
+          'stage': 1,
           'users': [this.users.models[1], this.users.models[2], this.users.models[3]],
           'type': ['d']
         });
         assert.deepEqual({
           'id': 1,
           'max': 3,
+          'stage': 1,
           'users': [
             {
               'id': 'unique',

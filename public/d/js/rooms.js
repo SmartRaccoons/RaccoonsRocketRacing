@@ -79,7 +79,7 @@
 
     Room.prototype.tagName = 'li';
 
-    Room.prototype.template = _.template("<ul>\n <li><%=name%></li>\n <li></li>\n <li><%=self.rooms.options.stages[stage]%></li>\n</ul>\n<button type='button'><%=_l('Play')%></button>");
+    Room.prototype.template = _.template("<strong><%=name%></strong>\n<span><%=self.rooms.options.stages[stage]%></span>");
 
     Room.prototype.user_add = function(user) {
       this._users += 1;
@@ -100,8 +100,7 @@
     };
 
     Room.prototype._update_users = function() {
-      this.$el.attr('data-users', this._users);
-      return this.$('ul>li:nth-child(2)').html(this._users + '/' + this._max);
+      return this.$el.attr('data-users', this._users);
     };
 
     Room.prototype.render = function(data) {

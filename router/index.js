@@ -116,7 +116,8 @@
           return;
         }
         return _this.rooms.add({
-          'users': [user]
+          'users': [user],
+          'stage': 1
         });
       });
       socket.on('room:join', function(room) {
