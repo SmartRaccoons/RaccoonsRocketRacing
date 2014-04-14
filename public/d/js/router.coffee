@@ -18,54 +18,14 @@ App.Order = class Order
       @buffer_execute = false
 
 
-App.Router = class Router extends Backbone.View
+App.Router = class Router extends Backbone.Router
 
-  'template': _.template """
-<div id="user-panel">
-  <ul>
-    <li>Rules</li>
-    <li>Battles</li>
-    <li>My profile</li>
-    <li>Best users</li>
-  </ul>
-  <div class="room-left"><button data-role="room-left"><%=_l('Left room')%></button></div>
-  <div class="info">
-    <span class="username">termilv</span>
-    <span class="logout">logout</span>
-  </div>
-</div>
+  routes:
+    '': 'rooms'
+    'm:id': 'map'
 
-<section class='room'>
-  <div class="room-list"></div>
-</section>
-
-<section class='game'></section>
-              """
-
-  'events':
-    'click .room-left button': -> App.socket.send.trigger 'room:left'
-    'keydown': (e)-> @control(e.keyCode, true)
-    'keyup': (e)-> @control(e.keyCode, false)
-
-  initialize: ->
-    @_keys =
-      'up':
-        'active': false
-        'code': [38, 74]
-      'down':
-        'active': false
-        'code': [40, 77]
-      'left':
-        'active': false
-        'code': [37, 78]
-      'right':
-        'active': false
-        'code': [39, 188]
-      'fire':
-        'active': false
-        'code': [32]
-    super
-
+  initialize: (op)->
+    @$el = op.el
     @room = new App.Rooms
       'stages': 1: 'stage 1'
     @listenTo @room, 'join', (id)=> App.socket.send.trigger 'room:join', id
@@ -97,17 +57,69 @@ App.Router = class Router extends Backbone.View
             o.end()
           , delay
 
-    @render()
-    @
-
-  control: (code, active)->
-    for attr, val of @_keys
+    keys =
+      'up':
+        'active': false
+        'code': [38, 74]
+      'down':
+        'active': false
+        'code': [40, 77]
+      'left':
+        'active': false
+        'code': [37, 78]
+      'right':
+        'active': false
+        'code': [39, 188]
+      'fire':
+        'active': false
+        'code': [32, 90]
+    control = (code, active)->
+     for attr, val of keys
       if code in val.code and val.active isnt active
         val.active = active
         App.socket.send.trigger 'control', {'move': attr, 'active': active}
+    $('body').on 'keydown', (e)-> control(e.keyCode, true)
+    $('body').on 'keyup', (e)-> control(e.keyCode, false)
+    @render()
+    @
+
+  rooms: ->
+
+  map: (id)->
+    console.info id
 
   render: ->
-    super
-    @room.$el.appendTo(@$('.room-list'))
-    @room_new.render().$el.appendTo(@$('.room-list'))
-    @game.$el.appendTo(@$('.game').empty())
+    @$el.html """
+<div id="user-panel">
+  <ul>
+    <li>Rules</li>
+    <li><a href="#">Battles</a></li>
+    <li>My profile</li>
+    <li>Best users</li>
+  </ul>
+  <div class="room-left"><a href="#">"""+_l('Left room')+"""</a></div>
+  <div class="info">
+    <span class="username">termilv</span>
+    <span class="logout">logout</span>
+  </div>
+</div>
+
+<section class='room'>
+  <div class="room-list"></div>
+</section>
+
+<section class='game'></section>
+"""
+    @$el.find('.room-left a').on 'click', -> App.socket.send.trigger 'room:left'
+    @room.$el.appendTo(@$el.find('.room-list'))
+    @room_new.render().$el.appendTo(@$el.find('.room-list'))
+    @game.$el.appendTo(@$el.find('.game'))
+
+
+  remove: ->
+    @$el.remove()
+    $('body').off 'keydown'
+    $('body').off 'keyup'
+    @stopListening()
+
+

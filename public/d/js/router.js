@@ -62,46 +62,15 @@
       return _ref;
     }
 
-    Router.prototype['template'] = _.template("<div id=\"user-panel\">\n  <ul>\n    <li>Rules</li>\n    <li>Battles</li>\n    <li>My profile</li>\n    <li>Best users</li>\n  </ul>\n  <div class=\"room-left\"><button data-role=\"room-left\"><%=_l('Left room')%></button></div>\n  <div class=\"info\">\n    <span class=\"username\">termilv</span>\n    <span class=\"logout\">logout</span>\n  </div>\n</div>\n\n<section class='room'>\n  <div class=\"room-list\"></div>\n</section>\n\n<section class='game'></section>\n");
-
-    Router.prototype['events'] = {
-      'click .room-left button': function() {
-        return App.socket.send.trigger('room:left');
-      },
-      'keydown': function(e) {
-        return this.control(e.keyCode, true);
-      },
-      'keyup': function(e) {
-        return this.control(e.keyCode, false);
-      }
+    Router.prototype.routes = {
+      '': 'rooms',
+      'm:id': 'map'
     };
 
-    Router.prototype.initialize = function() {
-      var o,
+    Router.prototype.initialize = function(op) {
+      var control, keys, o,
         _this = this;
-      this._keys = {
-        'up': {
-          'active': false,
-          'code': [38, 74]
-        },
-        'down': {
-          'active': false,
-          'code': [40, 77]
-        },
-        'left': {
-          'active': false,
-          'code': [37, 78]
-        },
-        'right': {
-          'active': false,
-          'code': [39, 188]
-        },
-        'fire': {
-          'active': false,
-          'code': [32]
-        }
-      };
-      Router.__super__.initialize.apply(this, arguments);
+      this.$el = op.el;
       this.room = new App.Rooms({
         'stages': {
           1: 'stage 1'
@@ -142,38 +111,80 @@
           }
         }
       });
+      keys = {
+        'up': {
+          'active': false,
+          'code': [38, 74]
+        },
+        'down': {
+          'active': false,
+          'code': [40, 77]
+        },
+        'left': {
+          'active': false,
+          'code': [37, 78]
+        },
+        'right': {
+          'active': false,
+          'code': [39, 188]
+        },
+        'fire': {
+          'active': false,
+          'code': [32, 90]
+        }
+      };
+      control = function(code, active) {
+        var attr, val, _results;
+        _results = [];
+        for (attr in keys) {
+          val = keys[attr];
+          if (__indexOf.call(val.code, code) >= 0 && val.active !== active) {
+            val.active = active;
+            _results.push(App.socket.send.trigger('control', {
+              'move': attr,
+              'active': active
+            }));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      };
+      $('body').on('keydown', function(e) {
+        return control(e.keyCode, true);
+      });
+      $('body').on('keyup', function(e) {
+        return control(e.keyCode, false);
+      });
       this.render();
       return this;
     };
 
-    Router.prototype.control = function(code, active) {
-      var attr, val, _ref1, _results;
-      _ref1 = this._keys;
-      _results = [];
-      for (attr in _ref1) {
-        val = _ref1[attr];
-        if (__indexOf.call(val.code, code) >= 0 && val.active !== active) {
-          val.active = active;
-          _results.push(App.socket.send.trigger('control', {
-            'move': attr,
-            'active': active
-          }));
-        } else {
-          _results.push(void 0);
-        }
-      }
-      return _results;
+    Router.prototype.rooms = function() {};
+
+    Router.prototype.map = function(id) {
+      return console.info(id);
     };
 
     Router.prototype.render = function() {
-      Router.__super__.render.apply(this, arguments);
-      this.room.$el.appendTo(this.$('.room-list'));
-      this.room_new.render().$el.appendTo(this.$('.room-list'));
-      return this.game.$el.appendTo(this.$('.game').empty());
+      this.$el.html("<div id=\"user-panel\">\n  <ul>\n    <li>Rules</li>\n    <li><a href=\"#\">Battles</a></li>\n    <li>My profile</li>\n    <li>Best users</li>\n  </ul>\n  <div class=\"room-left\"><a href=\"#\">" + _l('Left room') + "</a></div>\n<div class=\"info\">\n  <span class=\"username\">termilv</span>\n  <span class=\"logout\">logout</span>\n</div>\n</div>\n\n<section class='room'>\n<div class=\"room-list\"></div>\n</section>\n\n<section class='game'></section>");
+      this.$el.find('.room-left a').on('click', function() {
+        return App.socket.send.trigger('room:left');
+      });
+      this.room.$el.appendTo(this.$el.find('.room-list'));
+      this.room_new.render().$el.appendTo(this.$el.find('.room-list'));
+      return this.game.$el.appendTo(this.$el.find('.game'));
+    };
+
+    Router.prototype.remove = function() {
+      this.$el.remove();
+      $('body').off('keydown');
+      $('body').off('keyup');
+      return this.stopListening();
     };
 
     return Router;
 
-  })(Backbone.View);
+  })(Backbone.Router);
 
 }).call(this);

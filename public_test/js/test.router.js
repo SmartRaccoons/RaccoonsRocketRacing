@@ -131,14 +131,14 @@
     });
     describe('rooms', function() {
       it('room:functions', function() {
-        expect(r.$('.room-list ol>li').length).to.be(0);
+        expect($('.room-list ol>li').length).to.be(0);
         App.socket.receive.trigger('room:list', [
           {
             'id': 1,
             stage: 1
           }
         ]);
-        expect(r.$('.room-list ol>li').length).to.be(1);
+        expect($('.room-list ol>li').length).to.be(1);
         App.socket.receive.trigger('room:room_add', {
           'id': 2,
           stage: 1
@@ -149,14 +149,14 @@
         var spy;
         spy = sinon.spy();
         App.socket.send.on('room:create', spy);
-        r.$('.room-new-add button').click();
+        $('.room-new-add button').click();
         return expect(spy.callCount).to.be(1);
       });
       return it('room:left', function() {
         var spy;
         spy = sinon.spy();
         App.socket.send.on('room:left', spy);
-        r.$('.room-left button').click();
+        $('.room-left a').click();
         return expect(spy.callCount).to.be(1);
       });
     });

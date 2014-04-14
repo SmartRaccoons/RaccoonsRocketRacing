@@ -13,7 +13,10 @@ var connect = function(address){
     primus.on('close', function(){});
     primus.on('disconnection', function(){});
     primus.on('open', function(){
-        App.socket.send.trigger('login:try')
+        App.socket.send.trigger('login:try');
+        if(!Backbone.History.started){
+            Backbone.history.start();
+        }
 //      App.socket.receive.trigger.apply(App.socket.receive, ['connect']);
     });
     return primus;
