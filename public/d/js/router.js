@@ -62,7 +62,7 @@
       return _ref;
     }
 
-    Router.prototype['template'] = _.template("<div class=\"room-list\"></div>\n<div class=\"room-new\"></div>\n<div class=\"room-left\"><button data-role=\"room-left\"><%=_l('Left room')%></button></div>\n<section class=\"game\"></section>");
+    Router.prototype['template'] = _.template("<div id=\"user-panel\">\n  <ul>\n    <li>Rules</li>\n    <li>Battles</li>\n    <li>My profile</li>\n    <li>Best users</li>\n  </ul>\n  <div class=\"room-left\"><button data-role=\"room-left\"><%=_l('Left room')%></button></div>\n  <div class=\"info\">\n    <span class=\"username\">termilv</span>\n    <span class=\"logout\">logout</span>\n  </div>\n</div>\n\n<section class='room'>\n  <div class=\"room-list\"></div>\n</section>\n\n<section class='game'></section>\n");
 
     Router.prototype['events'] = {
       'click .room-left button': function() {
@@ -102,7 +102,11 @@
         }
       };
       Router.__super__.initialize.apply(this, arguments);
-      this.room = new App.Rooms();
+      this.room = new App.Rooms({
+        'stages': {
+          1: 'stage 1'
+        }
+      });
       this.listenTo(this.room, 'join', function(id) {
         return App.socket.send.trigger('room:join', id);
       });
@@ -164,8 +168,8 @@
     Router.prototype.render = function() {
       Router.__super__.render.apply(this, arguments);
       this.room.$el.appendTo(this.$('.room-list'));
-      this.room_new.render().$el.appendTo(this.$('.room-new'));
-      return this.game.$el.appendTo(this.$('.game'));
+      this.room_new.render().$el.appendTo(this.$('.room-list'));
+      return this.game.$el.appendTo(this.$('.game').empty());
     };
 
     return Router;

@@ -1,4 +1,4 @@
-var r = new App.Router({el: $('body')}),
+var r = new App.Router({el: $('#wrap')}),
     primus;
 App.socket.send.on('all', function(){
     primus.write(Array.prototype.slice.call(arguments));

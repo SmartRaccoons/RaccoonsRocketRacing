@@ -134,12 +134,14 @@
         expect(r.$('.room-list ol>li').length).to.be(0);
         App.socket.receive.trigger('room:list', [
           {
-            'id': 1
+            'id': 1,
+            stage: 1
           }
         ]);
         expect(r.$('.room-list ol>li').length).to.be(1);
         App.socket.receive.trigger('room:room_add', {
-          'id': 2
+          'id': 2,
+          stage: 1
         });
         return expect($('.room-list ol>li').length).to.be(2);
       });
@@ -147,23 +149,8 @@
         var spy;
         spy = sinon.spy();
         App.socket.send.on('room:create', spy);
-        r.$('.room-new button').click();
+        r.$('.room-new-add button').click();
         return expect(spy.callCount).to.be(1);
-      });
-      it('room:join', function() {
-        var spy;
-        spy = sinon.spy();
-        App.socket.send.on('room:join', spy);
-        App.socket.receive.trigger('room:list', [
-          {
-            'id': 1
-          }, {
-            'id': 2
-          }
-        ]);
-        r.$('.room-list ol>li:first-child button').click();
-        expect(spy.callCount).to.be(1);
-        return expect(spy.getCall(0).args[0]).to.be(2);
       });
       return it('room:left', function() {
         var spy;

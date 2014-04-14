@@ -21,10 +21,25 @@ App.Order = class Order
 App.Router = class Router extends Backbone.View
 
   'template': _.template """
-                <div class="room-list"></div>
-                <div class="room-new"></div>
-                <div class="room-left"><button data-role="room-left"><%=_l('Left room')%></button></div>
-                <section class="game"></section>
+<div id="user-panel">
+  <ul>
+    <li>Rules</li>
+    <li>Battles</li>
+    <li>My profile</li>
+    <li>Best users</li>
+  </ul>
+  <div class="room-left"><button data-role="room-left"><%=_l('Left room')%></button></div>
+  <div class="info">
+    <span class="username">termilv</span>
+    <span class="logout">logout</span>
+  </div>
+</div>
+
+<section class='room'>
+  <div class="room-list"></div>
+</section>
+
+<section class='game'></section>
               """
 
   'events':
@@ -51,7 +66,8 @@ App.Router = class Router extends Backbone.View
         'code': [32]
     super
 
-    @room = new App.Rooms()
+    @room = new App.Rooms
+      'stages': 1: 'stage 1'
     @listenTo @room, 'join', (id)=> App.socket.send.trigger 'room:join', id
 
     @room_new = new App.CreateRoom()
@@ -93,5 +109,5 @@ App.Router = class Router extends Backbone.View
   render: ->
     super
     @room.$el.appendTo(@$('.room-list'))
-    @room_new.render().$el.appendTo(@$('.room-new'))
-    @game.$el.appendTo(@$('.game'))
+    @room_new.render().$el.appendTo(@$('.room-list'))
+    @game.$el.appendTo(@$('.game').empty())
