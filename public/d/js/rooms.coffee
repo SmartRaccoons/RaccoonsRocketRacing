@@ -70,28 +70,41 @@ class Room extends Backbone.View
 
 App.RoomPreview = class RoomPreview extends Backbone.View
   template: _.template """
-					<div id="map-preview">
 						<div class="preview">
-							<div class="img"><img alt="map" src="map.png" /></div>
-							<div class="info map-name">Super duper Mapka</div>
-							<div class="info timer">05:47</div>
-							<div class="info users">5/10</div>
+							<img src="public/d/maps/preview<%=stage%>.png" />
+							<strong><%=name%></strong>
+
+							<i><%=users.length%>/<%=max%></i>
 						</div>
-						<div class="link"><input type="text" value="http://countertank.com/#map/superMapka" /></div>
-						<ol class="t t-s">
-
-							<li class="map">
-								<ul class="c">
-									<li class="l w49 name">Super user</li>
-									<li class="r w25 depth">10</li>
-									<li class="r w25 kill">12</li>
-								</ul>
-							</li>
-
-						</ol>
-						<div class="join">Join</div>
-					</div>
+						<input type="text" value="http://countertank.com/#m<%=id%>" />
+            <div class="teams" data-teams="<%=teams.length%>">
+              <% _.each(teams, function(users, i){ %>
+                <div data-id="<%=i%>">
+                  <ol>
+                    <% _.each(users, function(u){ %>
+                      <li data-id="<%=u%>">
+                          <strong><%=users_ids[u].name%></strong>
+                      </li>
+                    <% }) %>
+                  </ol>
+                  <button><%=_l('Join')%></button>
+                </div>
+              <% }) %>
+            </div>
   """
+  events:
+    'click .preview input': (e)-> @.select()
+    'click .teams button': (e)-> @trigger 'join', {'room': @_room_id, 'team': parseInt($(e.target).parent('div').attr('data-id'))}
+
+
+  show: -> @render.apply(@, arguments)
+
+  __renderData: (d)->
+    @_room_id = d.id
+    users_ids = {}
+    _.each d.users, (u)->
+      users_ids[u.id] = u
+    return {'users_ids': users_ids}
 
 
 App.CreateRoom = class CreateRoom extends Backbone.View

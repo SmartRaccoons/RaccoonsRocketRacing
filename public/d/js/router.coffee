@@ -28,21 +28,26 @@ App.Router = class Router extends Backbone.Router
     @$el = op.el
     @room = new App.Rooms
       'stages': 1: 'stage 1'
-    @listenTo @room, 'join', (id)=> App.socket.send.trigger 'room:join', id
+    @listenTo @room, 'open', (id)=> @map(id)
 
     @room_new = new App.CreateRoom()
     @listenTo @room_new, 'create', => App.socket.send.trigger 'room:create'
+
+    @roompreview = new App.RoomPreview()
+    @listenTo @roompreview, 'join', (d)-> App.socket.send.trigger 'room:join', d
 
     @game = new window.Bco()
     @game.render()
 
     @listenTo App.socket.receive, 'login:success', (user)=>
+      @user = user
       @room.options.monitor = user.id
 
     @listenTo App.socket.receive, 'room:list', =>
       @game.stop()
       @$el.removeClass('user-in-room')
     @listenTo App.socket.receive, 'game:start', => @$el.addClass('user-in-room')
+    @listenTo App.socket.receive, 'roompreview:show', (data)=> @navigate 'm'+data.id
 
     o = new Order()
     @listenTo App.socket.receive, 'all', =>
@@ -50,7 +55,7 @@ App.Router = class Router extends Backbone.Router
       event = args.shift()
       params = event.split(':')
       if params.length is 2
-        if params[0] in ['room', 'game']
+        if params[0] in ['room', 'roompreview', 'game']
           delay = 0
           o.next =>
             @[params[0]][params[1]].apply(@[params[0]], args)
@@ -86,7 +91,11 @@ App.Router = class Router extends Backbone.Router
   rooms: ->
 
   map: (id)->
-    console.info id
+    load = => App.socket.send.trigger 'room:open', id
+    if @user
+      load()
+    else
+      @listenToOnce App.socket.receive, 'login:success', load
 
   render: ->
     @$el.html """
@@ -113,6 +122,7 @@ App.Router = class Router extends Backbone.Router
     @$el.find('.room-left a').on 'click', -> App.socket.send.trigger 'room:left'
     @room.$el.appendTo(@$el.find('.room-list'))
     @room_new.render().$el.appendTo(@$el.find('.room-list'))
+    @roompreview.$el.appendTo(@$el.find('.room'))
     @game.$el.appendTo(@$el.find('.game'))
 
 

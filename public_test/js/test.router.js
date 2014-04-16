@@ -34,6 +34,37 @@
     afterEach(function() {
       return r.remove();
     });
+    describe('functional', function() {
+      it('map request', function() {
+        var spy;
+        spy = sinon.spy();
+        App.socket.send.on('room:open', spy);
+        App.socket.receive.trigger('login:success', {
+          'id': 1,
+          'name': 'beni'
+        });
+        r.map(2);
+        expect(spy.callCount).to.be(1);
+        return expect(spy.getCall(0).args[0]).to.be(2);
+      });
+      return it('map request not logged in', function() {
+        var spy;
+        spy = sinon.spy();
+        App.socket.send.on('room:open', spy);
+        r.map(2);
+        expect(spy.callCount).to.be(0);
+        App.socket.receive.trigger('login:success', {
+          'id': 1,
+          'name': 'beni'
+        });
+        expect(spy.callCount).to.be(1);
+        App.socket.receive.trigger('login:success', {
+          'id': 1,
+          'name': 'beni'
+        });
+        return expect(spy.callCount).to.be(1);
+      });
+    });
     describe('moving', function() {
       it('keydown', function() {
         var spy;
@@ -152,12 +183,71 @@
         $('.room-new-add button').click();
         return expect(spy.callCount).to.be(1);
       });
+      it('room:open', function() {
+        r.map = sinon.spy();
+        App.socket.receive.trigger('room:list', [
+          {
+            'id': 1,
+            'stage': 1
+          }, {
+            'id': 2,
+            'stage': 1
+          }
+        ]);
+        $('.room-list ol>li:first-child').click();
+        expect(r.map.callCount).to.be(1);
+        return expect(r.map.getCall(0).args[0]).to.be(2);
+      });
       return it('room:left', function() {
         var spy;
         spy = sinon.spy();
         App.socket.send.on('room:left', spy);
         $('.room-left a').click();
         return expect(spy.callCount).to.be(1);
+      });
+    });
+    describe('room preview', function() {
+      it('preview', function() {
+        App.socket.receive.trigger('roompreview:show', {
+          'id': 10,
+          'name': 'ben',
+          'max': 2,
+          'stage': 1,
+          'users': [],
+          'teams': []
+        });
+        return expect($('.room .preview strong').html()).to.be('ben');
+      });
+      it('join event', function() {
+        var spy;
+        App.socket.receive.trigger('roompreview:show', {
+          'id': 10,
+          'name': 'ben',
+          'max': 2,
+          'stage': 1,
+          'users': [],
+          'teams': [[], []]
+        });
+        spy = sinon.spy();
+        App.socket.send.on('room:join', spy);
+        $('.room .teams>div:nth-child(1) button').click();
+        return expect(spy.getCall(0).args[0]).to.be.eql({
+          'room': 10,
+          'team': 0
+        });
+      });
+      return it('trigger navigation', function() {
+        r.navigate = sinon.spy();
+        App.socket.receive.trigger('roompreview:show', {
+          'id': 11,
+          'name': 'ben',
+          'max': 2,
+          'stage': 1,
+          'users': [],
+          'teams': [[], []]
+        });
+        expect(r.navigate.callCount).to.be(1);
+        return expect(r.navigate.getCall(0).args[0]).to.be('m11');
       });
     });
     return describe('game', function() {

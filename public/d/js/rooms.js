@@ -132,7 +132,35 @@
       return _ref2;
     }
 
-    RoomPreview.prototype.template = _.template("<div id=\"map-preview\">\n	<div class=\"preview\">\n		<div class=\"img\"><img alt=\"map\" src=\"map.png\" /></div>\n		<div class=\"info map-name\">Super duper Mapka</div>\n		<div class=\"info timer\">05:47</div>\n		<div class=\"info users\">5/10</div>\n	</div>\n	<div class=\"link\"><input type=\"text\" value=\"http://countertank.com/#map/superMapka\" /></div>\n	<ol class=\"t t-s\">\n\n		<li class=\"map\">\n			<ul class=\"c\">\n				<li class=\"l w49 name\">Super user</li>\n				<li class=\"r w25 depth\">10</li>\n				<li class=\"r w25 kill\">12</li>\n			</ul>\n		</li>\n\n	</ol>\n	<div class=\"join\">Join</div>\n</div>");
+    RoomPreview.prototype.template = _.template("<div class=\"preview\">\n	<img src=\"public/d/maps/preview<%=stage%>.png\" />\n	<strong><%=name%></strong>\n\n	<i><%=users.length%>/<%=max%></i>\n</div>\n<input type=\"text\" value=\"http://countertank.com/#m<%=id%>\" />\n            <div class=\"teams\" data-teams=\"<%=teams.length%>\">\n              <% _.each(teams, function(users, i){ %>\n                <div data-id=\"<%=i%>\">\n                  <ol>\n                    <% _.each(users, function(u){ %>\n                      <li data-id=\"<%=u%>\">\n                          <strong><%=users_ids[u].name%></strong>\n                      </li>\n                    <% }) %>\n                  </ol>\n                  <button><%=_l('Join')%></button>\n                </div>\n              <% }) %>\n            </div>");
+
+    RoomPreview.prototype.events = {
+      'click .preview input': function(e) {
+        return this.select();
+      },
+      'click .teams button': function(e) {
+        return this.trigger('join', {
+          'room': this._room_id,
+          'team': parseInt($(e.target).parent('div').attr('data-id'))
+        });
+      }
+    };
+
+    RoomPreview.prototype.show = function() {
+      return this.render.apply(this, arguments);
+    };
+
+    RoomPreview.prototype.__renderData = function(d) {
+      var users_ids;
+      this._room_id = d.id;
+      users_ids = {};
+      _.each(d.users, function(u) {
+        return users_ids[u.id] = u;
+      });
+      return {
+        'users_ids': users_ids
+      };
+    };
 
     return RoomPreview;
 

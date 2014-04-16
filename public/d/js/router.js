@@ -76,16 +76,21 @@
           1: 'stage 1'
         }
       });
-      this.listenTo(this.room, 'join', function(id) {
-        return App.socket.send.trigger('room:join', id);
+      this.listenTo(this.room, 'open', function(id) {
+        return _this.map(id);
       });
       this.room_new = new App.CreateRoom();
       this.listenTo(this.room_new, 'create', function() {
         return App.socket.send.trigger('room:create');
       });
+      this.roompreview = new App.RoomPreview();
+      this.listenTo(this.roompreview, 'join', function(d) {
+        return App.socket.send.trigger('room:join', d);
+      });
       this.game = new window.Bco();
       this.game.render();
       this.listenTo(App.socket.receive, 'login:success', function(user) {
+        _this.user = user;
         return _this.room.options.monitor = user.id;
       });
       this.listenTo(App.socket.receive, 'room:list', function() {
@@ -95,6 +100,9 @@
       this.listenTo(App.socket.receive, 'game:start', function() {
         return _this.$el.addClass('user-in-room');
       });
+      this.listenTo(App.socket.receive, 'roompreview:show', function(data) {
+        return _this.navigate('m' + data.id);
+      });
       o = new Order();
       this.listenTo(App.socket.receive, 'all', function() {
         var args, delay, event, params, _ref1;
@@ -102,7 +110,7 @@
         event = args.shift();
         params = event.split(':');
         if (params.length === 2) {
-          if ((_ref1 = params[0]) === 'room' || _ref1 === 'game') {
+          if ((_ref1 = params[0]) === 'room' || _ref1 === 'roompreview' || _ref1 === 'game') {
             delay = 0;
             return o.next(function() {
               _this[params[0]][params[1]].apply(_this[params[0]], args);
@@ -163,7 +171,16 @@
     Router.prototype.rooms = function() {};
 
     Router.prototype.map = function(id) {
-      return console.info(id);
+      var load,
+        _this = this;
+      load = function() {
+        return App.socket.send.trigger('room:open', id);
+      };
+      if (this.user) {
+        return load();
+      } else {
+        return this.listenToOnce(App.socket.receive, 'login:success', load);
+      }
     };
 
     Router.prototype.render = function() {
@@ -173,6 +190,7 @@
       });
       this.room.$el.appendTo(this.$el.find('.room-list'));
       this.room_new.render().$el.appendTo(this.$el.find('.room-list'));
+      this.roompreview.$el.appendTo(this.$el.find('.room'));
       return this.game.$el.appendTo(this.$el.find('.game'));
     };
 
