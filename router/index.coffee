@@ -98,7 +98,7 @@ module.exports = class Router extends events.EventEmitter
     socket.on 'room:create', =>
       if not user.is_authenticated() or user.get('room')
         return
-      @rooms.add({'users': [user], 'stage': 1, 'teams': [[user.id], []]})
+      @rooms.add({'users': [user], 'stage': 1, 'max': 4, 'teams': [[user.id], []]})
 
     socket.on 'room:open', (r)=>
       room = @rooms.get(r)

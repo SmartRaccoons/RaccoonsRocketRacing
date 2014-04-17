@@ -317,7 +317,8 @@
         assert.equal(r.rooms.models.length, 1);
         assert.equal(r.rooms.models[0].get('users')[0].id, r.users.models[0].id);
         assert.deepEqual(r.rooms.models[0].get('teams'), [[r.users.models[0].id], []]);
-        return assert.equal(r.rooms.models[0].get('stage'), 1);
+        assert.equal(r.rooms.models[0].get('stage'), 1);
+        return assert.equal(r.rooms.models[0].get('max'), 4);
       });
       it('create not authenticated', function() {
         socket.emit('room:create');

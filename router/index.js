@@ -125,6 +125,7 @@
         return _this.rooms.add({
           'users': [user],
           'stage': 1,
+          'max': 4,
           'teams': [[user.id], []]
         });
       });
