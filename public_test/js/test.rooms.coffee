@@ -41,7 +41,7 @@ describe 'Rooms', ->
       r.room_add({'id': 2, 'stage': 1, 'users': []})
       spy = sinon.spy()
       r.on('open', spy)
-      r.$('>li[data-pk="1"]').click()
+      r.$('>li[data-pk="1"] strong').click()
       expect(spy.callCount).to.be(1)
       expect(spy.getCall(0).args[0]).to.be(1)
 
@@ -109,7 +109,7 @@ describe 'Preview Room', ->
 
     it 'map params', ->
       r.show({'id': 10, 'name': 'ben', 'max': 2, 'stage': 1, 'users': [], 'teams': []})
-      expect(r.$('.preview img').attr('src')).to.be('public/d/maps/preview1.png')
+      expect(r.$('.preview img').attr('src')).to.be('d/maps/preview1.png')
       expect(r.$('.preview strong').html()).to.be('ben')
       expect(r.$('.preview i').html()).to.be('0/2')
       expect(r.$('input').attr('value')).to.be('http://countertank.com/#m10')
@@ -123,7 +123,7 @@ describe 'Preview Room', ->
       expect(r.$('.teams div:nth-child(2) li:nth-child(1)').attr('data-id')).to.be('2')
       expect(r.$('.teams div:nth-child(2) li:nth-child(1) strong').html()).to.be('user 2')
 
-    it 'events', ->
+    it 'event join', ->
       r.show({'id': 10, 'name': 'ben', 'max': 2, 'stage': 1, 'users': [{'id': 1, 'name': 'user 1'}, {'id': 2, 'name': 'user 2'}, {'id': 3, 'name': 'user 3'}], 'teams': [[1, 3], [2]]})
       spy = sinon.spy()
       r.on 'join', spy
@@ -134,3 +134,9 @@ describe 'Preview Room', ->
       expect(spy.callCount).to.be(2)
       expect(spy.getCall(1).args[0]).to.be.eql({'room': 10, 'team': 1})
 
+#    it 'event select input', ->
+#      r.show({'id': 10, 'name': 'ben', 'max': 2, 'stage': 1, 'users': [{'id': 1, 'name': 'user 1'}, {'id': 2, 'name': 'user 2'}, {'id': 3, 'name': 'user 3'}], 'teams': [[1, 3], [2]]})
+#      spy = sinon.spy()
+#      r.$('input').select = spy
+#      r.$('input').click()
+#      expect(spy.callCount).to.be(1)

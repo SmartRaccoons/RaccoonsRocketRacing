@@ -207,6 +207,27 @@ describe 'router', ->
       socket.emit('room:create')
       assert.equal(r.rooms.models.length, 1)
 
+    it 'open', ->
+      socket.emit('login:try')
+      r.rooms.add({'users': [], 'teams': [[]]})
+      socket.emit('room:open', 1)
+      s = r.emit_user.withArgs(r.users.models[0], 'roompreview:show')
+      assert.equal(s.callCount, 1)
+      assert.deepEqual(s.getCall(0).args[2], r.rooms.models[0].toJSON())
+
+    it 'open wrong room id', ->
+      socket.emit('login:try')
+      r.rooms.add({'users': [], 'teams': [[]]})
+      r.emit_user = sinon.spy()
+      socket.emit('room:open', 2)
+      assert.equal(r.emit_user.callCount, 0)
+
+    it 'open not authenticated', ->
+      r.rooms.add({'users': [], 'teams': [[]]})
+      r.emit_user = sinon.spy()
+      socket.emit('room:open', 1)
+      assert.equal(r.emit_user.callCount, 0)
+
     it 'join', ->
       r.rooms.add({'users': [], 'teams': [[]]})
       socket.emit('login:try')

@@ -161,6 +161,8 @@
 
     _.extend(Bco.prototype, Backbone.View.prototype);
 
+    Bco.prototype.className = 'game-canvas';
+
     Bco.prototype.options = {
       path: ''
     };

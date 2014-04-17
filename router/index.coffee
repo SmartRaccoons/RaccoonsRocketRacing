@@ -100,6 +100,12 @@ module.exports = class Router extends events.EventEmitter
         return
       @rooms.add({'users': [user], 'stage': 1, 'teams': [[user.id], []]})
 
+    socket.on 'room:open', (r)=>
+      room = @rooms.get(r)
+      if not user.is_authenticated() or not room
+        return
+      @emit_user user, 'roompreview:show', room.toJSON()
+
     socket.on 'room:join', (pr)=>
       if not user.is_authenticated()
         return

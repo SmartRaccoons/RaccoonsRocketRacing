@@ -18,7 +18,7 @@
 
     Rooms.prototype.events = {
       'click >li': function(e) {
-        return this.trigger('open', parseInt($(e.target).attr('data-pk')));
+        return this.trigger('open', parseInt($(e.target).closest('li').attr('data-pk')));
       }
     };
 
@@ -132,11 +132,13 @@
       return _ref2;
     }
 
-    RoomPreview.prototype.template = _.template("<div class=\"preview\">\n	<img src=\"public/d/maps/preview<%=stage%>.png\" />\n	<strong><%=name%></strong>\n\n	<i><%=users.length%>/<%=max%></i>\n</div>\n<input type=\"text\" value=\"http://countertank.com/#m<%=id%>\" />\n            <div class=\"teams\" data-teams=\"<%=teams.length%>\">\n              <% _.each(teams, function(users, i){ %>\n                <div data-id=\"<%=i%>\">\n                  <ol>\n                    <% _.each(users, function(u){ %>\n                      <li data-id=\"<%=u%>\">\n                          <strong><%=users_ids[u].name%></strong>\n                      </li>\n                    <% }) %>\n                  </ol>\n                  <button><%=_l('Join')%></button>\n                </div>\n              <% }) %>\n            </div>");
+    RoomPreview.prototype.className = 'room-preview';
+
+    RoomPreview.prototype.template = _.template("<div class=\"preview\">\n              <span><img src=\"d/maps/preview<%=stage%>.png\" /></span>\n              <strong><%=name%></strong>\n              <i><%=users.length%>/<%=max%></i>\n            </div>\n<input type=\"text\" value=\"http://countertank.com/#m<%=id%>\" />\n            <div class=\"teams\" data-teams=\"<%=teams.length%>\">\n              <% _.each(teams, function(users, i){ %>\n                <div data-id=\"<%=i%>\">\n                  <ol>\n                    <% _.each(users, function(u){ %>\n                      <li data-id=\"<%=u%>\">\n                          <strong><%=users_ids[u].name%></strong>\n                      </li>\n                    <% }) %>\n                  </ol>\n                  <button><%=_l('Join')%></button>\n                </div>\n              <% }) %>\n            </div>");
 
     RoomPreview.prototype.events = {
-      'click .preview input': function(e) {
-        return this.select();
+      'click input': function(e) {
+        return this.$('input').select();
       },
       'click .teams button': function(e) {
         return this.trigger('join', {

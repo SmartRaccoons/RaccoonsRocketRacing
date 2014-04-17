@@ -3,7 +3,7 @@ App.Rooms = class Rooms extends Backbone.View
   rooms: {}
 
   events:
-    'click >li': (e)-> @trigger 'open', parseInt($(e.target).attr('data-pk'))
+    'click >li': (e)-> @trigger 'open', parseInt($(e.target).closest('li').attr('data-pk'))
 
   room_add: (data)->
     r = new Room()
@@ -69,13 +69,13 @@ class Room extends Backbone.View
 
 
 App.RoomPreview = class RoomPreview extends Backbone.View
+  className: 'room-preview'
   template: _.template """
 						<div class="preview">
-							<img src="public/d/maps/preview<%=stage%>.png" />
-							<strong><%=name%></strong>
-
-							<i><%=users.length%>/<%=max%></i>
-						</div>
+              <span><img src="d/maps/preview<%=stage%>.png" /></span>
+              <strong><%=name%></strong>
+              <i><%=users.length%>/<%=max%></i>
+            </div>
 						<input type="text" value="http://countertank.com/#m<%=id%>" />
             <div class="teams" data-teams="<%=teams.length%>">
               <% _.each(teams, function(users, i){ %>
@@ -93,7 +93,7 @@ App.RoomPreview = class RoomPreview extends Backbone.View
             </div>
   """
   events:
-    'click .preview input': (e)-> @.select()
+    'click input': (e)-> @$('input').select()
     'click .teams button': (e)-> @trigger 'join', {'room': @_room_id, 'team': parseInt($(e.target).parent('div').attr('data-id'))}
 
 

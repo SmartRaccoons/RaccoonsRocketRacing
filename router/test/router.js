@@ -329,6 +329,37 @@
         socket.emit('room:create');
         return assert.equal(r.rooms.models.length, 1);
       });
+      it('open', function() {
+        var s;
+        socket.emit('login:try');
+        r.rooms.add({
+          'users': [],
+          'teams': [[]]
+        });
+        socket.emit('room:open', 1);
+        s = r.emit_user.withArgs(r.users.models[0], 'roompreview:show');
+        assert.equal(s.callCount, 1);
+        return assert.deepEqual(s.getCall(0).args[2], r.rooms.models[0].toJSON());
+      });
+      it('open wrong room id', function() {
+        socket.emit('login:try');
+        r.rooms.add({
+          'users': [],
+          'teams': [[]]
+        });
+        r.emit_user = sinon.spy();
+        socket.emit('room:open', 2);
+        return assert.equal(r.emit_user.callCount, 0);
+      });
+      it('open not authenticated', function() {
+        r.rooms.add({
+          'users': [],
+          'teams': [[]]
+        });
+        r.emit_user = sinon.spy();
+        socket.emit('room:open', 1);
+        return assert.equal(r.emit_user.callCount, 0);
+      });
       it('join', function() {
         r.rooms.add({
           'users': [],

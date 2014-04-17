@@ -1,10 +1,25 @@
 @import "compass"
 
-=button-sm
-  height: 25px
-  padding: 0 10px
-  font-size: 12px
-  line-height: 25px
+=button
+  text-align: center
+  background: #68848A
+  border: 0
+  color: #fff
+  cursor: pointer
+  text-decoration: none
+  &:hover
+    background: #21211E
+
+=button-size($size)
+  height: $size
+  padding: 0 $size/2
+  font-size: $size/2
+  line-height: $size
+  border-radius: $size/5
+=li-size($size)
+  border-radius: $size
+  padding: $size
+  margin: $size/2
 
 *
   -moz-box-sizing: border-box
@@ -15,9 +30,11 @@ html, body
   height: 100%
   padding: 0
   margin: 0
+html
+  font-size: 62.5%
 
 body
-  font: normal 16px/1.4 arial
+  font: normal 1.5rem/1.4 arial
   min-height: 650px
   min-width: 1100px
   position: relative
@@ -70,26 +87,132 @@ body
     display: inline-block
     position: absolute
     margin-left: 15px
-    button
-      +button-sm
+    a
+      +button
       background: #940000
+      +button-size(2.5rem)
 
-
-
-.room-list
+.room, .game
   height: 620px
-  background: #969696
-  border-radius: 10px
-  position: relative
-  padding: 10px
 
-.room-list
-  width: 440px
+.room .chat, .room-list, .room-preview, .game
+  padding: 1rem
+  position: relative
+  border-radius: 1rem
+  background: #969696
+
+.chat, .room-list, .room-preview
+  +float-left
+  height: 100%
 
 .room-new-add
   position: absolute
   right: 10px
   bottom: 10px
+
+.room .chat
+  width: 28%
+
+.chat
+  ol
+    height: 90%
+    font-size: 1.2rem
+    color: #fff
+    >li
+      +li-size(0.24rem)
+    i
+      color: #ddcccc
+      font-style: normal
+      &:before, &:after
+        color: #ffffff
+      &:before
+        content: '['
+      &:after
+        content: ']'
+    strong
+      font-weight: normal
+      color: #969696
+      &:after
+        content: ' :'
+        color: #fff
+  textarea
+    width: 100%
+    margin-top: 1rem
+    height: 9%
+    border: 0.5rem solid #69858B
+
+.room-list
+  width: 40%
+  margin: 0 0.5%
+  ol
+    height: 90%
+
+.room-preview
+  width: 30%
+  .preview
+    position: relative
+    padding: 0.5rem
+    background: #68848A
+    line-height: 1
+    strong, i
+      display: block
+      position: absolute
+      padding: 0.5rem
+      border-radius: 0.5rem
+      background: rgba(105, 133, 139, 0.7)
+      color: #fff
+      font-style: normal
+    strong
+      top: 5%
+      left: 5%
+    i
+      bottom: 5%
+      left: 5%
+  .teams
+    height: 40%
+    &[data-teams='2']
+      +clearfix
+      >div
+        +float-left
+        width: 50%
+    >div
+      height: 100%
+      position: relative
+    ol
+      height: 90%
+      font-size: 1.2rem
+      >li
+        +li-size(0.24rem)
+      strong
+        font-weight: normal
+    button
+      +button-size(2.2rem)
+      position: absolute
+      bottom: 0
+  img
+    max-width: 100%
+
+.game
+  .chat, .users
+    width: 21%
+  .users
+    +float-left
+    height: 100%
+    ol
+      height: 60%
+      font-size: 1.2rem
+      >li
+        +li-size(0.24rem)
+  .game-canvas
+    +float-left
+    width: 56%
+    margin: 0 1%
+    text-align: center
+    border: 0.5rem solid #69858B
+    line-height: 0
+    font-size: 0
+    canvas
+      width: 100%
 
 
 
@@ -125,24 +248,25 @@ body
     width: 20%
     top: 0
     left: 50%
-    margin-top: 5px
+    margin-top: 0.5rem
     text-align: center
+
+
 ol
   list-style: none
   padding: 0
   margin: 0
   overflow-y: scroll
   color: #fff
-  height: 540px
+  &:empty
+    display: none
   ul, li
     list-style: none
     margin: 0
     padding: 0
   >li
     background: #4A4343
-    border-radius: 5px
-    padding: 5px
-    margin: 2px
+    +li-size(0.5rem)
     &:hover
       background: #21211E
   ul li
@@ -150,16 +274,17 @@ ol
       text-align: center
     &.r
       text-align: right
-button
-  height: 50px
-  padding: 0 20px
-  font-size: 20px
-  line-height: 50px
-  text-align: center
-  background: #68848A
-  border: 0
+h1
+  margin: 0
+  padding: 0
   color: #fff
-  border-radius: 10px
-  cursor: pointer
-  &:hover
-    background: #21211E
+  font-size: 2.2rem
+
+input
+  border: 0.5rem solid #69858B
+  margin: 0.5rem 0
+  width: 100%
+
+button
+  +button
+  +button-size(5rem)

@@ -102,28 +102,78 @@ App.Router = class Router extends Backbone.Router
 <div id="user-panel">
   <ul>
     <li>Rules</li>
-    <li><a href="#">Battles</a></li>
     <li>My profile</li>
     <li>Best users</li>
   </ul>
   <div class="room-left"><a href="#">"""+_l('Left room')+"""</a></div>
   <div class="info">
-    <span class="username">termilv</span>
+    <span class="username">fake name</span>
     <span class="logout">logout</span>
   </div>
 </div>
 
 <section class='room'>
+  <div class="chat">
+		<ol>
+			<li>
+					<i>12:23</i>
+					<strong>Super user</strong>
+					 of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv
+				</ul>
+			</li>
+			<li>
+					<i>12:23</i>
+					<strong>Super user</strong>
+          00s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv
+				</ul>
+			</li>
+		</ol>
+		<textarea cols="35" rows="3" placeholder="(Nastrodoj)Press Enter to add message"></textarea>
+  </div>
+
+
   <div class="room-list"></div>
 </section>
 
-<section class='game'></section>
+<section class='game'>
+
+  <div class="chat">
+		<ol>
+			<li>
+					<i>12:23</i>
+					<strong>Super user</strong>
+					 of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv
+				</ul>
+			</li>
+			<li>
+					<i>12:23</i>
+					<strong>Super user</strong>
+          00s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv
+				</ul>
+			</li>
+		</ol>
+		<textarea cols="35" rows="3" placeholder="(Nastrodoj)Press Enter to add message"></textarea>
+  </div>
+
+
+</section>
 """
     @$el.find('.room-left a').on 'click', -> App.socket.send.trigger 'room:left'
     @room.$el.appendTo(@$el.find('.room-list'))
     @room_new.render().$el.appendTo(@$el.find('.room-list'))
     @roompreview.$el.appendTo(@$el.find('.room'))
     @game.$el.appendTo(@$el.find('.game'))
+    $("""
+    <div class="users">
+      <h1>Super mapka</h1>
+      <input type="text" value="http://countertank.com/#m3" />
+      <ol>
+        <li>
+            <strong>Super user</strong>
+        </li>
+      </ol>
+    </div>
+    """).appendTo(@$el.find('.game'))
 
 
   remove: ->

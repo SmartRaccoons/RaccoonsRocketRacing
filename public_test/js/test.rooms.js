@@ -95,7 +95,7 @@
         });
         spy = sinon.spy();
         r.on('open', spy);
-        r.$('>li[data-pk="1"]').click();
+        r.$('>li[data-pk="1"] strong').click();
         expect(spy.callCount).to.be(1);
         return expect(spy.getCall(0).args[0]).to.be(1);
       });
@@ -255,7 +255,7 @@
           'users': [],
           'teams': []
         });
-        expect(r.$('.preview img').attr('src')).to.be('public/d/maps/preview1.png');
+        expect(r.$('.preview img').attr('src')).to.be('d/maps/preview1.png');
         expect(r.$('.preview strong').html()).to.be('ben');
         expect(r.$('.preview i').html()).to.be('0/2');
         return expect(r.$('input').attr('value')).to.be('http://countertank.com/#m10');
@@ -287,7 +287,7 @@
         expect(r.$('.teams div:nth-child(2) li:nth-child(1)').attr('data-id')).to.be('2');
         return expect(r.$('.teams div:nth-child(2) li:nth-child(1) strong').html()).to.be('user 2');
       });
-      return it('events', function() {
+      return it('event join', function() {
         r.show({
           'id': 10,
           'name': 'ben',

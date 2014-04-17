@@ -128,6 +128,14 @@
           'teams': [[user.id], []]
         });
       });
+      socket.on('room:open', function(r) {
+        var room;
+        room = _this.rooms.get(r);
+        if (!user.is_authenticated() || !room) {
+          return;
+        }
+        return _this.emit_user(user, 'roompreview:show', room.toJSON());
+      });
       socket.on('room:join', function(pr) {
         var e;
         if (!user.is_authenticated()) {

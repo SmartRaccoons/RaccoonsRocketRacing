@@ -184,14 +184,15 @@
     };
 
     Router.prototype.render = function() {
-      this.$el.html("<div id=\"user-panel\">\n  <ul>\n    <li>Rules</li>\n    <li><a href=\"#\">Battles</a></li>\n    <li>My profile</li>\n    <li>Best users</li>\n  </ul>\n  <div class=\"room-left\"><a href=\"#\">" + _l('Left room') + "</a></div>\n<div class=\"info\">\n  <span class=\"username\">termilv</span>\n  <span class=\"logout\">logout</span>\n</div>\n</div>\n\n<section class='room'>\n<div class=\"room-list\"></div>\n</section>\n\n<section class='game'></section>");
+      this.$el.html("<div id=\"user-panel\">\n  <ul>\n    <li>Rules</li>\n    <li>My profile</li>\n    <li>Best users</li>\n  </ul>\n  <div class=\"room-left\"><a href=\"#\">" + _l('Left room') + "</a></div>\n<div class=\"info\">\n  <span class=\"username\">fake name</span>\n  <span class=\"logout\">logout</span>\n</div>\n</div>\n\n<section class='room'>\n<div class=\"chat\">\n		<ol>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n					 of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n        00s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n		</ol>\n		<textarea cols=\"35\" rows=\"3\" placeholder=\"(Nastrodoj)Press Enter to add message\"></textarea>\n</div>\n\n\n<div class=\"room-list\"></div>\n</section>\n\n<section class='game'>\n\n<div class=\"chat\">\n		<ol>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n					 of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n        00s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n		</ol>\n		<textarea cols=\"35\" rows=\"3\" placeholder=\"(Nastrodoj)Press Enter to add message\"></textarea>\n</div>\n\n\n</section>");
       this.$el.find('.room-left a').on('click', function() {
         return App.socket.send.trigger('room:left');
       });
       this.room.$el.appendTo(this.$el.find('.room-list'));
       this.room_new.render().$el.appendTo(this.$el.find('.room-list'));
       this.roompreview.$el.appendTo(this.$el.find('.room'));
-      return this.game.$el.appendTo(this.$el.find('.game'));
+      this.game.$el.appendTo(this.$el.find('.game'));
+      return $("<div class=\"users\">\n  <h1>Super mapka</h1>\n  <input type=\"text\" value=\"http://countertank.com/#m3\" />\n  <ol>\n    <li>\n        <strong>Super user</strong>\n    </li>\n  </ol>\n</div>").appendTo(this.$el.find('.game'));
     };
 
     Router.prototype.remove = function() {
