@@ -35,53 +35,68 @@ describe 'Rooms', ->
 
 
   describe 'new room', ->
-    it 'join user errors', ->
+    it 'join user room errors', ->
       rooms = new Rooms()
-      rooms.add({'id': 'bena', 'users': [@users.models[0]], 'creator': @users.models[0]})
-      rooms.add({'id': '2', 'users': [@users.models[1]], 'creator': @users.models[1]})
-      assert.throws((=> rooms.join_user('no', @users.models[2])), Error, 'wrong room')
-      assert.throws((=> rooms.join_user('2', @users.models[1])), Error, 'user in room')
-      assert.throws((=> rooms.join_user('bena', @users.models[1])), Error, 'user in room')
-      assert.doesNotThrow((=> rooms.join_user('bena', @users.models[2])))
+      rooms.add({'id': 'bena', 'users': [@users.models[0]], 'teams': [['unique']]})
+      rooms.add({'id': '2', 'users': [@users.models[1]], 'teams': [['unique 2']]})
+      assert.throws((=> rooms.user_join(@users.models[2])), Error, 'wrong room')
+      assert.throws((=> rooms.user_join(@users.models[2], {'room': 'no'})), Error, 'wrong room')
+      assert.throws((=> rooms.user_join(@users.models[1], {'room': '2'})), Error, 'user in room')
+      assert.throws((=> rooms.user_join(@users.models[1], {'room': 'bena'})), Error, 'user in room')
+      assert.doesNotThrow((=> rooms.user_join(@users.models[2], {'room': 'bena', 'team': 0})))
+
+    it 'join user team errors', ->
+      rooms = new Rooms()
+      rooms.add({'id': 'bena', 'users': [@users.models[0]], 'teams': [['unique']]})
+      rooms.add({'id': 'b2', 'users': [], 'teams': [[], []]})
+      rooms.add({'id': '2', 'users': [@users.models[1]], 'teams': []})
+      assert.throws((=> rooms.user_join(@users.models[2], {'room': 'bena'})), Error, 'wrong team')
+      assert.throws((=> rooms.user_join(@users.models[2], {'room': 'bena', 'team': 1})), Error, 'wrong team')
+      assert.throws((=> rooms.user_join(@users.models[2], {'room': 'b2', 'team': 2})), Error, 'wrong team')
+      assert.doesNotThrow((=> rooms.user_join(@users.models[2], {'room': 'b2', 'team': 1})))
 
     it 'left user errors', ->
       rooms = new Rooms()
-      rooms.add({'id': 'bena', 'users': [@users.models[0]], 'creator': @users.models[0]})
-      assert.throws((=> rooms.left_user(@users.models[1])), Error, 'not in room')
-      assert.doesNotThrow((=> rooms.left_user(@users.models[0])))
+      rooms.add({'id': 'bena', 'users': [@users.models[0]], 'teams': [['unique']]})
+      assert.throws((=> rooms.user_left(@users.models[1])), Error, 'not in room')
+      assert.doesNotThrow((=> rooms.user_left(@users.models[0])))
 
-    it 'join user', ->
+    it 'user join', ->
       rooms = new Rooms()
       spy = sinon.spy()
       rooms.on 'user:join', spy
-      rooms.add({'id': 'bena', 'users': [@users.models[0]], 'creator': @users.models[0]})
+      rooms.add({'id': 'bena', 'users': [@users.models[0]], 'teams': [['unique']]})
       assert.equal(rooms.models[0].id, @users.models[0].get('room').id)
-      rooms.join_user('bena', @users.models[1])
+      rooms.user_join(@users.models[1], {'room': 'bena', 'team': 0})
       assert.equal(rooms.models[0].id, @users.models[1].get('room').id)
+      assert.equal(0, @users.models[1].get('team'))
+      assert.deepEqual(rooms.models[0].get('teams'), [['unique', 'unique 2']])
       assert.equal('bena', spy.getCall(0).args[0].get('id'))
       assert.equal('unique 2', spy.getCall(0).args[1].get('id'))
       assert.equal(1, spy.callCount)
       assert.equal(rooms.get('bena').get('users').length, 2)
 
-    it 'left user', ->
+    it 'user left', ->
       rooms = new Rooms()
       spy = sinon.spy()
       rooms.on 'user:left', spy
-      rooms.add({'id': 'bena', 'users': [@users.models[0]], 'creator': @users.models[0]})
-      rooms.join_user('bena', @users.models[1])
-      rooms.left_user(@users.models[0])
+      rooms.add({'id': 'bena', 'users': [@users.models[0]], 'teams': [['unique']]})
+      rooms.user_join(@users.models[1], {'room': 'bena', 'team': 0})
+      rooms.user_left(@users.models[0])
       assert.equal('bena', spy.getCall(0).args[0].get('id'))
       assert.equal('unique', spy.getCall(0).args[1].get('id'))
       assert.equal(1, spy.callCount)
       assert.equal(rooms.get('bena').get('users').length, 1)
+      assert.deepEqual(rooms.get('bena').get('teams'), [['unique 2']])
       assert.equal(null, @users.models[0].get('room'))
+      assert.equal(null, @users.models[0].get('team'))
 
     it 'left last user and destroy room', ->
       rooms = new Rooms()
       spy = sinon.spy()
       rooms.on 'remove', spy
-      rooms.add({'id': 'bena', 'users': [@users.models[0]], 'creator': @users.models[0]})
-      rooms.left_user(@users.models[0])
+      rooms.add({'id': 'bena', 'users': [@users.models[0]], 'teams': [['unique']]})
+      rooms.user_left(@users.models[0])
       assert.equal('bena', spy.getCall(0).args[0].get('id'))
       assert.equal(0, rooms.models.length)
 
@@ -89,9 +104,9 @@ describe 'Rooms', ->
   describe 'toJSON', ->
     it 'attributes', ->
       rooms = new Rooms(null, {'max': 3})
-      rooms.add({'users': [@users.models[0]]})
-      rooms.add({'users': [@users.models[1], @users.models[2], @users.models[3]], 'type': ['d']})
-      assert.deepEqual({'id': 1, 'max': 3, 'users': [{'id': 'unique', 'name': 'lietotajs 1'}]}, rooms.toJSON()[0])
+      rooms.add({'stage': 1, 'users': [@users.models[0]], 'teams': [[1], [2]]})
+      rooms.add({'stage': 1, 'users': [@users.models[1], @users.models[2], @users.models[3]], 'teams': [[], []], 'type': ['d']})
+      assert.deepEqual({'id': 1, 'max': 3, 'stage': 1, 'teams': [[1], [2]], 'users': [{'id': 'unique', 'name': 'lietotajs 1'}]}, rooms.toJSON()[0])
       assert.equal(3, rooms.toJSON()[1]['max'])
       assert.deepEqual(2, rooms.toJSON()[1]['id'])
       assert.deepEqual([{'id': 'unique 2', 'name': 'lietotajs 2'},
@@ -102,18 +117,18 @@ describe 'Rooms', ->
   describe 'create/remove room', ->
     it '3 max players', ->
       rooms = new Rooms([], {'max': 3})
-      rooms.add('id': 'bena', 'users': [@users.models[0]], 'creator': @users.models[0])
-      rooms.join_user('bena', @users.models[1])
-      rooms.join_user('bena', @users.models[2])
-      assert.throws((=> rooms.joinUser('bena', @users.models[3])), Error, 'full room')
+      rooms.add('id': 'bena', 'users': [@users.models[0]], 'teams': [['unique']])
+      rooms.user_join(@users.models[1], {'room': 'bena', 'team': 0})
+      rooms.user_join(@users.models[2], {'room': 'bena', 'team': 0})
+      assert.throws((=> rooms.user_join(@users.models[3], {'room': 'bena', 'team': 0})), Error, 'full room')
 
     it 'remove room', ->
       rooms = new Rooms([], {'max': 3})
       spy = sinon.spy()
       rooms.on 'remove', spy
-      rooms.add('id': 'bena', 'users': [@users.models[0]], 'creator': @users.models[0])
-      rooms.join_user('bena', @users.models[1])
-      rooms.join_user('bena', @users.models[2])
+      rooms.add('id': 'bena', 'users': [@users.models[0]], 'teams': [['unique']])
+      rooms.user_join(@users.models[1], {'room': 'bena', 'team': 0})
+      rooms.user_join(@users.models[2], {'room': 'bena', 'team': 0})
       rooms.remove(rooms.models[0])
       assert.equal(1, spy.callCount)
       assert.equal(null, @users.models[0].room)

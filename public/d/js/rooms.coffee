@@ -2,10 +2,12 @@ App.Rooms = class Rooms extends Backbone.View
   tagName: 'ol'
   rooms: {}
 
+  events:
+    'click >li': (e)-> @trigger 'open', parseInt($(e.target).closest('li').attr('data-pk'))
+
   room_add: (data)->
     r = new Room()
     r.rooms = @
-    @listenTo r, 'join', => @trigger 'join', data.id
     @listenTo r, 'monitor:add', => @trigger 'monitor:add'
     @listenTo r, 'monitor:remove', => @trigger 'monitor:remove'
     r.render(data)
@@ -30,44 +32,79 @@ App.Rooms = class Rooms extends Backbone.View
 class Room extends Backbone.View
   tagName: 'li'
   template: _.template """
-                       <ul></ul>
-                       <button type='button'><%=_l('Play')%></button>
+                       <strong><%=name%></strong>
+                       <span><%=self.rooms.options.stages[stage]%></span>
                        """
-
-  events:
-    'click button': -> @trigger('join')
 
   user_add: (user)->
     @_users += 1
-    if @_users is @_max
-      @$button.attr('disabled', '')
+    @_update_users()
     if user.id is @rooms.options.monitor
       @trigger 'monitor:add'
       @_monitor = true
-    @$ul.append('<li data-pk="'+user.id+'"><strong>'+user.name+'</strong></li>')
 
   user_left: (user)->
     @_users -= 1
-    if @_users < @_max
-      @$button.removeAttr('disabled')
+    @_update_users()
     if user is @rooms.options.monitor
       @_monitor = false
       @trigger 'monitor:remove'
-    @$ul.find('li[data-pk="'+user+'"]').remove()
+
+  _update_users: ->
+    @$el.attr('data-users', @_users)
 
   render: (data)->
     super
     @_users = 0
     @_max = data.max
-    @$ul = @$('ul')
-    @$button = @$('button')
     @$el.attr('data-pk', data.id)
+    @$el.attr('data-max', data.max)
+    @_update_users()
     _.each data.users, _.bind(@user_add, @)
 
   remove: ->
     if @_monitor
       @trigger 'monitor:remove'
     super
+
+
+App.RoomPreview = class RoomPreview extends Backbone.View
+  className: 'room-preview'
+  template: _.template """
+						<div class="preview">
+              <span><img src="d/maps/preview<%=stage%>.png" /></span>
+              <strong><%=name%></strong>
+              <i><%=users.length%>/<%=max%></i>
+            </div>
+						<input type="text" value="http://countertank.com/#m<%=id%>" />
+            <div class="teams" data-teams="<%=teams.length%>">
+              <% _.each(teams, function(users, i){ %>
+                <div data-id="<%=i%>">
+                  <ol>
+                    <% _.each(users, function(u){ %>
+                      <li data-id="<%=u%>">
+                          <strong><%=users_ids[u].name%></strong>
+                      </li>
+                    <% }) %>
+                  </ol>
+                  <button><%=_l('Join')%></button>
+                </div>
+              <% }) %>
+            </div>
+  """
+  events:
+    'click input': (e)-> @$('input').select()
+    'click .teams button': (e)-> @trigger 'join', {'room': @_room_id, 'team': parseInt($(e.target).parent('div').attr('data-id'))}
+
+
+  show: -> @render.apply(@, arguments)
+
+  __renderData: (d)->
+    @_room_id = d.id
+    users_ids = {}
+    _.each d.users, (u)->
+      users_ids[u.id] = u
+    return {'users_ids': users_ids}
 
 
 App.CreateRoom = class CreateRoom extends Backbone.View

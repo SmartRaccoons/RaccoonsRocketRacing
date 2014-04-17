@@ -1,5 +1,5 @@
 App.lang.strings.lv = {
-    'Play': 'Spēlēt',
+    'Join': 'Pievienoties',
     'Create room': 'Izveidot istabu',
     'Left room': 'Pamest istabu',
     '': ''

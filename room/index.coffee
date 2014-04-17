@@ -27,34 +27,43 @@ root.Users = class Users extends root.Backbone.Collection
 class Room extends root.Backbone.Model
   defaults:
     users: []
+    teams: [[]]
 
   initialize: ->
     for u in @get('users')
-      @_add_user(u)
+      @_user_add(u)
 
   is_full: -> @get('users').length is @get('max')
 
-  _add_user: (u)->
+  _user_add: (u)->
     u.set('room', @)
+    @get('teams').forEach (t, i)->
+      if t.indexOf(u.id) isnt -1
+        u.set('team', i)
 
-  join_user: (user)->
-    @_add_user(user)
+  user_join: (user, team)->
     @get('users').push(user)
+    @get('teams')[team].push(user.id)
+    @_user_add(user)
     @collection.trigger('user:join', @, user)
 
-  left_user: (user)->
+  user_left: (user)->
     users = []
     for u in @get('users')
       if u.id isnt user.id
         users.push(u)
     @set('users', users)
     user.set('room', null)
+    @get('teams')[user.get('team')].splice(@get('teams')[user.get('team')].indexOf(user.id) , 1)
+    user.set('team', null)
     @collection.trigger('user:left', @, user)
 
   toJSON: ->
       'id': @id
       'max': @get('max')
+      'stage': @get('stage')
       'users': @get('users').map (u)-> u.user_data()
+      'teams': @get('teams')
 
 
 root.Rooms = class Rooms extends root.Backbone.Collection
@@ -62,8 +71,8 @@ root.Rooms = class Rooms extends root.Backbone.Collection
   initialize: (models, opt)->
     @_id = 1
     @_max = opt&&opt['max'] || 2
-    @on 'remove', (r)->
-      r.get('users').forEach (u)-> u.set('room', null)
+#    @on 'remove', (r)->
+#      r.get('users').forEach (u)-> u.set('room', null)
     @
 
   add: ->
@@ -74,8 +83,8 @@ root.Rooms = class Rooms extends root.Backbone.Collection
       args[0].max = @_max
     root.Backbone.Collection.prototype.add.apply(@, args)
 
-  join_user: (room_id, user)->
-    room = @get(room_id)
+  user_join: (user, pr)->
+    room = @get(pr.room)
     if not room?
       throw new Error 'wrong room'
     for r in @models
@@ -84,13 +93,15 @@ root.Rooms = class Rooms extends root.Backbone.Collection
           throw new Error 'user in room'
     if room.is_full()
       throw new Error 'full room'
-    room.join_user(user)
+    if not (pr.team < room.get('teams').length and pr.team >= 0)
+      throw new Error 'wrong team'
+    room.user_join(user, pr.team)
 
-  left_user: (user)->
+  user_left: (user)->
     room = @by_user(user)
     if not room
       throw new Error 'not in room'
-    room.left_user(user)
+    room.user_left(user)
     if room.get('users').length is 0
       @remove(room)
       room = null

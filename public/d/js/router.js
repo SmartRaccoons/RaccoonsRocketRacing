@@ -62,24 +62,64 @@
       return _ref;
     }
 
-    Router.prototype['template'] = _.template("<div class=\"room-list\"></div>\n<div class=\"room-new\"></div>\n<div class=\"room-left\"><button data-role=\"room-left\"><%=_l('Left room')%></button></div>\n<section class=\"game\"></section>");
-
-    Router.prototype['events'] = {
-      'click .room-left button': function() {
-        return App.socket.send.trigger('room:left');
-      },
-      'keydown': function(e) {
-        return this.control(e.keyCode, true);
-      },
-      'keyup': function(e) {
-        return this.control(e.keyCode, false);
-      }
+    Router.prototype.routes = {
+      '': 'rooms',
+      'm:id': 'map'
     };
 
-    Router.prototype.initialize = function() {
-      var o,
+    Router.prototype.initialize = function(op) {
+      var control, keys, o,
         _this = this;
-      this._keys = {
+      this.$el = op.el;
+      this.room = new App.Rooms({
+        'stages': {
+          1: 'stage 1'
+        }
+      });
+      this.listenTo(this.room, 'open', function(id) {
+        return _this.map(id);
+      });
+      this.room_new = new App.CreateRoom();
+      this.listenTo(this.room_new, 'create', function() {
+        return App.socket.send.trigger('room:create');
+      });
+      this.roompreview = new App.RoomPreview();
+      this.listenTo(this.roompreview, 'join', function(d) {
+        return App.socket.send.trigger('room:join', d);
+      });
+      this.game = new window.Bco();
+      this.game.render();
+      this.listenTo(App.socket.receive, 'login:success', function(user) {
+        _this.user = user;
+        return _this.room.options.monitor = user.id;
+      });
+      this.listenTo(App.socket.receive, 'room:list', function() {
+        _this.game.stop();
+        return _this.$el.removeClass('user-in-room');
+      });
+      this.listenTo(App.socket.receive, 'game:start', function() {
+        return _this.$el.addClass('user-in-room');
+      });
+      this.listenTo(App.socket.receive, 'roompreview:show', function(data) {
+        return _this.navigate('m' + data.id);
+      });
+      o = new Order();
+      this.listenTo(App.socket.receive, 'all', function() {
+        var args, delay, event, params, _ref1;
+        args = Array.prototype.slice.call(arguments);
+        event = args.shift();
+        params = event.split(':');
+        if (params.length === 2) {
+          if ((_ref1 = params[0]) === 'room' || _ref1 === 'roompreview' || _ref1 === 'game') {
+            delay = 0;
+            return o.next(function() {
+              _this[params[0]][params[1]].apply(_this[params[0]], args);
+              return o.end();
+            }, delay);
+          }
+        }
+      });
+      keys = {
         'up': {
           'active': false,
           'code': [38, 74]
@@ -98,78 +138,72 @@
         },
         'fire': {
           'active': false,
-          'code': [32]
+          'code': [32, 90]
         }
       };
-      Router.__super__.initialize.apply(this, arguments);
-      this.room = new App.Rooms();
-      this.listenTo(this.room, 'join', function(id) {
-        return App.socket.send.trigger('room:join', id);
-      });
-      this.room_new = new App.CreateRoom();
-      this.listenTo(this.room_new, 'create', function() {
-        return App.socket.send.trigger('room:create');
-      });
-      this.game = new window.Bco();
-      this.game.render();
-      this.listenTo(App.socket.receive, 'login:success', function(user) {
-        return _this.room.options.monitor = user.id;
-      });
-      this.listenTo(App.socket.receive, 'room:list', function() {
-        _this.game.stop();
-        return _this.$el.removeClass('user-in-room');
-      });
-      this.listenTo(App.socket.receive, 'game:start', function() {
-        return _this.$el.addClass('user-in-room');
-      });
-      o = new Order();
-      this.listenTo(App.socket.receive, 'all', function() {
-        var args, delay, event, params, _ref1;
-        args = Array.prototype.slice.call(arguments);
-        event = args.shift();
-        params = event.split(':');
-        if (params.length === 2) {
-          if ((_ref1 = params[0]) === 'room' || _ref1 === 'game') {
-            delay = 0;
-            return o.next(function() {
-              _this[params[0]][params[1]].apply(_this[params[0]], args);
-              return o.end();
-            }, delay);
+      control = function(code, active) {
+        var attr, val, _results;
+        _results = [];
+        for (attr in keys) {
+          val = keys[attr];
+          if (__indexOf.call(val.code, code) >= 0 && val.active !== active) {
+            val.active = active;
+            _results.push(App.socket.send.trigger('control', {
+              'move': attr,
+              'active': active
+            }));
+          } else {
+            _results.push(void 0);
           }
         }
+        return _results;
+      };
+      $('body').on('keydown', function(e) {
+        return control(e.keyCode, true);
+      });
+      $('body').on('keyup', function(e) {
+        return control(e.keyCode, false);
       });
       this.render();
       return this;
     };
 
-    Router.prototype.control = function(code, active) {
-      var attr, val, _ref1, _results;
-      _ref1 = this._keys;
-      _results = [];
-      for (attr in _ref1) {
-        val = _ref1[attr];
-        if (__indexOf.call(val.code, code) >= 0 && val.active !== active) {
-          val.active = active;
-          _results.push(App.socket.send.trigger('control', {
-            'move': attr,
-            'active': active
-          }));
-        } else {
-          _results.push(void 0);
-        }
+    Router.prototype.rooms = function() {};
+
+    Router.prototype.map = function(id) {
+      var load,
+        _this = this;
+      load = function() {
+        return App.socket.send.trigger('room:open', id);
+      };
+      if (this.user) {
+        return load();
+      } else {
+        return this.listenToOnce(App.socket.receive, 'login:success', load);
       }
-      return _results;
     };
 
     Router.prototype.render = function() {
-      Router.__super__.render.apply(this, arguments);
-      this.room.$el.appendTo(this.$('.room-list'));
-      this.room_new.render().$el.appendTo(this.$('.room-new'));
-      return this.game.$el.appendTo(this.$('.game'));
+      this.$el.html("<div id=\"user-panel\">\n  <ul>\n    <li>Rules</li>\n    <li>My profile</li>\n    <li>Best users</li>\n  </ul>\n  <div class=\"room-left\"><a href=\"#\">" + _l('Left room') + "</a></div>\n<div class=\"info\">\n  <span class=\"username\">fake name</span>\n  <span class=\"logout\">logout</span>\n</div>\n</div>\n\n<section class='room'>\n<div class=\"chat\">\n		<ol>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n					 of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n        00s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n		</ol>\n		<textarea cols=\"35\" rows=\"3\" placeholder=\"(Nastrodoj)Press Enter to add message\"></textarea>\n</div>\n\n\n<div class=\"room-list\"></div>\n</section>\n\n<section class='game'>\n\n<div class=\"chat\">\n		<ol>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n					 of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n        00s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n		</ol>\n		<textarea cols=\"35\" rows=\"3\" placeholder=\"(Nastrodoj)Press Enter to add message\"></textarea>\n</div>\n\n\n</section>");
+      this.$el.find('.room-left a').on('click', function() {
+        return App.socket.send.trigger('room:left');
+      });
+      this.room.$el.appendTo(this.$el.find('.room-list'));
+      this.room_new.render().$el.appendTo(this.$el.find('.room-list'));
+      this.roompreview.$el.appendTo(this.$el.find('.room'));
+      this.game.$el.appendTo(this.$el.find('.game'));
+      return $("<div class=\"users\">\n  <h1>Super mapka</h1>\n  <input type=\"text\" value=\"http://countertank.com/#m3\" />\n  <ol>\n    <li>\n        <strong>Super user</strong>\n    </li>\n  </ol>\n</div>").appendTo(this.$el.find('.game'));
+    };
+
+    Router.prototype.remove = function() {
+      this.$el.remove();
+      $('body').off('keydown');
+      $('body').off('keyup');
+      return this.stopListening();
     };
 
     return Router;
 
-  })(Backbone.View);
+  })(Backbone.Router);
 
 }).call(this);

@@ -42,7 +42,7 @@ module.exports = class Router extends events.EventEmitter
     @users = new Users()
     @users.on 'remove', (u)=>
       if u.get('room')
-        @rooms.left_user(u)
+        @rooms.user_left(u)
     @users.on 'change:room', (u)=>
       if u.get('room') is null
         @emit_user(u, 'room:list', @rooms.toJSON())
@@ -53,8 +53,13 @@ module.exports = class Router extends events.EventEmitter
     join_user = (u)=>
       r = u.get('room')
       @emit_user(u, 'game:elements', r.game._elements)
-      positions = [[0, 0], [r.game.size[0]-32, r.game.size[1]-32], [r.game.size[0]-32, 0], [0, r.game.size[1]-32]]
-      r.game.add_tank(u.id, {'pos': positions[(r.get('users').length-1) % 4]})
+      x = 0
+      y = 0
+      if u.get('team') > 0
+        y = r.game.size[1]-32
+      if r.get('teams')[u.get('team')].length > 1 and r.game.get_tank(r.get('teams')[0][0]).pos_start[0] is 0
+        x = r.game.size[0]-32
+      r.game.add_tank(u.id, {'pos': [x, y]})
 
     @rooms.on 'add', (r)=>
       @emit_lobby('room:room_add', r.toJSON())
@@ -93,18 +98,24 @@ module.exports = class Router extends events.EventEmitter
     socket.on 'room:create', =>
       if not user.is_authenticated() or user.get('room')
         return
-      @rooms.add({'users': [user]})
+      @rooms.add({'users': [user], 'stage': 1, 'teams': [[user.id], []]})
 
-    socket.on 'room:join', (room)=>
+    socket.on 'room:open', (r)=>
+      room = @rooms.get(r)
+      if not user.is_authenticated() or not room
+        return
+      @emit_user user, 'roompreview:show', room.toJSON()
+
+    socket.on 'room:join', (pr)=>
       if not user.is_authenticated()
         return
       try
-        @rooms.join_user(room, user)
+        @rooms.user_join(user, pr)
       catch e
 
     socket.on 'room:left', =>
       try
-        @rooms.left_user(user)
+        @rooms.user_left(user)
       catch e
 
     socket.on 'end', =>

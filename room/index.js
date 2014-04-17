@@ -73,7 +73,8 @@
     }
 
     Room.prototype.defaults = {
-      users: []
+      users: [],
+      teams: [[]]
     };
 
     Room.prototype.initialize = function() {
@@ -82,7 +83,7 @@
       _results = [];
       for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
         u = _ref3[_i];
-        _results.push(this._add_user(u));
+        _results.push(this._user_add(u));
       }
       return _results;
     };
@@ -91,17 +92,23 @@
       return this.get('users').length === this.get('max');
     };
 
-    Room.prototype._add_user = function(u) {
-      return u.set('room', this);
+    Room.prototype._user_add = function(u) {
+      u.set('room', this);
+      return this.get('teams').forEach(function(t, i) {
+        if (t.indexOf(u.id) !== -1) {
+          return u.set('team', i);
+        }
+      });
     };
 
-    Room.prototype.join_user = function(user) {
-      this._add_user(user);
+    Room.prototype.user_join = function(user, team) {
       this.get('users').push(user);
+      this.get('teams')[team].push(user.id);
+      this._user_add(user);
       return this.collection.trigger('user:join', this, user);
     };
 
-    Room.prototype.left_user = function(user) {
+    Room.prototype.user_left = function(user) {
       var u, users, _i, _len, _ref3;
       users = [];
       _ref3 = this.get('users');
@@ -113,6 +120,8 @@
       }
       this.set('users', users);
       user.set('room', null);
+      this.get('teams')[user.get('team')].splice(this.get('teams')[user.get('team')].indexOf(user.id), 1);
+      user.set('team', null);
       return this.collection.trigger('user:left', this, user);
     };
 
@@ -120,9 +129,11 @@
       return {
         'id': this.id,
         'max': this.get('max'),
+        'stage': this.get('stage'),
         'users': this.get('users').map(function(u) {
           return u.user_data();
-        })
+        }),
+        'teams': this.get('teams')
       };
     };
 
@@ -143,11 +154,6 @@
     Rooms.prototype.initialize = function(models, opt) {
       this._id = 1;
       this._max = opt && opt['max'] || 2;
-      this.on('remove', function(r) {
-        return r.get('users').forEach(function(u) {
-          return u.set('room', null);
-        });
-      });
       return this;
     };
 
@@ -163,9 +169,9 @@
       return root.Backbone.Collection.prototype.add.apply(this, args);
     };
 
-    Rooms.prototype.join_user = function(room_id, user) {
+    Rooms.prototype.user_join = function(user, pr) {
       var r, room, u, _i, _j, _len, _len1, _ref4, _ref5;
-      room = this.get(room_id);
+      room = this.get(pr.room);
       if (room == null) {
         throw new Error('wrong room');
       }
@@ -183,16 +189,19 @@
       if (room.is_full()) {
         throw new Error('full room');
       }
-      return room.join_user(user);
+      if (!(pr.team < room.get('teams').length && pr.team >= 0)) {
+        throw new Error('wrong team');
+      }
+      return room.user_join(user, pr.team);
     };
 
-    Rooms.prototype.left_user = function(user) {
+    Rooms.prototype.user_left = function(user) {
       var room;
       room = this.by_user(user);
       if (!room) {
         throw new Error('not in room');
       }
-      room.left_user(user);
+      room.user_left(user);
       if (room.get('users').length === 0) {
         this.remove(room);
         return room = null;
