@@ -64,31 +64,86 @@
       });
     });
     describe('new room', function() {
-      it('join user errors', function() {
+      it('join user room errors', function() {
         var rooms,
           _this = this;
         rooms = new Rooms();
         rooms.add({
           'id': 'bena',
           'users': [this.users.models[0]],
-          'creator': this.users.models[0]
+          'teams': [['unique']]
         });
         rooms.add({
           'id': '2',
           'users': [this.users.models[1]],
-          'creator': this.users.models[1]
+          'teams': [['unique 2']]
         });
         assert.throws((function() {
-          return rooms.join_user('no', _this.users.models[2]);
+          return rooms.user_join(_this.users.models[2]);
         }), Error, 'wrong room');
         assert.throws((function() {
-          return rooms.join_user('2', _this.users.models[1]);
+          return rooms.user_join(_this.users.models[2], {
+            'room': 'no'
+          });
+        }), Error, 'wrong room');
+        assert.throws((function() {
+          return rooms.user_join(_this.users.models[1], {
+            'room': '2'
+          });
         }), Error, 'user in room');
         assert.throws((function() {
-          return rooms.join_user('bena', _this.users.models[1]);
+          return rooms.user_join(_this.users.models[1], {
+            'room': 'bena'
+          });
         }), Error, 'user in room');
         return assert.doesNotThrow((function() {
-          return rooms.join_user('bena', _this.users.models[2]);
+          return rooms.user_join(_this.users.models[2], {
+            'room': 'bena',
+            'team': 0
+          });
+        }));
+      });
+      it('join user team errors', function() {
+        var rooms,
+          _this = this;
+        rooms = new Rooms();
+        rooms.add({
+          'id': 'bena',
+          'users': [this.users.models[0]],
+          'teams': [['unique']]
+        });
+        rooms.add({
+          'id': 'b2',
+          'users': [],
+          'teams': [[], []]
+        });
+        rooms.add({
+          'id': '2',
+          'users': [this.users.models[1]],
+          'teams': []
+        });
+        assert.throws((function() {
+          return rooms.user_join(_this.users.models[2], {
+            'room': 'bena'
+          });
+        }), Error, 'wrong team');
+        assert.throws((function() {
+          return rooms.user_join(_this.users.models[2], {
+            'room': 'bena',
+            'team': 1
+          });
+        }), Error, 'wrong team');
+        assert.throws((function() {
+          return rooms.user_join(_this.users.models[2], {
+            'room': 'b2',
+            'team': 2
+          });
+        }), Error, 'wrong team');
+        return assert.doesNotThrow((function() {
+          return rooms.user_join(_this.users.models[2], {
+            'room': 'b2',
+            'team': 1
+          });
         }));
       });
       it('left user errors', function() {
@@ -98,16 +153,16 @@
         rooms.add({
           'id': 'bena',
           'users': [this.users.models[0]],
-          'creator': this.users.models[0]
+          'teams': [['unique']]
         });
         assert.throws((function() {
-          return rooms.left_user(_this.users.models[1]);
+          return rooms.user_left(_this.users.models[1]);
         }), Error, 'not in room');
         return assert.doesNotThrow((function() {
-          return rooms.left_user(_this.users.models[0]);
+          return rooms.user_left(_this.users.models[0]);
         }));
       });
-      it('join user', function() {
+      it('user join', function() {
         var rooms, spy;
         rooms = new Rooms();
         spy = sinon.spy();
@@ -115,17 +170,22 @@
         rooms.add({
           'id': 'bena',
           'users': [this.users.models[0]],
-          'creator': this.users.models[0]
+          'teams': [['unique']]
         });
         assert.equal(rooms.models[0].id, this.users.models[0].get('room').id);
-        rooms.join_user('bena', this.users.models[1]);
+        rooms.user_join(this.users.models[1], {
+          'room': 'bena',
+          'team': 0
+        });
         assert.equal(rooms.models[0].id, this.users.models[1].get('room').id);
+        assert.equal(0, this.users.models[1].get('team'));
+        assert.deepEqual(rooms.models[0].get('teams'), [['unique', 'unique 2']]);
         assert.equal('bena', spy.getCall(0).args[0].get('id'));
         assert.equal('unique 2', spy.getCall(0).args[1].get('id'));
         assert.equal(1, spy.callCount);
         return assert.equal(rooms.get('bena').get('users').length, 2);
       });
-      it('left user', function() {
+      it('user left', function() {
         var rooms, spy;
         rooms = new Rooms();
         spy = sinon.spy();
@@ -133,15 +193,20 @@
         rooms.add({
           'id': 'bena',
           'users': [this.users.models[0]],
-          'creator': this.users.models[0]
+          'teams': [['unique']]
         });
-        rooms.join_user('bena', this.users.models[1]);
-        rooms.left_user(this.users.models[0]);
+        rooms.user_join(this.users.models[1], {
+          'room': 'bena',
+          'team': 0
+        });
+        rooms.user_left(this.users.models[0]);
         assert.equal('bena', spy.getCall(0).args[0].get('id'));
         assert.equal('unique', spy.getCall(0).args[1].get('id'));
         assert.equal(1, spy.callCount);
         assert.equal(rooms.get('bena').get('users').length, 1);
-        return assert.equal(null, this.users.models[0].get('room'));
+        assert.deepEqual(rooms.get('bena').get('teams'), [['unique 2']]);
+        assert.equal(null, this.users.models[0].get('room'));
+        return assert.equal(null, this.users.models[0].get('team'));
       });
       return it('left last user and destroy room', function() {
         var rooms, spy;
@@ -151,9 +216,9 @@
         rooms.add({
           'id': 'bena',
           'users': [this.users.models[0]],
-          'creator': this.users.models[0]
+          'teams': [['unique']]
         });
-        rooms.left_user(this.users.models[0]);
+        rooms.user_left(this.users.models[0]);
         assert.equal('bena', spy.getCall(0).args[0].get('id'));
         return assert.equal(0, rooms.models.length);
       });
@@ -166,17 +231,20 @@
         });
         rooms.add({
           'stage': 1,
-          'users': [this.users.models[0]]
+          'users': [this.users.models[0]],
+          'teams': [[1], [2]]
         });
         rooms.add({
           'stage': 1,
           'users': [this.users.models[1], this.users.models[2], this.users.models[3]],
+          'teams': [[], []],
           'type': ['d']
         });
         assert.deepEqual({
           'id': 1,
           'max': 3,
           'stage': 1,
+          'teams': [[1], [2]],
           'users': [
             {
               'id': 'unique',
@@ -210,12 +278,21 @@
         rooms.add({
           'id': 'bena',
           'users': [this.users.models[0]],
-          'creator': this.users.models[0]
+          'teams': [['unique']]
         });
-        rooms.join_user('bena', this.users.models[1]);
-        rooms.join_user('bena', this.users.models[2]);
+        rooms.user_join(this.users.models[1], {
+          'room': 'bena',
+          'team': 0
+        });
+        rooms.user_join(this.users.models[2], {
+          'room': 'bena',
+          'team': 0
+        });
         return assert.throws((function() {
-          return rooms.joinUser('bena', _this.users.models[3]);
+          return rooms.user_join(_this.users.models[3], {
+            'room': 'bena',
+            'team': 0
+          });
         }), Error, 'full room');
       });
       return it('remove room', function() {
@@ -228,10 +305,16 @@
         rooms.add({
           'id': 'bena',
           'users': [this.users.models[0]],
-          'creator': this.users.models[0]
+          'teams': [['unique']]
         });
-        rooms.join_user('bena', this.users.models[1]);
-        rooms.join_user('bena', this.users.models[2]);
+        rooms.user_join(this.users.models[1], {
+          'room': 'bena',
+          'team': 0
+        });
+        rooms.user_join(this.users.models[2], {
+          'room': 'bena',
+          'team': 0
+        });
         rooms.remove(rooms.models[0]);
         assert.equal(1, spy.callCount);
         assert.equal(null, this.users.models[0].room);

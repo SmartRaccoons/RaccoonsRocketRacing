@@ -25,7 +25,7 @@
       this.users = new Users();
       this.users.on('remove', function(u) {
         if (u.get('room')) {
-          return _this.rooms.left_user(u);
+          return _this.rooms.user_left(u);
         }
       });
       this.users.on('change:room', function(u) {
@@ -37,12 +37,19 @@
       });
       this.rooms = new Rooms();
       join_user = function(u) {
-        var positions, r;
+        var r, x, y;
         r = u.get('room');
         _this.emit_user(u, 'game:elements', r.game._elements);
-        positions = [[0, 0], [r.game.size[0] - 32, r.game.size[1] - 32], [r.game.size[0] - 32, 0], [0, r.game.size[1] - 32]];
+        x = 0;
+        y = 0;
+        if (u.get('team') > 0) {
+          y = r.game.size[1] - 32;
+        }
+        if (r.get('teams')[u.get('team')].length > 1 && r.game.get_tank(r.get('teams')[0][0]).pos_start[0] === 0) {
+          x = r.game.size[0] - 32;
+        }
         return r.game.add_tank(u.id, {
-          'pos': positions[(r.get('users').length - 1) % 4]
+          'pos': [x, y]
         });
       };
       this.rooms.on('add', function(r) {
@@ -117,16 +124,17 @@
         }
         return _this.rooms.add({
           'users': [user],
-          'stage': 1
+          'stage': 1,
+          'teams': [[user.id], []]
         });
       });
-      socket.on('room:join', function(room) {
+      socket.on('room:join', function(pr) {
         var e;
         if (!user.is_authenticated()) {
           return;
         }
         try {
-          return _this.rooms.join_user(room, user);
+          return _this.rooms.user_join(user, pr);
         } catch (_error) {
           e = _error;
         }
@@ -134,7 +142,7 @@
       socket.on('room:left', function() {
         var e;
         try {
-          return _this.rooms.left_user(user);
+          return _this.rooms.user_left(user);
         } catch (_error) {
           e = _error;
         }

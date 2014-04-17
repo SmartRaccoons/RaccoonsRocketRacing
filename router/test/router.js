@@ -50,7 +50,12 @@
           'id': 3
         });
         r.rooms.add({
-          'users': [r.users.models[0], r.users.models[1]]
+          'users': [r.users.models[0]],
+          'teams': [[1]]
+        });
+        r.rooms.user_join(r.users.models[1], {
+          'room': 1,
+          'team': 0
         });
         r.emit_user = sinon.spy();
         r.emit_room(r.rooms.models[0], 'event', 'args');
@@ -77,7 +82,8 @@
           'name': 'not is_authenticated'
         });
         r.rooms.add({
-          'users': [r.users.models[0]]
+          'users': [r.users.models[0]],
+          'teams': [[1]]
         });
         r.emit_user = sinon.spy();
         r.emit_lobby('event', 'args');
@@ -143,7 +149,8 @@
           'id': 1
         });
         r.rooms.add({
-          'stage': 2
+          'stage': 2,
+          'teams': []
         });
         r.emit_user = sinon.spy();
         r.users.models[0].set('room', null);
@@ -154,6 +161,7 @@
           {
             'id': 1,
             'stage': 2,
+            'teams': [],
             'max': 2,
             'users': []
           }
@@ -176,13 +184,15 @@
       it('add', function() {
         var s;
         r.rooms.add({
-          'stage': 1
+          'stage': 1,
+          'teams': []
         });
         s = spy.withArgs('room:room_add');
         assert.equal(s.callCount, 1);
         return assert.deepEqual(s.getCall(0).args[1], {
           'id': 1,
           'stage': 1,
+          'teams': [],
           'max': 2,
           'users': []
         });
@@ -193,9 +203,10 @@
           'id': 1
         });
         r.rooms.add({
-          'users': [r.users.models[0]]
+          'users': [r.users.models[0]],
+          'teams': [[1]]
         });
-        r.rooms.left_user(r.users.models[0]);
+        r.rooms.user_left(r.users.models[0]);
         s = spy.withArgs('room:room_remove');
         assert.equal(s.callCount, 1);
         return assert.deepEqual(s.getCall(0).args[1], {
@@ -208,9 +219,13 @@
           'id': 1
         });
         r.rooms.add({
-          'users': []
+          'users': [],
+          'teams': [[]]
         });
-        r.rooms.join_user(1, r.users.models[0]);
+        r.rooms.user_join(r.users.models[0], {
+          'room': 1,
+          'team': 0
+        });
         s = spy.withArgs('room:user_join');
         assert.equal(s.callCount, 1);
         return assert.deepEqual(s.getCall(0).args[1], {
@@ -230,9 +245,14 @@
           'id': 2
         });
         r.rooms.add({
-          'users': [r.users.models[0], r.users.models[1]]
+          'users': [r.users.models[0]],
+          'teams': [[1]]
         });
-        r.rooms.left_user(r.users.models[1]);
+        r.rooms.user_join(r.users.models[1], {
+          'room': 1,
+          'team': 0
+        });
+        r.rooms.user_left(r.users.models[1]);
         s = spy.withArgs('room:user_left');
         assert.equal(s.callCount, 1);
         return assert.deepEqual(s.getCall(0).args[1], {
@@ -246,9 +266,10 @@
           'id': 1
         });
         r.rooms.add({
-          'users': [r.users.models[0]]
+          'users': [r.users.models[0]],
+          'teams': [[1]]
         });
-        r.rooms.left_user(r.users.models[0]);
+        r.rooms.user_left(r.users.models[0]);
         s = spy.withArgs('room:user_left');
         return assert.equal(s.callCount, 0);
       });
@@ -257,23 +278,25 @@
           'id': 1
         });
         r.rooms.add({
-          'users': [r.users.models[0]]
+          'users': [r.users.models[0]],
+          'teams': [[1]]
         });
-        r.rooms.models[0].left_user = sinon.spy();
+        r.rooms.models[0].user_left = sinon.spy();
         r.users.remove(r.users.models[0]);
-        assert.equal(r.rooms.models[0].left_user.callCount, 1);
-        return assert.equal(r.rooms.models[0].left_user.getCall(0).args[0].id, 1);
+        assert.equal(r.rooms.models[0].user_left.callCount, 1);
+        return assert.equal(r.rooms.models[0].user_left.getCall(0).args[0].id, 1);
       });
       return it('remove user - no room', function() {
         r.users.add({
           'id': 1
         });
         r.rooms.add({
-          'users': []
+          'users': [],
+          'teams': [[]]
         });
-        r.rooms.models[0].left_user = sinon.spy();
+        r.rooms.models[0].user_left = sinon.spy();
         r.users.remove(r.users.models[0]);
-        return assert.equal(r.rooms.models[0].left_user.callCount, 0);
+        return assert.equal(r.rooms.models[0].user_left.callCount, 0);
       });
     });
     describe('rooms user action', function() {
@@ -293,6 +316,7 @@
         socket.emit('room:create');
         assert.equal(r.rooms.models.length, 1);
         assert.equal(r.rooms.models[0].get('users')[0].id, r.users.models[0].id);
+        assert.deepEqual(r.rooms.models[0].get('teams'), [[r.users.models[0].id], []]);
         return assert.equal(r.rooms.models[0].get('stage'), 1);
       });
       it('create not authenticated', function() {
@@ -307,12 +331,17 @@
       });
       it('join', function() {
         r.rooms.add({
-          'users': []
+          'users': [],
+          'teams': [[]]
         });
         socket.emit('login:try');
-        socket.emit('room:join', 1);
+        socket.emit('room:join', {
+          'room': 1,
+          'team': 0
+        });
         assert.equal(r.rooms.models[0].get('users').length, 1);
-        return assert.equal(r.rooms.models[0].get('users')[0].id, r.users.models[0].id);
+        assert.equal(r.rooms.models[0].get('users')[0].id, r.users.models[0].id);
+        return assert.equal(r.rooms.models[0].get('teams')[0][0], r.users.models[0].id);
       });
       it('join not authenticated', function() {
         r.rooms.add({
@@ -332,14 +361,22 @@
       });
       it('join second time', function() {
         r.rooms.add({
-          'users': []
+          'users': [],
+          'teams': [[]]
         });
         r.rooms.add({
-          'users': []
+          'users': [],
+          'teams': [[]]
         });
         socket.emit('login:try');
-        socket.emit('room:join', 1);
-        socket.emit('room:join', 2);
+        socket.emit('room:join', {
+          'room': 1,
+          'team': 0
+        });
+        socket.emit('room:join', {
+          'room': 2,
+          'team': 0
+        });
         assert.equal(r.rooms.models[0].get('users').length, 1);
         return assert.equal(r.rooms.models[1].get('users').length, 0);
       });
@@ -351,18 +388,30 @@
           'id': 2
         });
         r.rooms.add({
-          'users': [r.users.models[1], r.users.models[2]]
+          'users': [r.users.models[1]],
+          'teams': [[1]]
+        });
+        r.rooms.user_join(r.users.models[2], {
+          'room': 1,
+          'team': 0
         });
         socket.emit('login:try');
-        socket.emit('room:join', 1);
+        socket.emit('room:join', {
+          'room': 1,
+          'team': 0
+        });
         return assert.equal(r.rooms.models[0].get('users').length, 2);
       });
       it('left', function() {
         r.rooms.add({
-          'users': []
+          'users': [],
+          'teams': [[]]
         });
         socket.emit('login:try');
-        socket.emit('room:join', 1);
+        socket.emit('room:join', {
+          'room': 1,
+          'team': 0
+        });
         socket.emit('room:left');
         return assert.equal(r.rooms.models.length, 0);
       });
@@ -396,7 +445,12 @@
       it('emit user', function() {
         var add, add2;
         r.rooms.add({
-          'users': [r.users.models[0], r.users.models[1]]
+          'users': [r.users.models[0]],
+          'teams': [['ben']]
+        });
+        r.rooms.user_join(r.users.models[1], {
+          'room': 1,
+          'team': 0
         });
         add = r.emit_user.withArgs(r.users.models[0], 'game:elements');
         add2 = r.emit_user.withArgs(r.users.models[1], 'game:elements');
@@ -408,55 +462,88 @@
       it('join user', function() {
         var add;
         r.rooms.add({
-          'users': [r.users.models[0]]
+          'users': [r.users.models[0]],
+          'teams': [['ben']]
         });
-        r.rooms.join_user(1, r.users.models[1]);
+        r.rooms.user_join(r.users.models[1], {
+          'room': 1,
+          'team': 0
+        });
         add = r.emit_user.withArgs(r.users.models[1], 'game:elements');
         assert.equal(add.callCount, 1);
         return assert.deepEqual(add.getCall(0).args[2], r.rooms.models[0].game._elements);
       });
       it('add tank', function() {
         var g;
-        r.rooms.add({});
+        r.rooms.add({
+          'teams': [[]]
+        });
         g = r.rooms.models[0].game;
         g.add_tank = sinon.spy();
-        r.rooms.join_user(1, r.users.models[0]);
+        r.rooms.user_join(r.users.models[0], {
+          'room': 1,
+          'team': 0
+        });
         assert.equal(g.add_tank.callCount, 1);
         assert.equal(g.add_tank.getCall(0).args[0], 'ben');
         return assert.deepEqual(g.add_tank.getCall(0).args[1], {
           'pos': [0, 0]
         });
       });
-      it('add tank 2. position', function() {
+      it('add tank other team', function() {
         var g;
         r.rooms.add({
-          'users': [r.users.models[1]]
+          'users': [r.users.models[0]],
+          'teams': [['ben'], []]
         });
         g = r.rooms.models[0].game;
         g.add_tank = sinon.spy();
-        r.rooms.join_user(1, r.users.models[0]);
+        r.rooms.user_join(r.users.models[1], {
+          'room': 1,
+          'team': 1
+        });
+        assert.equal(g.add_tank.callCount, 1);
+        assert.equal(g.add_tank.getCall(0).args[0], 'zed');
+        return assert.deepEqual(g.add_tank.getCall(0).args[1], {
+          'pos': [0, g.size[0] - 32]
+        });
+      });
+      it('add tank 2. position', function() {
+        var g;
+        r.rooms.add({
+          'users': [r.users.models[1]],
+          'teams': [['zed']]
+        });
+        g = r.rooms.models[0].game;
+        g.add_tank = sinon.spy();
+        r.rooms.user_join(r.users.models[0], {
+          'room': 1,
+          'team': 0
+        });
         assert.equal(g.add_tank.callCount, 1);
         assert.equal(g.add_tank.getCall(0).args[0], 'ben');
         g.add_tank.getCall(0).args[1];
         return assert.deepEqual(g.add_tank.getCall(0).args[1], {
-          'pos': [g.size[0] - 32, g.size[1] - 32]
+          'pos': [g.size[0] - 32, 0]
         });
       });
       it('destroy tank', function() {
         var spy;
         r.rooms.add({
-          'users': [r.users.models[1]]
+          'users': [r.users.models[1]],
+          'teams': [['zed']]
         });
         spy = sinon.spy();
         r.rooms.models[0].game.destroy_tank = spy;
-        r.rooms.left_user(r.users.models[1]);
+        r.rooms.user_left(r.users.models[1]);
         assert.equal(spy.callCount, 1);
         return assert.equal(spy.getCall(0).args[0], 'zed');
       });
       it('destroy room', function() {
         var spy;
         r.rooms.add({
-          'users': [r.users.models[1]]
+          'users': [r.users.models[1]],
+          'teams': [['zed']]
         });
         spy = sinon.spy();
         r.rooms.models[0].game.stop = spy;

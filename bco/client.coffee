@@ -107,6 +107,7 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
 
 
 (if typeof module isnt 'undefined' then module.exports else window).Bco = class Bco extends BcoCore
+  #TODO TDD
   _.extend @prototype, Backbone.View.prototype
   options:
     path: ''
