@@ -68,7 +68,7 @@
   }
 
   primus = new Primus(server, {
-    transformer: 'browserchannel'
+    transformer: 'websockets'
   });
 
   primus_client = pro.gen_code(pro.ast_squeeze(pro.ast_mangle(jsp.parse(primus.library()))));

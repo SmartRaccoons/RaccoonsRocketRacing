@@ -44,7 +44,7 @@ else
     }, -> process.exit(1))
 
 
-primus = new Primus(server, { transformer: 'browserchannel' })
+primus = new Primus(server, { transformer: 'websockets' })
 primus_client = pro.gen_code(pro.ast_squeeze(pro.ast_mangle(jsp.parse(primus.library()))))
 app.get '/pr.js', (req, res)-> res.send primus_client
 
