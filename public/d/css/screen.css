@@ -439,3 +439,16 @@ button {
 button:hover {
   background: #21211e;
 }
+
+/* line 293, ../sass/screen.sass */
+#debug {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+/* line 297, ../sass/screen.sass */
+#debug .latency {
+  background: #770000;
+  color: white;
+  padding: 0 3px;
+}
