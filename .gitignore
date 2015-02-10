@@ -2,4 +2,6 @@ config.js
 public/d/.sass-cache/
 .idea/
 node_modules/
+bower_components/
 *~
+*.css.map

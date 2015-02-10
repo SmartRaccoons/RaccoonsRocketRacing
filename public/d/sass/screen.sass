@@ -35,22 +35,21 @@ html
 
 body
   font: normal 1.5rem/1.4 arial
-  min-height: 650px
-  min-width: 1100px
+  height: 100%
   position: relative
 
 #wrap
-  height: 650px
-  width: 1100px
-  position: absolute
-  top: 50%
-  left: 50%
-  margin: -325px 0 0 -550px
+  width: 100%
+  height: 100%
+  position: relative
+  padding-top: 30px
 
 #user-panel
+  position: absolute
+  top: 0
+  width: 100%
   height: 24px
   margin: 3px 0
-  position: relative
   text-align: center
   .info
     position: absolute
@@ -93,8 +92,8 @@ body
       +button-size(2.5rem)
 
 .room, .game
-  height: 620px
-
+  //height: 620px
+  height: 100%
 .room .chat, .room-list, .room-preview, .game
   padding: 1rem
   position: relative
@@ -205,7 +204,7 @@ body
         +li-size(0.24rem)
   .game-canvas
     +float-left
-    width: 56%
+    height: 150px
     margin: 0 1%
     text-align: center
     border: 0.5rem solid #69858B

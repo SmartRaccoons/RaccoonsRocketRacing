@@ -20,83 +20,82 @@ html {
 /* line 36, ../sass/screen.sass */
 body {
   font: normal 1.5rem/1.4 arial;
-  min-height: 650px;
-  min-width: 1100px;
+  height: 100%;
   position: relative;
 }
 
-/* line 42, ../sass/screen.sass */
+/* line 41, ../sass/screen.sass */
 #wrap {
-  height: 650px;
-  width: 1100px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin: -325px 0 0 -550px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  padding-top: 30px;
 }
 
-/* line 50, ../sass/screen.sass */
+/* line 47, ../sass/screen.sass */
 #user-panel {
+  position: absolute;
+  top: 0;
+  width: 100%;
   height: 24px;
   margin: 3px 0;
-  position: relative;
   text-align: center;
 }
-/* line 55, ../sass/screen.sass */
+/* line 54, ../sass/screen.sass */
 #user-panel .info {
   position: absolute;
   right: 0;
   top: 0;
-  color: black;
+  color: #000;
 }
-/* line 60, ../sass/screen.sass */
+/* line 59, ../sass/screen.sass */
 #user-panel .info .logout {
   height: 20px;
   line-height: 20px;
-  background: #666666;
+  background: #666;
   border-radius: 5px;
   cursor: pointer;
   padding: 0 10px;
   margin-left: 10px;
-  color: white;
+  color: #fff;
 }
-/* line 69, ../sass/screen.sass */
+/* line 68, ../sass/screen.sass */
 #user-panel ul, #user-panel li {
   margin: 0;
   padding: 0;
   list-style: none;
 }
-/* line 73, ../sass/screen.sass */
+/* line 72, ../sass/screen.sass */
 #user-panel ul {
   display: inline-block;
   text-align: center;
 }
-/* line 76, ../sass/screen.sass */
+/* line 75, ../sass/screen.sass */
 #user-panel li {
   display: inline-block;
-  background: #68848a;
+  background: #68848A;
   border-radius: 3px;
   padding: 2px 10px;
   margin: 0 5px;
   cursor: pointer;
-  color: white;
+  color: #fff;
 }
-/* line 84, ../sass/screen.sass */
+/* line 83, ../sass/screen.sass */
 #user-panel li:hover {
-  background: #21211e;
+  background: #21211E;
 }
-/* line 86, ../sass/screen.sass */
+/* line 85, ../sass/screen.sass */
 #user-panel .room-left {
   display: inline-block;
   position: absolute;
   margin-left: 15px;
 }
-/* line 90, ../sass/screen.sass */
+/* line 89, ../sass/screen.sass */
 #user-panel .room-left a {
   text-align: center;
-  background: #68848a;
+  background: #68848A;
   border: 0;
-  color: white;
+  color: #fff;
   cursor: pointer;
   text-decoration: none;
   background: #940000;
@@ -108,15 +107,15 @@ body {
 }
 /* line 10, ../sass/screen.sass */
 #user-panel .room-left a:hover {
-  background: #21211e;
+  background: #21211E;
 }
 
-/* line 95, ../sass/screen.sass */
+/* line 94, ../sass/screen.sass */
 .room, .game {
-  height: 620px;
+  height: 100%;
 }
 
-/* line 98, ../sass/screen.sass */
+/* line 97, ../sass/screen.sass */
 .room .chat, .room-list, .room-preview, .game {
   padding: 1rem;
   position: relative;
@@ -124,149 +123,147 @@ body {
   background: #969696;
 }
 
-/* line 104, ../sass/screen.sass */
+/* line 103, ../sass/screen.sass */
 .chat, .room-list, .room-preview {
-  display: inline;
   float: left;
   height: 100%;
 }
 
-/* line 108, ../sass/screen.sass */
+/* line 107, ../sass/screen.sass */
 .room-new-add {
   position: absolute;
   right: 10px;
   bottom: 10px;
 }
 
-/* line 113, ../sass/screen.sass */
+/* line 112, ../sass/screen.sass */
 .room .chat {
   width: 28%;
 }
 
-/* line 117, ../sass/screen.sass */
+/* line 116, ../sass/screen.sass */
 .chat ol {
   height: 90%;
   font-size: 1.2rem;
-  color: white;
+  color: #fff;
 }
-/* line 121, ../sass/screen.sass */
+/* line 120, ../sass/screen.sass */
 .chat ol > li {
   border-radius: 0.24rem;
   padding: 0.24rem;
   margin: 0.12rem;
 }
-/* line 123, ../sass/screen.sass */
+/* line 122, ../sass/screen.sass */
 .chat ol i {
   color: #ddcccc;
   font-style: normal;
 }
-/* line 126, ../sass/screen.sass */
+/* line 125, ../sass/screen.sass */
 .chat ol i:before, .chat ol i:after {
-  color: white;
+  color: #ffffff;
 }
-/* line 128, ../sass/screen.sass */
+/* line 127, ../sass/screen.sass */
 .chat ol i:before {
   content: "[";
 }
-/* line 130, ../sass/screen.sass */
+/* line 129, ../sass/screen.sass */
 .chat ol i:after {
   content: "]";
 }
-/* line 132, ../sass/screen.sass */
+/* line 131, ../sass/screen.sass */
 .chat ol strong {
   font-weight: normal;
   color: #969696;
 }
-/* line 135, ../sass/screen.sass */
+/* line 134, ../sass/screen.sass */
 .chat ol strong:after {
   content: " :";
-  color: white;
+  color: #fff;
 }
-/* line 138, ../sass/screen.sass */
+/* line 137, ../sass/screen.sass */
 .chat textarea {
   width: 100%;
   margin-top: 1rem;
   height: 9%;
-  border: 0.5rem solid #69858b;
+  border: 0.5rem solid #69858B;
 }
 
-/* line 144, ../sass/screen.sass */
+/* line 143, ../sass/screen.sass */
 .room-list {
   width: 40%;
   margin: 0 0.5%;
 }
-/* line 147, ../sass/screen.sass */
+/* line 146, ../sass/screen.sass */
 .room-list ol {
   height: 90%;
 }
 
-/* line 150, ../sass/screen.sass */
+/* line 149, ../sass/screen.sass */
 .room-preview {
   width: 30%;
 }
-/* line 152, ../sass/screen.sass */
+/* line 151, ../sass/screen.sass */
 .room-preview .preview {
   position: relative;
   padding: 0.5rem;
-  background: #68848a;
+  background: #68848A;
   line-height: 1;
 }
-/* line 157, ../sass/screen.sass */
+/* line 156, ../sass/screen.sass */
 .room-preview .preview strong, .room-preview .preview i {
   display: block;
   position: absolute;
   padding: 0.5rem;
   border-radius: 0.5rem;
   background: rgba(105, 133, 139, 0.7);
-  color: white;
+  color: #fff;
   font-style: normal;
 }
-/* line 165, ../sass/screen.sass */
+/* line 164, ../sass/screen.sass */
 .room-preview .preview strong {
   top: 5%;
   left: 5%;
 }
-/* line 168, ../sass/screen.sass */
+/* line 167, ../sass/screen.sass */
 .room-preview .preview i {
   bottom: 5%;
   left: 5%;
 }
-/* line 171, ../sass/screen.sass */
+/* line 170, ../sass/screen.sass */
 .room-preview .teams {
   height: 40%;
 }
-/* line 173, ../sass/screen.sass */
+/* line 172, ../sass/screen.sass */
 .room-preview .teams[data-teams='2'] {
   overflow: hidden;
   *zoom: 1;
 }
-/* line 175, ../sass/screen.sass */
+/* line 174, ../sass/screen.sass */
 .room-preview .teams[data-teams='2'] > div {
-  display: inline;
   float: left;
   width: 50%;
 }
-/* line 178, ../sass/screen.sass */
+/* line 177, ../sass/screen.sass */
 .room-preview .teams > div {
   height: 100%;
   position: relative;
 }
-/* line 181, ../sass/screen.sass */
+/* line 180, ../sass/screen.sass */
 .room-preview .teams ol {
   height: 90%;
   font-size: 1.2rem;
 }
-/* line 184, ../sass/screen.sass */
+/* line 183, ../sass/screen.sass */
 .room-preview .teams ol > li {
   border-radius: 0.24rem;
   padding: 0.24rem;
   margin: 0.12rem;
 }
-/* line 186, ../sass/screen.sass */
+/* line 185, ../sass/screen.sass */
 .room-preview .teams ol strong {
   font-weight: normal;
 }
-/* line 188, ../sass/screen.sass */
+/* line 187, ../sass/screen.sass */
 .room-preview .teams button {
   height: 2.2rem;
   padding: 0 1.1rem;
@@ -276,87 +273,83 @@ body {
   position: absolute;
   bottom: 0;
 }
-/* line 192, ../sass/screen.sass */
+/* line 191, ../sass/screen.sass */
 .room-preview img {
   max-width: 100%;
 }
 
-/* line 196, ../sass/screen.sass */
+/* line 195, ../sass/screen.sass */
 .game .chat, .game .users {
   width: 21%;
 }
-/* line 198, ../sass/screen.sass */
+/* line 197, ../sass/screen.sass */
 .game .users {
-  display: inline;
   float: left;
   height: 100%;
 }
-/* line 201, ../sass/screen.sass */
+/* line 200, ../sass/screen.sass */
 .game .users ol {
   height: 60%;
   font-size: 1.2rem;
 }
-/* line 204, ../sass/screen.sass */
+/* line 203, ../sass/screen.sass */
 .game .users ol > li {
   border-radius: 0.24rem;
   padding: 0.24rem;
   margin: 0.12rem;
 }
-/* line 206, ../sass/screen.sass */
+/* line 205, ../sass/screen.sass */
 .game .game-canvas {
-  display: inline;
   float: left;
-  width: 56%;
+  height: 150px;
   margin: 0 1%;
   text-align: center;
-  border: 0.5rem solid #69858b;
+  border: 0.5rem solid #69858B;
   line-height: 0;
   font-size: 0;
 }
-/* line 214, ../sass/screen.sass */
+/* line 213, ../sass/screen.sass */
 .game .game-canvas canvas {
   width: 100%;
 }
 
-/* line 221, ../sass/screen.sass */
+/* line 220, ../sass/screen.sass */
 .room-left, .game, #user-panel .room-left {
   display: none;
 }
 
-/* line 223, ../sass/screen.sass */
+/* line 222, ../sass/screen.sass */
 .user-in-room #user-panel .room-left {
   display: inline-block;
 }
 
-/* line 227, ../sass/screen.sass */
+/* line 226, ../sass/screen.sass */
 .user-in-room .game {
   display: block;
 }
-/* line 229, ../sass/screen.sass */
+/* line 228, ../sass/screen.sass */
 .user-in-room .room {
   display: none;
 }
 
-/* line 234, ../sass/screen.sass */
+/* line 233, ../sass/screen.sass */
 .room-list li {
   overflow: hidden;
   *zoom: 1;
   position: relative;
   cursor: pointer;
 }
-/* line 238, ../sass/screen.sass */
+/* line 237, ../sass/screen.sass */
 .room-list li strong {
-  display: inline;
   float: left;
   width: 50%;
 }
-/* line 241, ../sass/screen.sass */
+/* line 240, ../sass/screen.sass */
 .room-list li span {
-  display: inline;
   float: right;
   width: 30%;
 }
-/* line 244, ../sass/screen.sass */
+/* line 243, ../sass/screen.sass */
 .room-list li:after {
   content: attr(data-users) "/" attr(data-max);
   position: absolute;
@@ -368,65 +361,65 @@ body {
   text-align: center;
 }
 
-/* line 255, ../sass/screen.sass */
+/* line 254, ../sass/screen.sass */
 ol {
   list-style: none;
   padding: 0;
   margin: 0;
   overflow-y: scroll;
-  color: white;
+  color: #fff;
 }
-/* line 261, ../sass/screen.sass */
+/* line 260, ../sass/screen.sass */
 ol:empty {
   display: none;
 }
-/* line 263, ../sass/screen.sass */
+/* line 262, ../sass/screen.sass */
 ol ul, ol li {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-/* line 267, ../sass/screen.sass */
+/* line 266, ../sass/screen.sass */
 ol > li {
-  background: #4a4343;
+  background: #4A4343;
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin: 0.25rem;
 }
-/* line 270, ../sass/screen.sass */
+/* line 269, ../sass/screen.sass */
 ol > li:hover {
-  background: #21211e;
+  background: #21211E;
 }
-/* line 273, ../sass/screen.sass */
+/* line 272, ../sass/screen.sass */
 ol ul li.m {
   text-align: center;
 }
-/* line 275, ../sass/screen.sass */
+/* line 274, ../sass/screen.sass */
 ol ul li.r {
   text-align: right;
 }
 
-/* line 277, ../sass/screen.sass */
+/* line 276, ../sass/screen.sass */
 h1 {
   margin: 0;
   padding: 0;
-  color: white;
+  color: #fff;
   font-size: 2.2rem;
 }
 
-/* line 283, ../sass/screen.sass */
+/* line 282, ../sass/screen.sass */
 input {
-  border: 0.5rem solid #69858b;
+  border: 0.5rem solid #69858B;
   margin: 0.5rem 0;
   width: 100%;
 }
 
-/* line 288, ../sass/screen.sass */
+/* line 287, ../sass/screen.sass */
 button {
   text-align: center;
-  background: #68848a;
+  background: #68848A;
   border: 0;
-  color: white;
+  color: #fff;
   cursor: pointer;
   text-decoration: none;
   height: 5rem;
@@ -437,18 +430,20 @@ button {
 }
 /* line 10, ../sass/screen.sass */
 button:hover {
-  background: #21211e;
+  background: #21211E;
 }
 
-/* line 293, ../sass/screen.sass */
+/* line 292, ../sass/screen.sass */
 #debug {
   position: absolute;
   bottom: 0;
   right: 0;
 }
-/* line 297, ../sass/screen.sass */
+/* line 296, ../sass/screen.sass */
 #debug .latency {
   background: #770000;
-  color: white;
+  color: #ffffff;
   padding: 0 3px;
 }
+
+/*# sourceMappingURL=screen.css.map */

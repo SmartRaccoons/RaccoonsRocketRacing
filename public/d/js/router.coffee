@@ -100,20 +100,20 @@ App.Router = class Router extends Backbone.Router
   render: ->
     @$el.html """
 <div id="user-panel">
-  <ul>
+  <!--<ul>
     <li>Rules</li>
     <li>My profile</li>
     <li>Best users</li>
-  </ul>
+  </ul>-->
   <div class="room-left"><a href="#">"""+_l('Left room')+"""</a></div>
-  <div class="info">
+  <!--<div class="info">
     <span class="username">fake name</span>
     <span class="logout">logout</span>
-  </div>
+  </div>-->
 </div>
 
 <section class='room'>
-  <div class="chat">
+  <!--<div class="chat">
 		<ol>
 			<li>
 					<i>12:23</i>
@@ -129,7 +129,7 @@ App.Router = class Router extends Backbone.Router
 			</li>
 		</ol>
 		<textarea cols="35" rows="3" placeholder="(Nastrodoj)Press Enter to add message"></textarea>
-  </div>
+  </div>-->
 
 
   <div class="room-list"></div>
@@ -137,7 +137,7 @@ App.Router = class Router extends Backbone.Router
 
 <section class='game'>
 
-  <div class="chat">
+  <!--<div class="chat">
 		<ol>
 			<li>
 					<i>12:23</i>
@@ -153,7 +153,7 @@ App.Router = class Router extends Backbone.Router
 			</li>
 		</ol>
 		<textarea cols="35" rows="3" placeholder="(Nastrodoj)Press Enter to add message"></textarea>
-  </div>
+  </div>-->
 
 
 </section>
@@ -163,17 +163,17 @@ App.Router = class Router extends Backbone.Router
     @room_new.render().$el.appendTo(@$el.find('.room-list'))
     @roompreview.$el.appendTo(@$el.find('.room'))
     @game.$el.appendTo(@$el.find('.game'))
-    $("""
-    <div class="users">
-      <h1>Super mapka</h1>
-      <input type="text" value="http://countertank.com/#m3" />
-      <ol>
-        <li>
-            <strong>Super user</strong>
-        </li>
-      </ol>
-    </div>
-    """).appendTo(@$el.find('.game'))
+#    $("""
+#    div class="users">
+#      <h1>Super mapka</h1>
+#      <input type="text" value="http://countertank.com/#m3" />
+#      <ol>
+#        <li>
+#            <strong>Super user</strong>
+#        </li>
+#      </ol>
+#    </div>
+#    """).appendTo(@$el.find('.game'))
 
 
   remove: ->
