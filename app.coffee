@@ -48,12 +48,31 @@ primus = new Primus(server, { transformer: 'websockets' })
 primus_client = pro.gen_code(pro.ast_squeeze(pro.ast_mangle(jsp.parse(primus.library()))))
 app.get '/pr.js', (req, res)-> res.send primus_client
 
+
+callback_data = (socket, data)-> socket.emit.apply(socket, data)
+callback_write = (socket, args)-> socket.spark.write(args)
+
+if config.development
+  wrap_delay = (fn, delay, log)->
+    if delay is 0
+      return fn
+    ->
+      args = arguments
+      setTimeout ->
+        log.apply(this, args)
+        fn.apply(this, args)
+      , delay
+  callback_data = wrap_delay callback_data, config.development_delay_in, (socket, data)->
+    console.info 'data', socket.id, data
+  callback_write = wrap_delay callback_write, config.development_delay_out, (socket, args, event)->
+    console.info 'emit', socket.id, event, args
+
+
 r = new Router()
 r.emit_socket = (socket, event)->
   args = Array.prototype.slice.apply(arguments).splice(2)
   args.unshift(event)
-#  console.info 'emit', socket.id, event, args
-  socket.spark.write(args)
+  callback_write(socket, args, event)
 
 primus.on 'connection', (spark)->
   socket = new events.EventEmitter
@@ -63,8 +82,7 @@ primus.on 'connection', (spark)->
   socket.end = -> spark.end()
   spark.on 'end', -> socket.emit 'end'
   spark.on 'data', (data)->
-#    console.info 'data', socket.id, data
-    socket.emit.apply(socket, data)
+    callback_data(socket, data)
   r.connection(socket)
 
 
