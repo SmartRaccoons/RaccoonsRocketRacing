@@ -22,9 +22,9 @@ var App = {
         } catch (e){}
     },
     'lang': {
-        'active': 'lv',
+        'active': 'en',
         'strings': {
-            'lv': {}
+            'en': {}
         }
     }
 };

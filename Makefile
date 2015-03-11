@@ -18,7 +18,7 @@ production :
 	public/d/js/backbone-patch.js \
 	bower_components/pixi.js/bin/pixi.dev.js \
 	public/d/js/init.js \
-	public/d/js/lv.js \
+	public/d/locale/en.js \
 	bco/client.js \
 	public/d/js/objects.js \
 	public/d/js/rooms.js \
