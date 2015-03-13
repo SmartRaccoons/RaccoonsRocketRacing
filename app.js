@@ -87,15 +87,19 @@
 
   if (config.development) {
     wrap_delay = function(fn, delay, log) {
+      var wrap;
+      wrap = function() {
+        log.apply(this, arguments);
+        return fn.apply(this, arguments);
+      };
       if (delay === 0) {
-        return fn;
+        return wrap;
       }
       return function() {
         var args;
         args = arguments;
         return setTimeout(function() {
-          log.apply(this, args);
-          return fn.apply(this, args);
+          return wrap.apply(this, args);
         }, delay);
       };
     };
@@ -137,3 +141,5 @@
   console.log('http://127.0.0.1:' + config.port + '/-bco version:' + pjson.version);
 
 }).call(this);
+
+//# sourceMappingURL=app.js.map

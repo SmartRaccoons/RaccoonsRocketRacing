@@ -78,9 +78,9 @@ describe 'Objects', ->
 
   describe 'Tank', ->
     it 'params', ->
-      t = new App.SpriteTank()
+      t = new App.SpriteUser()
       expect(t.size).to.be.eql([32, 32])
-      expect(t.url).to.be('d/img/tank.png')
+      expect(t.url).to.be('d/img/user.png')
 
 
   describe 'Bullet', ->

@@ -30,9 +30,9 @@ App.Sprite = class Sprite
       @size[0], @size[1])
 
 
-App.SpriteTank = class Tank extends Sprite
+App.SpriteUser = class User extends Sprite
   size: [32, 32]
-  _name: 'tank'
+  _name: 'user'
 
 
 App.SpriteBullet = class Bullet extends Sprite

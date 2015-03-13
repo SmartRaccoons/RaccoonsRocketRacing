@@ -21,6 +21,9 @@
       app.get('/bco/client.js', function(req, res) {
         return res.sendfile(__dirname + '/bco/client.js');
       });
+      app.get('/bco/client.js.map', function(req, res) {
+        return res.sendfile(__dirname + '/bco/client.js.map');
+      });
       return app.get('/-bco', function(req, res) {
         return res.sendfile(__dirname + '/public/dev.html');
       });
@@ -28,3 +31,5 @@
   })(this);
 
 }).call(this);
+
+//# sourceMappingURL=app_dev.js.map

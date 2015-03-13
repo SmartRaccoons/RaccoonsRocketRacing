@@ -54,18 +54,22 @@ callback_write = (socket, args)-> socket.spark.write(args)
 
 if config.development
   wrap_delay = (fn, delay, log)->
+    wrap = ->
+      log.apply(this, arguments)
+      fn.apply(this, arguments)
     if delay is 0
-      return fn
+      return wrap
     ->
       args = arguments
       setTimeout ->
-        log.apply(this, args)
-        fn.apply(this, args)
+        wrap.apply(this, args)
       , delay
-  callback_data = wrap_delay callback_data, config.development_delay_in, (socket, data)->
+  callback_data = wrap_delay(callback_data, config.development_delay_in, (socket, data)->
     console.info 'data', socket.id, data
-  callback_write = wrap_delay callback_write, config.development_delay_out, (socket, args, event)->
+  )
+  callback_write = wrap_delay(callback_write, config.development_delay_out, (socket, args, event)->
     console.info 'emit', socket.id, event, args
+  )
 
 
 r = new Router()

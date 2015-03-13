@@ -7,8 +7,12 @@ module.exports = (grunt) ->
     watch:
       coffee:
         files: ['../**/*.coffee']
+        options:
+          livereload: true
       sass:
         files: 'public/d/sass/screen.sass'
+        options:
+          livereload: true
       static:
         files: ['public/d/**/*.css',
                 'public/**/*.html',
@@ -24,7 +28,7 @@ module.exports = (grunt) ->
   grunt.event.on 'watch', (event, file, ext)->
     if ext == 'coffee'
 #      console.info("compiling: #{file}")
-      exec("coffee -c #{file}", exec_callback)
+      exec("coffee -m -c #{file}", exec_callback)
     if ext == 'sass'
 #      console.info("compiling: #{file}")
       exec("cd public/d && compass compile --sourcemap sass/screen.sass", exec_callback)

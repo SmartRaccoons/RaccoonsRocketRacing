@@ -6,6 +6,7 @@
     "pixi.js": "2.2"
   },
   "devDependencies": {
-    "sinonjs": "1.10"
+    "sinonjs": "1.10",
+    "assert": "0.1"
   }
 }

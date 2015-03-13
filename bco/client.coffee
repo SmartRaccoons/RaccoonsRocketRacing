@@ -36,6 +36,11 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
   add: (pr)->
     @_elements[pr.id] = pr
 
+  add_user: (user_id, params = {})->
+    params['object'] = 'user'
+    params['params'] = {'user_id': user_id}
+    @add(params)
+
   get: (pr)->
     if typeof pr is 'number'
       return @_elements[pr]
@@ -48,6 +53,12 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
       if passed
         elements.push(val)
     return elements
+
+  get_user: (user_id)->
+    for id, val of @_elements
+      if val.params.user_id is user_id
+        return val
+    return null
 
   update: (pr)->
     for attr, val of pr

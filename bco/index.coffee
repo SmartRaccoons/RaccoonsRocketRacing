@@ -36,13 +36,13 @@ module.exports.Bco = class Bco extends BcoCore
     @
 
   restart: ->
-    tanks = @get({'object': 'tank'})
+    users = @get({'object': 'user'})
     super
 
     @trigger 'restart'
     @_draw_map()
-    for t in tanks
-      @add_tank(t.params.tank_id, {'pos': t['pos_start']})
+    for t in users
+      @add_user(t.params.user_id, {'pos': t['pos_start']})
     @
 
   add: (pr)->
@@ -58,7 +58,7 @@ module.exports.Bco = class Bco extends BcoCore
       destroy: pr.destroy || 0
       over: false
       hitpoints: pr.hitpoints || 1
-    if pr.object is 'tank'
+    if pr.object is 'user'
       params['size'] = [32, 32]
       if not params['pos_start']
         params['pos_start'] = [params['pos'][0], params['pos'][1]]
@@ -74,19 +74,8 @@ module.exports.Bco = class Bco extends BcoCore
     @trigger 'add', params
     @id
 
-  add_tank: (tank_id, params = {})->
-    params['object'] = 'tank'
-    params['params'] = {'tank_id': tank_id}
-    @add(params)
-
-  get_tank: (tank_id)->
-    for id, val of @_elements
-      if val.params.tank_id is tank_id
-        return val
-    return null
-
-  destroy_tank: (tank_id)->
-    t = @get_tank(tank_id)
+  destroy_user: (user_id)->
+    t = @get_user(user_id)
     @destroy(t.id)
 
   update: (pr)->
@@ -97,29 +86,29 @@ module.exports.Bco = class Bco extends BcoCore
     @trigger 'destroy', {'id': id, 'reason': reason}
     ob = @get(id)
     super({'id': id})
-    if ob and ob.object is 'tank' and reason is 'destroy'
-      @add_tank(ob.params.tank_id, {'pos': ob['pos_start']})
+    if ob and ob.object is 'user' and reason is 'destroy'
+      @add_user(ob.params.user_id, {'pos': ob['pos_start']})
     @
 
-  tank_start: (tank_id, move)->
-    tank = @get_tank(tank_id)
+  user_start: (user_id, move)->
+    user = @get_user(user_id)
     if move in ['up', 'down', 'left', 'right']
-      @_tank_move(tank_id, move, true)
+      @_user_move(user_id, move, true)
     else if move is 'fire'
       @add
         'object': 'bullet'
-        'params': {'owner': tank.id}
-        'pos': [tank.pos[0]+tank.size[0]/2-4, tank.pos[1]+tank.size[1]/2-4]
-        'angle': tank.angle
+        'params': {'owner': user.id}
+        'pos': [user.pos[0]+user.size[0]/2-4, user.pos[1]+user.size[1]/2-4]
+        'angle': user.angle
         'destroy': 1
         'speed': 200
 
-  tank_stop: (tank_id, move)->
+  user_stop: (user_id, move)->
     if move in ['up', 'down', 'left', 'right']
-      @_tank_move(tank_id, move)
+      @_user_move(user_id, move)
 
-  _tank_move: (tank_id, move, active=false)->
-    t = @get_tank(tank_id)
+  _user_move: (user_id, move, active=false)->
+    t = @get_user(user_id)
     if not t._keystokes
       t._keystokes = []
     if active

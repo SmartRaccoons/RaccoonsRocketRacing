@@ -57,9 +57,9 @@ module.exports = class Router extends events.EventEmitter
       y = 0
       if u.get('team') > 0
         y = r.game.size[1]-32
-      if r.get('teams')[u.get('team')].length > 1 and r.game.get_tank(r.get('teams')[0][0]).pos_start[0] is 0
+      if r.get('teams')[u.get('team')].length > 1 and r.game.get_user(r.get('teams')[0][0]).pos_start[0] is 0
         x = r.game.size[0]-32
-      r.game.add_tank(u.id, {'pos': [x, y]})
+      r.game.add_user(u.id, {'pos': [x, y]})
 
     @rooms.on 'add', (r)=>
       @emit_lobby('room:room_add', r.toJSON())
@@ -83,7 +83,7 @@ module.exports = class Router extends events.EventEmitter
       @emit_lobby('room:user_join', {'room_id': r.id, 'user': user.user_data()})
       join_user(user)
     @rooms.on 'user:left', (r, user)=>
-      r.game.destroy_tank(user.id)
+      r.game.destroy_user(user.id)
       if r.get('users').length > 0
         @emit_lobby('room:user_left', {'room_id': r.id, 'user_id': user.id})
 
@@ -124,7 +124,7 @@ module.exports = class Router extends events.EventEmitter
     socket.on 'control', (p)=>
       if not user.get('room')
         return
-      user.get('room').game[if p.active then 'tank_start' else 'tank_stop'](user.id, p.move)
+      user.get('room').game[if p.active then 'user_start' else 'user_stop'](user.id, p.move)
 
   emit_user: (user, event, args)-> @emit_socket user.get('socket'), event, args
 

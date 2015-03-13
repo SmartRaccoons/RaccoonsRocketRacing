@@ -42,6 +42,17 @@
       return this._elements[pr.id] = pr;
     };
 
+    BcoCore.prototype.add_user = function(user_id, params) {
+      if (params == null) {
+        params = {};
+      }
+      params['object'] = 'user';
+      params['params'] = {
+        'user_id': user_id
+      };
+      return this.add(params);
+    };
+
     BcoCore.prototype.get = function(pr) {
       var elements, id, param, passed, val, value, _ref;
       if (typeof pr === 'number') {
@@ -63,6 +74,18 @@
         }
       }
       return elements;
+    };
+
+    BcoCore.prototype.get_user = function(user_id) {
+      var id, val, _ref;
+      _ref = this._elements;
+      for (id in _ref) {
+        val = _ref[id];
+        if (val.params.user_id === user_id) {
+          return val;
+        }
+      }
+      return null;
     };
 
     BcoCore.prototype.update = function(pr) {
@@ -252,3 +275,5 @@
   })(BcoCore);
 
 }).call(this);
+
+//# sourceMappingURL=client.js.map

@@ -311,38 +311,38 @@ describe 'router', ->
       assert.equal(add.callCount, 1)
       assert.deepEqual(add.getCall(0).args[2], r.rooms.models[0].game._elements)
 
-    it 'add tank', ->
+    it 'add user', ->
       r.rooms.add({'teams': [[]]})
       g = r.rooms.models[0].game
-      g.add_tank = sinon.spy()
+      g.add_user = sinon.spy()
       r.rooms.user_join(r.users.models[0], {'room': 1, 'team': 0})
-      assert.equal(g.add_tank.callCount, 1)
-      assert.equal(g.add_tank.getCall(0).args[0], 'ben')
-      assert.deepEqual(g.add_tank.getCall(0).args[1], {'pos': [0, 0]})
+      assert.equal(g.add_user.callCount, 1)
+      assert.equal(g.add_user.getCall(0).args[0], 'ben')
+      assert.deepEqual(g.add_user.getCall(0).args[1], {'pos': [0, 0]})
 
-    it 'add tank other team', ->
+    it 'add user other team', ->
       r.rooms.add({'users': [r.users.models[0]], 'teams': [['ben'], []]})
       g = r.rooms.models[0].game
-      g.add_tank = sinon.spy()
+      g.add_user = sinon.spy()
       r.rooms.user_join(r.users.models[1], {'room': 1, 'team': 1})
-      assert.equal(g.add_tank.callCount, 1)
-      assert.equal(g.add_tank.getCall(0).args[0], 'zed')
-      assert.deepEqual(g.add_tank.getCall(0).args[1], {'pos': [0, g.size[0]-32]})
+      assert.equal(g.add_user.callCount, 1)
+      assert.equal(g.add_user.getCall(0).args[0], 'zed')
+      assert.deepEqual(g.add_user.getCall(0).args[1], {'pos': [0, g.size[0]-32]})
 
-    it 'add tank 2. position', ->
+    it 'add user 2. position', ->
       r.rooms.add({'users': [r.users.models[1]], 'teams': [['zed']]})
       g = r.rooms.models[0].game
-      g.add_tank = sinon.spy()
+      g.add_user = sinon.spy()
       r.rooms.user_join(r.users.models[0], {'room': 1, 'team': 0})
-      assert.equal(g.add_tank.callCount, 1)
-      assert.equal(g.add_tank.getCall(0).args[0], 'ben')
-      g.add_tank.getCall(0).args[1]
-      assert.deepEqual(g.add_tank.getCall(0).args[1], {'pos': [g.size[0]-32, 0]})
+      assert.equal(g.add_user.callCount, 1)
+      assert.equal(g.add_user.getCall(0).args[0], 'ben')
+      g.add_user.getCall(0).args[1]
+      assert.deepEqual(g.add_user.getCall(0).args[1], {'pos': [g.size[0]-32, 0]})
 
-    it 'destroy tank', ->
+    it 'destroy user', ->
       r.rooms.add({'users': [r.users.models[1]], 'teams': [['zed']]})
       spy = sinon.spy()
-      r.rooms.models[0].game.destroy_tank = spy
+      r.rooms.models[0].game.destroy_user = spy
       r.rooms.user_left(r.users.models[1])
       assert.equal(spy.callCount, 1)
       assert.equal(spy.getCall(0).args[0], 'zed')
@@ -421,8 +421,8 @@ describe 'router', ->
     it 'control active:true', ->
       socket.emit('login:try')
       socket.emit('room:create')
-      r.rooms.models[0].game.tank_start = start
-      r.rooms.models[0].game.tank_stop = stop
+      r.rooms.models[0].game.user_start = start
+      r.rooms.models[0].game.user_stop = stop
       socket.emit('control', {'active': true, 'move': 'up'})
       assert.equal(start.callCount, 1)
       assert.equal(stop.callCount, 0)
@@ -432,8 +432,8 @@ describe 'router', ->
     it 'control active:false', ->
       socket.emit('login:try')
       socket.emit('room:create')
-      r.rooms.models[0].game.tank_start = start
-      r.rooms.models[0].game.tank_stop = stop
+      r.rooms.models[0].game.user_start = start
+      r.rooms.models[0].game.user_stop = stop
       socket.emit('control', {'active': false, 'move': 'down'})
       assert.equal(start.callCount, 0)
       assert.equal(stop.callCount, 1)

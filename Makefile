@@ -1,5 +1,6 @@
 update :
 	npm install
+	bower install
 
 server :
 	python -m SimpleHTTPServer
