@@ -66,7 +66,7 @@ module.exports = class Router extends events.EventEmitter
       r.game = new Bco(map)
       r.game.on 'add', (pr)=> @emit_room(r, 'game:add', pr)
       r.game.on 'update', (pr)=>
-        @emit_room(r, 'game:update', extend({'pos': r.game.get(pr.id).pos}, pr))
+        @emit_room(r, 'game:update', extend({'pos': r.game.get(pr.id).pos}, pr), true)
       r.game.on 'restart', => @emit_room(r, 'game:restart')
       r.game.on 'destroy', (pr)=>
         @emit_room(r, 'game:destroy', pr)
@@ -126,13 +126,14 @@ module.exports = class Router extends events.EventEmitter
         return
       user.get('room').game.user_action(user.id, p.move, p.active)
 
-  emit_user: (user, event, args)-> @emit_socket user.get('socket'), event, args
+  emit_user: (user, args...)->
+    @emit_socket.apply(@, [user.get('socket')].concat(args))
 
-  emit_socket: (socket, event, args)-> socket.emit event, args
+  emit_socket: (socket, args...)-> socket.emit.apply(@, args)
 
-  emit_room: (room, event, args)->
-    room.get('users').forEach (u)=> @emit_user(u, event, args)
-
+  emit_room: (room, args...)->
+    room.get('users').forEach (u)=>
+      @emit_user.apply(@, [u].concat(args))
 
   emit_lobby: (event, args)->
     @users.each (u)=>

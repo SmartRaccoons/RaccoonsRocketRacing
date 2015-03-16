@@ -22,8 +22,8 @@ describe 'router', ->
     it 'emit_user', ->
       r.users.add({'socket': {'emit': sinon.spy()}})
       user = r.users.models[0]
-      r.emit_user(user, 'ben', 'ban')
-      assert.deepEqual(user.get('socket').emit.getCall(0).args, ['ben', 'ban'])
+      r.emit_user(user, 'event', 'args', 'args2')
+      assert.deepEqual(user.get('socket').emit.getCall(0).args, ['event', 'args', 'args2'])
 
     it 'emit_room', ->
       r.emit_lobby = sinon.spy()
@@ -34,13 +34,15 @@ describe 'router', ->
       r.rooms.add({'users': [r.users.models[0]], 'teams': [[1]]})
       r.rooms.user_join(r.users.models[1], {'room': 1, 'team': 0})
       r.emit_user = sinon.spy()
-      r.emit_room(r.rooms.models[0], 'event', 'args')
+      r.emit_room(r.rooms.models[0], 'event', 'args', 'args2')
       assert.equal(r.emit_user.getCall(0).args[0].id, 1)
       assert.equal(r.emit_user.getCall(0).args[1], 'event')
       assert.equal(r.emit_user.getCall(0).args[2], 'args')
+      assert.equal(r.emit_user.getCall(0).args[3], 'args2')
       assert.equal(r.emit_user.getCall(1).args[0].id, 2)
       assert.equal(r.emit_user.getCall(1).args[1], 'event')
       assert.equal(r.emit_user.getCall(1).args[2], 'args')
+      assert.equal(r.emit_user.getCall(1).args[3], 'args2')
       assert.equal(r.emit_user.callCount, 2)
 
     it 'emit_lobby', ->
@@ -381,6 +383,7 @@ describe 'router', ->
       assert.equal(update.getCall(0).args[2].id, id)
       assert.equal(update.getCall(0).args[2].speed, 10)
       assert.deepEqual(update.getCall(0).args[2].pos, [0, 0])
+      assert.equal(update.getCall(0).args[3], true)
 
     it 'event restart', ->
       r.rooms.add({})

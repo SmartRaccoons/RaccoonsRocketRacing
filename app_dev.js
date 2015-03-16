@@ -21,6 +21,9 @@
       app.get('/bco/client.js', function(req, res) {
         return res.sendfile(__dirname + '/bco/client.js');
       });
+      app.get('/bco/client.coffee', function(req, res) {
+        return res.sendfile(__dirname + '/bco/client.coffee');
+      });
       app.get('/bco/client.js.map', function(req, res) {
         return res.sendfile(__dirname + '/bco/client.js.map');
       });

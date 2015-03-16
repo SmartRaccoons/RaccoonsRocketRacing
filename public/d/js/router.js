@@ -161,11 +161,10 @@
             val = keys[attr];
             if (__indexOf.call(val.code, code) >= 0 && val.active !== active) {
               val.active = active;
-              App.socket.send.trigger('control', {
+              _results.push(App.socket.send.trigger('control', {
                 'move': attr,
                 'active': active
-              });
-              _results.push(_this.game.user_action(_this.user.id, attr, active));
+              }));
             } else {
               _results.push(void 0);
             }

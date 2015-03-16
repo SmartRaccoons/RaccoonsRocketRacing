@@ -388,34 +388,83 @@
       });
     });
     return describe('control', function() {
-      var id, socket_id;
+      var id, spy, spy_add, user_id;
+      user_id = 10;
       id = null;
-      socket_id = 'bob';
+      spy = null;
+      spy_add = null;
       beforeEach(function() {
-        b.add_user(socket_id, {
+        id = b.add_user(user_id, {
           'pos': [2, 3],
           'angle': 90
         });
-        return id = b.get_user(socket_id).id;
+        spy = sinon.spy(b, 'update');
+        return spy_add = sinon.spy(b, 'add');
       });
       it('fire', function() {
-        var spy;
-        spy = sinon.spy();
-        b.on('add', spy);
-        b.user_action(socket_id, 'fire', true);
-        assert.equal('bullet', spy.getCall(0).args[0].object);
-        assert.equal(id, spy.getCall(0).args[0].params.owner);
-        assert.deepEqual([14, 15], spy.getCall(0).args[0].pos);
-        assert.deepEqual(90, spy.getCall(0).args[0].angle);
-        assert.deepEqual(200, spy.getCall(0).args[0].speed);
-        return assert.deepEqual(1, spy.getCall(0).args[0].destroy);
+        b.user_action(user_id, 'fire', true);
+        assert.equal('bullet', spy_add.getCall(0).args[0].object);
+        assert.equal(id, spy_add.getCall(0).args[0].params.owner);
+        assert.deepEqual([14, 15], spy_add.getCall(0).args[0].pos);
+        assert.deepEqual(90, spy_add.getCall(0).args[0].angle);
+        assert.deepEqual(200, spy_add.getCall(0).args[0].speed);
+        return assert.deepEqual(1, spy_add.getCall(0).args[0].destroy);
       });
-      return it('fire inactive', function() {
-        var spy;
-        spy = sinon.spy();
-        b.on('add', spy);
-        b.user_action(socket_id, 'fire', false);
-        return assert.equal(0, spy.callCount);
+      it('fire inactive', function() {
+        b.user_action(user_id, 'fire', false);
+        return assert.equal(0, spy_add.callCount);
+      });
+      it('move up', function() {
+        b.user_action(user_id, 'up');
+        assert.equal(id, spy.getCall(0).args[0].id);
+        assert.equal(270, spy.getCall(0).args[0].angle);
+        return assert.equal(100, spy.getCall(0).args[0].speed);
+      });
+      it('move down', function() {
+        b.user_action(user_id, 'down');
+        return assert.equal(90, spy.getCall(0).args[0].angle);
+      });
+      it('move left', function() {
+        b.user_action(user_id, 'left');
+        return assert.equal(180, spy.getCall(0).args[0].angle);
+      });
+      it('move right', function() {
+        b.user_action(user_id, 'right');
+        return assert.equal(0, spy.getCall(0).args[0].angle);
+      });
+      it('move round coors', function() {
+        b.get_user(user_id).pos = [7, 8];
+        b.get_user(user_id).angle = 0;
+        b.user_action(user_id, 'right');
+        assert(!spy.getCall(0).args[0].pos);
+        b.user_action(user_id, 'up');
+        assert.deepEqual([0, 16], spy.getCall(1).args[0].pos);
+        b._elements[id].pos = [24, 23];
+        b.user_action(user_id, 'left');
+        return assert.deepEqual([32, 16], spy.getCall(2).args[0].pos);
+      });
+      it('move stop', function() {
+        b.user_action(user_id, 'up');
+        b.user_action(user_id, 'up', false);
+        return assert.equal(0, spy.getCall(1).args[0].speed);
+      });
+      it('move with more keystokes', function() {
+        b.user_action(user_id, 'down');
+        b.user_action(user_id, 'left');
+        b.user_action(user_id, 'up');
+        b.user_action(user_id, 'up', false);
+        assert.equal(4, spy.callCount);
+        assert.equal(180, spy.getCall(3).args[0].angle);
+        assert.equal(100, spy.getCall(3).args[0].speed);
+        b.user_action(user_id, 'down', false);
+        return assert.equal(4, spy.callCount);
+      });
+      return it('wrong move', function() {
+        b._user_move = sinon.spy();
+        b.user_action(user_id, 'wrong');
+        assert.equal(0, spy.callCount);
+        assert.equal(0, spy_add.callCount);
+        return assert.equal(0, b._user_move.callCount);
       });
     });
   });

@@ -83,7 +83,6 @@ App.Router = class Router extends Backbone.Router
       if code in val.code and val.active isnt active
         val.active = active
         App.socket.send.trigger 'control', {'move': attr, 'active': active}
-        @game.user_action(@user.id, attr, active)
     $('body').on 'keydown', (e)-> control(e.keyCode, true)
     $('body').on 'keyup', (e)-> control(e.keyCode, false)
     @render()

@@ -88,57 +88,6 @@
       return null;
     };
 
-    BcoCore.prototype.user_action = function(user_id, move, active) {
-      if (active == null) {
-        active = true;
-      }
-      if (move === 'up' || move === 'down' || move === 'left' || move === 'right') {
-        return this._user_move(user_id, move, active);
-      }
-    };
-
-    BcoCore.prototype._user_move = function(user_id, move, active) {
-      var last_move, params, pr, t;
-      if (active == null) {
-        active = false;
-      }
-      t = this.get_user(user_id);
-      if (!t._keystokes) {
-        t._keystokes = [];
-      }
-      if (active) {
-        t._keystokes.push(move);
-      } else {
-        if (t._keystokes[t._keystokes.length - 1] !== move) {
-          return t._keystokes.splice(t._keystokes.indexOf(move), 1);
-        }
-        t._keystokes.splice(t._keystokes.length - 1, 1);
-      }
-      params = {
-        'id': t.id,
-        'speed': 100
-      };
-      if (t._keystokes.length === 0) {
-        params['speed'] = 0;
-      } else {
-        last_move = t._keystokes[t._keystokes.length - 1];
-        if (last_move === 'up') {
-          params['angle'] = 270;
-        } else if (last_move === 'down') {
-          params['angle'] = 90;
-        } else if (last_move === 'left') {
-          params['angle'] = 180;
-        } else if (last_move === 'right') {
-          params['angle'] = 0;
-        }
-        if (t.angle !== params['angle']) {
-          pr = 16;
-          params['pos'] = [Math.round(t.pos[0] / pr) * pr, Math.round(t.pos[1] / pr) * pr];
-        }
-      }
-      return this.update(params);
-    };
-
     BcoCore.prototype.update = function(pr) {
       var attr, val, _results;
       _results = [];

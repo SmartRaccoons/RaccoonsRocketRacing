@@ -2,7 +2,8 @@
 (function() {
   var Bco, Rooms, Router, Users, events, extend, map,
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __slice = [].slice;
 
   events = require('events');
 
@@ -67,7 +68,7 @@
           r.game.on('update', function(pr) {
             return _this.emit_room(r, 'game:update', extend({
               'pos': r.game.get(pr.id).pos
-            }, pr));
+            }, pr), true);
           });
           r.game.on('restart', function() {
             return _this.emit_room(r, 'game:restart');
@@ -193,18 +194,24 @@
       })(this));
     };
 
-    Router.prototype.emit_user = function(user, event, args) {
-      return this.emit_socket(user.get('socket'), event, args);
+    Router.prototype.emit_user = function() {
+      var args, user;
+      user = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      return this.emit_socket.apply(this, [user.get('socket')].concat(args));
     };
 
-    Router.prototype.emit_socket = function(socket, event, args) {
-      return socket.emit(event, args);
+    Router.prototype.emit_socket = function() {
+      var args, socket;
+      socket = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      return socket.emit.apply(this, args);
     };
 
-    Router.prototype.emit_room = function(room, event, args) {
+    Router.prototype.emit_room = function() {
+      var args, room;
+      room = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       return room.get('users').forEach((function(_this) {
         return function(u) {
-          return _this.emit_user(u, event, args);
+          return _this.emit_user.apply(_this, [u].concat(args));
         };
       })(this));
     };
