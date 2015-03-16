@@ -50,12 +50,18 @@ describe 'Router', ->
 
 
   describe 'moving', ->
+    beforeEach ->
+      r.user = {id: 5}
+      r.game.user_action = sinon.spy()
 
     it 'keydown', ->
       spy = sinon.spy()
       App.socket.send.on 'control', spy
       $('#wrap').trigger(keyboard_down.up)
       expect(spy.getCall(0).args[0]).to.be.eql({'move': 'up', 'active': true})
+      expect(r.game.user_action.getCall(0).args[0], 5)
+      expect(r.game.user_action.getCall(0).args[1], 'up')
+      expect(r.game.user_action.getCall(0).args[2], true)
       $('#wrap').trigger(keyboard_down.down)
       expect(spy.getCall(1).args[0]).to.be.eql({'move': 'down', 'active': true})
       $('#wrap').trigger(keyboard_down.left)

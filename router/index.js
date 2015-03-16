@@ -188,7 +188,7 @@
           if (!user.get('room')) {
             return;
           }
-          return user.get('room').game[p.active ? 'user_start' : 'user_stop'](user.id, p.move);
+          return user.get('room').game.user_action(user.id, p.move, p.active);
         };
       })(this));
     };

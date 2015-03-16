@@ -90,11 +90,10 @@ module.exports.Bco = class Bco extends BcoCore
       @add_user(ob.params.user_id, {'pos': ob['pos_start']})
     @
 
-  user_start: (user_id, move)->
-    user = @get_user(user_id)
-    if move in ['up', 'down', 'left', 'right']
-      @_user_move(user_id, move, true)
-    else if move is 'fire'
+  user_action: (user_id, move, active=false)->
+    super
+    if move is 'fire' and active
+      user = @get_user(user_id)
       @add
         'object': 'bullet'
         'params': {'owner': user.id}
@@ -102,38 +101,6 @@ module.exports.Bco = class Bco extends BcoCore
         'angle': user.angle
         'destroy': 1
         'speed': 200
-
-  user_stop: (user_id, move)->
-    if move in ['up', 'down', 'left', 'right']
-      @_user_move(user_id, move)
-
-  _user_move: (user_id, move, active=false)->
-    t = @get_user(user_id)
-    if not t._keystokes
-      t._keystokes = []
-    if active
-      t._keystokes.push(move)
-    else
-      if t._keystokes[t._keystokes.length - 1] isnt move
-        return t._keystokes.splice(t._keystokes.indexOf(move), 1)
-      t._keystokes.splice(t._keystokes.length-1, 1)
-    params = {'id': t.id, 'speed': 100}
-    if t._keystokes.length is 0
-      params['speed'] = 0
-    else
-      last_move = t._keystokes[t._keystokes.length - 1]
-      if last_move is 'up'
-        params['angle'] = 270
-      else if last_move is 'down'
-        params['angle'] = 90
-      else if last_move is 'left'
-        params['angle'] = 180
-      else if last_move is 'right'
-        params['angle'] = 0
-      if t.angle isnt params['angle']
-        pr = 16
-        params['pos'] = [Math.round(t.pos[0]/pr)*pr, Math.round(t.pos[1]/pr)*pr]
-    @update(params)
 
   _updateView: (dt)->
     super(dt)

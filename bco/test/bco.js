@@ -402,7 +402,7 @@
         var spy;
         spy = sinon.spy();
         b.on('add', spy);
-        b.user_start(socket_id, 'fire');
+        b.user_action(socket_id, 'fire', true);
         assert.equal('bullet', spy.getCall(0).args[0].object);
         assert.equal(id, spy.getCall(0).args[0].params.owner);
         assert.deepEqual([14, 15], spy.getCall(0).args[0].pos);
@@ -410,84 +410,12 @@
         assert.deepEqual(200, spy.getCall(0).args[0].speed);
         return assert.deepEqual(1, spy.getCall(0).args[0].destroy);
       });
-      it('move', function() {
+      return it('fire inactive', function() {
         var spy;
         spy = sinon.spy();
-        b.on('update', spy);
-        b.user_start(socket_id, 'up');
-        assert.equal(id, spy.getCall(0).args[0].id);
-        assert.equal(270, spy.getCall(0).args[0].angle);
-        return assert.equal(100, spy.getCall(0).args[0].speed);
-      });
-      it('move down', function() {
-        var spy;
-        spy = sinon.spy();
-        b.on('update', spy);
-        b.user_start(socket_id, 'down');
-        return assert.equal(90, spy.getCall(0).args[0].angle);
-      });
-      it('move left', function() {
-        var spy;
-        spy = sinon.spy();
-        b.on('update', spy);
-        b.user_start(socket_id, 'left');
-        return assert.equal(180, spy.getCall(0).args[0].angle);
-      });
-      it('move right', function() {
-        var spy;
-        spy = sinon.spy();
-        b.on('update', spy);
-        b.user_start(socket_id, 'right');
-        return assert.equal(0, spy.getCall(0).args[0].angle);
-      });
-      it('move round coors', function() {
-        var spy;
-        spy = sinon.spy();
-        b.on('update', spy);
-        b.get_user(socket_id).pos = [7, 8];
-        b.get_user(socket_id).angle = 0;
-        b.user_start(socket_id, 'right');
-        assert(!spy.getCall(0).args[0].pos);
-        b.user_start(socket_id, 'up');
-        assert.deepEqual([0, 16], spy.getCall(1).args[0].pos);
-        b._elements[id].pos = [24, 23];
-        b.user_start(socket_id, 'left');
-        return assert.deepEqual([32, 16], spy.getCall(2).args[0].pos);
-      });
-      it('move stop', function() {
-        var spy;
-        spy = sinon.spy();
-        b.user_start(socket_id, 'up');
-        b.on('update', spy);
-        b.user_stop(socket_id, 'up');
-        return assert.equal(0, spy.getCall(0).args[0].speed);
-      });
-      it('move with more keystokes', function() {
-        var spy;
-        spy = sinon.spy();
-        b.on('update', spy);
-        b.user_start(socket_id, 'down');
-        b.user_start(socket_id, 'left');
-        b.user_start(socket_id, 'up');
-        b.user_stop(socket_id, 'up');
-        assert.equal(4, spy.callCount);
-        assert.equal(180, spy.getCall(3).args[0].angle);
-        assert.equal(100, spy.getCall(3).args[0].speed);
-        b.user_stop(socket_id, 'down');
-        return assert.equal(4, spy.callCount);
-      });
-      return it('wrong move', function() {
-        var add, update;
-        update = sinon.spy();
-        add = sinon.spy();
-        b.on('update', update);
-        b.on('add', add);
-        b.user_start(id, 'ben');
-        assert.equal(0, update.callCount);
-        assert.equal(0, add.callCount);
-        b._user_move = sinon.spy();
-        b.user_stop(id, 'ben');
-        return assert.equal(0, b._user_move.callCount);
+        b.on('add', spy);
+        b.user_action(socket_id, 'fire', false);
+        return assert.equal(0, spy.callCount);
       });
     });
   });

@@ -153,23 +153,26 @@
           'code': [32, 90]
         }
       };
-      control = function(code, active) {
-        var attr, val, _results;
-        _results = [];
-        for (attr in keys) {
-          val = keys[attr];
-          if (__indexOf.call(val.code, code) >= 0 && val.active !== active) {
-            val.active = active;
-            _results.push(App.socket.send.trigger('control', {
-              'move': attr,
-              'active': active
-            }));
-          } else {
-            _results.push(void 0);
+      control = (function(_this) {
+        return function(code, active) {
+          var attr, val, _results;
+          _results = [];
+          for (attr in keys) {
+            val = keys[attr];
+            if (__indexOf.call(val.code, code) >= 0 && val.active !== active) {
+              val.active = active;
+              App.socket.send.trigger('control', {
+                'move': attr,
+                'active': active
+              });
+              _results.push(_this.game.user_action(_this.user.id, attr, active));
+            } else {
+              _results.push(void 0);
+            }
           }
-        }
-        return _results;
-      };
+          return _results;
+        };
+      })(this);
       $('body').on('keydown', function(e) {
         return control(e.keyCode, true);
       });
@@ -219,3 +222,5 @@
   })(Backbone.Router);
 
 }).call(this);
+
+//# sourceMappingURL=router.js.map

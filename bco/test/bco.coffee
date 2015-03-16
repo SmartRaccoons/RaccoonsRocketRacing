@@ -251,7 +251,7 @@ describe 'Bco', ->
     it 'fire', ->
       spy = sinon.spy()
       b.on 'add', spy
-      b.user_start(socket_id, 'fire')
+      b.user_action(socket_id, 'fire', true)
       assert.equal('bullet', spy.getCall(0).args[0].object)
       assert.equal(id, spy.getCall(0).args[0].params.owner)
       assert.deepEqual([14, 15], spy.getCall(0).args[0].pos)
@@ -259,74 +259,8 @@ describe 'Bco', ->
       assert.deepEqual(200, spy.getCall(0).args[0].speed)
       assert.deepEqual(1, spy.getCall(0).args[0].destroy)
 
-    it 'move', ->
+    it 'fire inactive', ->
       spy = sinon.spy()
-      b.on 'update', spy
-      b.user_start(socket_id, 'up')
-      assert.equal(id, spy.getCall(0).args[0].id)
-      assert.equal(270, spy.getCall(0).args[0].angle)
-      assert.equal(100, spy.getCall(0).args[0].speed)
-
-    it 'move down', ->
-      spy = sinon.spy()
-      b.on 'update', spy
-      b.user_start(socket_id, 'down')
-      assert.equal(90, spy.getCall(0).args[0].angle)
-
-    it 'move left', ->
-      spy = sinon.spy()
-      b.on 'update', spy
-      b.user_start(socket_id, 'left')
-      assert.equal(180, spy.getCall(0).args[0].angle)
-
-    it 'move right', ->
-      spy = sinon.spy()
-      b.on 'update', spy
-      b.user_start(socket_id, 'right')
-      assert.equal(0, spy.getCall(0).args[0].angle)
-
-    it 'move round coors', ->
-      spy = sinon.spy()
-      b.on 'update', spy
-      b.get_user(socket_id).pos = [7, 8]
-      b.get_user(socket_id).angle = 0
-      b.user_start(socket_id, 'right')
-      assert(!spy.getCall(0).args[0].pos)
-      b.user_start(socket_id, 'up')
-      assert.deepEqual([0, 16], spy.getCall(1).args[0].pos)
-      b._elements[id].pos = [24, 23]
-      b.user_start(socket_id, 'left')
-      assert.deepEqual([32, 16], spy.getCall(2).args[0].pos)
-
-    it 'move stop', ->
-      spy = sinon.spy()
-      b.user_start(socket_id, 'up')
-      b.on 'update', spy
-      b.user_stop(socket_id, 'up')
-      assert.equal(0, spy.getCall(0).args[0].speed)
-
-    it 'move with more keystokes', ->
-      spy = sinon.spy()
-      b.on 'update', spy
-      b.user_start(socket_id, 'down')
-      b.user_start(socket_id, 'left')
-      b.user_start(socket_id, 'up')
-      b.user_stop(socket_id, 'up')
-      assert.equal(4, spy.callCount)
-      assert.equal(180, spy.getCall(3).args[0].angle)
-      assert.equal(100, spy.getCall(3).args[0].speed)
-      b.user_stop(socket_id, 'down')
-      assert.equal(4, spy.callCount)
-
-    it 'wrong move', ->
-      update = sinon.spy()
-      add = sinon.spy()
-      b.on 'update', update
-      b.on 'add', add
-      b.user_start(id, 'ben')
-      assert.equal(0, update.callCount)
-      assert.equal(0, add.callCount)
-      b._user_move = sinon.spy()
-      b.user_stop(id, 'ben')
-      assert.equal(0, b._user_move.callCount)
-
+      b.on 'add', spy
+      b.user_action(socket_id, 'fire', false)
+      assert.equal(0, spy.callCount)

@@ -406,10 +406,12 @@ describe 'router', ->
   describe 'game control', ->
     socket = null
     start = null
+    action = null
     stop = null
     beforeEach ->
       start = sinon.spy()
       stop = sinon.spy()
+      action = sinon.spy()
       socket = new events.EventEmitter()
       socket.id = '1'
       r.users.add({'id': 'ben'})
@@ -421,24 +423,22 @@ describe 'router', ->
     it 'control active:true', ->
       socket.emit('login:try')
       socket.emit('room:create')
-      r.rooms.models[0].game.user_start = start
-      r.rooms.models[0].game.user_stop = stop
+      r.rooms.models[0].game.user_action = action
       socket.emit('control', {'active': true, 'move': 'up'})
-      assert.equal(start.callCount, 1)
-      assert.equal(stop.callCount, 0)
-      assert.equal(start.getCall(0).args[0], '1')
-      assert.equal(start.getCall(0).args[1], 'up')
+      assert.equal(action.callCount, 1)
+      assert.equal(action.getCall(0).args[0], '1')
+      assert.equal(action.getCall(0).args[1], 'up')
+      assert.equal(action.getCall(0).args[2], true)
 
     it 'control active:false', ->
       socket.emit('login:try')
       socket.emit('room:create')
-      r.rooms.models[0].game.user_start = start
-      r.rooms.models[0].game.user_stop = stop
+      r.rooms.models[0].game.user_action = action
       socket.emit('control', {'active': false, 'move': 'down'})
-      assert.equal(start.callCount, 0)
-      assert.equal(stop.callCount, 1)
-      assert.equal(stop.getCall(0).args[0], '1')
-      assert.equal(stop.getCall(0).args[1], 'down')
+      assert.equal(action.callCount, 1)
+      assert.equal(action.getCall(0).args[0], '1')
+      assert.equal(action.getCall(0).args[1], 'down')
+      assert.equal(action.getCall(0).args[2], false)
 
     it 'not login', ->
       socket.emit('control', {'active': true, 'move': 'up'})

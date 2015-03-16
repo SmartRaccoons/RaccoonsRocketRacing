@@ -3,7 +3,7 @@ update :
 	bower install
 
 server :
-	python -m SimpleHTTPServer
+	python simleserver.py 8000
 
 test :
 	mocha --reporter dot ./bco/test/

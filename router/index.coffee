@@ -124,7 +124,7 @@ module.exports = class Router extends events.EventEmitter
     socket.on 'control', (p)=>
       if not user.get('room')
         return
-      user.get('room').game[if p.active then 'user_start' else 'user_stop'](user.id, p.move)
+      user.get('room').game.user_action(user.id, p.move, p.active)
 
   emit_user: (user, event, args)-> @emit_socket user.get('socket'), event, args
 
