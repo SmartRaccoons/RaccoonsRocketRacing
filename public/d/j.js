@@ -11164,7 +11164,8 @@ n.push(App.socket.send.trigger("control",{move:m,active:p}))
 }}return n
 }
 })(this);
-$("body").on("keydown",function(l){return i(l.keyCode,true)
+$("body").on("keydown",function(l){l.preventDefault();
+return i(l.keyCode,true)
 });
 $("body").on("keyup",function(l){return i(l.keyCode,false)
 });
@@ -11179,7 +11180,7 @@ h=(function(j){return function(){return App.socket.send.trigger("room:open",i)
 if(this.user){return h()
 }else{return this.listenToOnce(App.socket.receive,"login:success",h)
 }};
-f.prototype.render=function(){this.$el.html('<div id="user-panel">\n  <!--<ul>\n    <li>Rules</li>\n    <li>My profile</li>\n    <li>Best users</li>\n  </ul>-->\n  <div class="room-left"><a href="#">'+_l("Left room")+'</a></div>\n<!--<div class="info">\n  <span class="username">fake name</span>\n  <span class="logout">logout</span>\n</div>-->\n</div>\n\n<section class=\'room\'>\n<!--<div class="chat">\n		<ol>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n					 of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n        00s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n		</ol>\n		<textarea cols="35" rows="3" placeholder="(Nastrodoj)Press Enter to add message"></textarea>\n</div>-->\n\n\n<div class="room-list"></div>\n</section>\n\n<section class=\'game\'>\n\n<!--<div class="chat">\n		<ol>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n					 of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n        00s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n		</ol>\n		<textarea cols="35" rows="3" placeholder="(Nastrodoj)Press Enter to add message"></textarea>\n</div>-->\n\n\n</section>');
+f.prototype.render=function(){this.$el.html('<div id="user-panel">\n  <!--<ul>\n    <li>Rules</li>\n    <li>My profile</li>\n    <li>Best users</li>\n  </ul>-->\n  <div class="room-left"><a href="#">'+_l("Left room")+'</a></div>\n<!--<div class="info">\n  <span class="username">fake name</span>\n  <span class="logout">logout</span>\n</div>-->\n</div>\n\n<section class=\'room\'>\n<div class="room-list"></div>\n</section>\n\n<section class=\'game\'>\n\n<!--<div class="chat">\n		<ol>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n					 of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n			<li>\n					<i>12:23</i>\n					<strong>Super user</strong>\n        00s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv\n				</ul>\n			</li>\n		</ol>\n		<textarea cols="35" rows="3" placeholder="(Nastrodoj)Press Enter to add message"></textarea>\n</div>-->\n\n\n</section>');
 this.$el.find(".room-left a").on("click",function(){return App.socket.send.trigger("room:left")
 });
 this.room.$el.appendTo(this.$el.find(".room-list"));

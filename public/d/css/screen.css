@@ -190,26 +190,27 @@ body {
 
 /* line 144, ../sass/screen.sass */
 .room-list {
-  width: 40%;
+  width: 58%;
   margin: 0 0.5%;
+  padding-bottom: 6rem;
 }
-/* line 147, ../sass/screen.sass */
+/* line 148, ../sass/screen.sass */
 .room-list ol {
   height: 90%;
 }
 
-/* line 150, ../sass/screen.sass */
+/* line 151, ../sass/screen.sass */
 .room-preview {
-  width: 30%;
+  width: 40%;
 }
-/* line 152, ../sass/screen.sass */
+/* line 153, ../sass/screen.sass */
 .room-preview .preview {
   position: relative;
   padding: 0.5rem;
   background: #68848A;
   line-height: 1;
 }
-/* line 157, ../sass/screen.sass */
+/* line 158, ../sass/screen.sass */
 .room-preview .preview strong, .room-preview .preview i {
   display: block;
   position: absolute;
@@ -219,51 +220,51 @@ body {
   color: #fff;
   font-style: normal;
 }
-/* line 165, ../sass/screen.sass */
+/* line 166, ../sass/screen.sass */
 .room-preview .preview strong {
   top: 5%;
   left: 5%;
 }
-/* line 168, ../sass/screen.sass */
+/* line 169, ../sass/screen.sass */
 .room-preview .preview i {
   bottom: 5%;
   left: 5%;
 }
-/* line 171, ../sass/screen.sass */
+/* line 172, ../sass/screen.sass */
 .room-preview .teams {
   height: 40%;
 }
-/* line 173, ../sass/screen.sass */
+/* line 174, ../sass/screen.sass */
 .room-preview .teams[data-teams='2'] {
   overflow: hidden;
   *zoom: 1;
 }
-/* line 175, ../sass/screen.sass */
+/* line 176, ../sass/screen.sass */
 .room-preview .teams[data-teams='2'] > div {
   float: left;
   width: 50%;
 }
-/* line 178, ../sass/screen.sass */
+/* line 179, ../sass/screen.sass */
 .room-preview .teams > div {
   height: 100%;
   position: relative;
 }
-/* line 181, ../sass/screen.sass */
+/* line 182, ../sass/screen.sass */
 .room-preview .teams ol {
   height: 90%;
   font-size: 1.2rem;
 }
-/* line 184, ../sass/screen.sass */
+/* line 185, ../sass/screen.sass */
 .room-preview .teams ol > li {
   border-radius: 0.24rem;
   padding: 0.24rem;
   margin: 0.12rem;
 }
-/* line 186, ../sass/screen.sass */
+/* line 187, ../sass/screen.sass */
 .room-preview .teams ol strong {
   font-weight: normal;
 }
-/* line 188, ../sass/screen.sass */
+/* line 189, ../sass/screen.sass */
 .room-preview .teams button {
   height: 2.2rem;
   padding: 0 1.1rem;
@@ -273,83 +274,62 @@ body {
   position: absolute;
   bottom: 0;
 }
-/* line 192, ../sass/screen.sass */
+/* line 193, ../sass/screen.sass */
 .room-preview img {
   max-width: 100%;
 }
 
-/* line 196, ../sass/screen.sass */
-.game .chat, .game .users {
-  width: 21%;
-}
-/* line 198, ../sass/screen.sass */
-.game .users {
-  float: left;
-  height: 100%;
-}
-/* line 201, ../sass/screen.sass */
-.game .users ol {
-  height: 60%;
-  font-size: 1.2rem;
-}
-/* line 204, ../sass/screen.sass */
-.game .users ol > li {
-  border-radius: 0.24rem;
-  padding: 0.24rem;
-  margin: 0.12rem;
-}
-/* line 206, ../sass/screen.sass */
+/* line 197, ../sass/screen.sass */
 .game .game-canvas {
-  float: left;
-  height: 150px;
-  margin: 0 1%;
+  width: 50%;
+  margin: 1%;
   text-align: center;
   border: 0.5rem solid #69858B;
   line-height: 0;
   font-size: 0;
 }
-/* line 214, ../sass/screen.sass */
+/* line 204, ../sass/screen.sass */
 .game .game-canvas canvas {
   width: 100%;
 }
 
-/* line 221, ../sass/screen.sass */
+/* line 211, ../sass/screen.sass */
 .room-left, .game, #user-panel .room-left {
   display: none;
 }
 
-/* line 223, ../sass/screen.sass */
+/* line 213, ../sass/screen.sass */
 .user-in-room #user-panel .room-left {
   display: inline-block;
 }
 
-/* line 227, ../sass/screen.sass */
+/* line 217, ../sass/screen.sass */
 .user-in-room .game {
   display: block;
 }
-/* line 229, ../sass/screen.sass */
+/* line 219, ../sass/screen.sass */
 .user-in-room .room {
   display: none;
 }
 
-/* line 234, ../sass/screen.sass */
+/* line 224, ../sass/screen.sass */
 .room-list li {
   overflow: hidden;
   *zoom: 1;
   position: relative;
   cursor: pointer;
 }
-/* line 238, ../sass/screen.sass */
+/* line 228, ../sass/screen.sass */
 .room-list li strong {
   float: left;
   width: 50%;
 }
-/* line 241, ../sass/screen.sass */
+/* line 231, ../sass/screen.sass */
 .room-list li span {
   float: right;
   width: 30%;
 }
-/* line 244, ../sass/screen.sass */
+/* line 234, ../sass/screen.sass */
 .room-list li:after {
   content: attr(data-users) "/" attr(data-max);
   position: absolute;
@@ -361,7 +341,7 @@ body {
   text-align: center;
 }
 
-/* line 255, ../sass/screen.sass */
+/* line 245, ../sass/screen.sass */
 ol {
   list-style: none;
   padding: 0;
@@ -369,37 +349,37 @@ ol {
   overflow-y: scroll;
   color: #fff;
 }
-/* line 261, ../sass/screen.sass */
+/* line 251, ../sass/screen.sass */
 ol:empty {
   display: none;
 }
-/* line 263, ../sass/screen.sass */
+/* line 253, ../sass/screen.sass */
 ol ul, ol li {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-/* line 267, ../sass/screen.sass */
+/* line 257, ../sass/screen.sass */
 ol > li {
   background: #4A4343;
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin: 0.25rem;
 }
-/* line 270, ../sass/screen.sass */
+/* line 260, ../sass/screen.sass */
 ol > li:hover {
   background: #21211E;
 }
-/* line 273, ../sass/screen.sass */
+/* line 263, ../sass/screen.sass */
 ol ul li.m {
   text-align: center;
 }
-/* line 275, ../sass/screen.sass */
+/* line 265, ../sass/screen.sass */
 ol ul li.r {
   text-align: right;
 }
 
-/* line 277, ../sass/screen.sass */
+/* line 267, ../sass/screen.sass */
 h1 {
   margin: 0;
   padding: 0;
@@ -407,14 +387,14 @@ h1 {
   font-size: 2.2rem;
 }
 
-/* line 283, ../sass/screen.sass */
+/* line 273, ../sass/screen.sass */
 input {
   border: 0.5rem solid #69858B;
   margin: 0.5rem 0;
   width: 100%;
 }
 
-/* line 288, ../sass/screen.sass */
+/* line 278, ../sass/screen.sass */
 button {
   text-align: center;
   background: #68848A;
@@ -433,13 +413,13 @@ button:hover {
   background: #21211E;
 }
 
-/* line 293, ../sass/screen.sass */
+/* line 283, ../sass/screen.sass */
 #debug {
   position: absolute;
   bottom: 0;
   right: 0;
 }
-/* line 297, ../sass/screen.sass */
+/* line 287, ../sass/screen.sass */
 #debug .latency {
   background: #770000;
   color: #ffffff;

@@ -83,7 +83,9 @@ App.Router = class Router extends Backbone.Router
       if code in val.code and val.active isnt active
         val.active = active
         App.socket.send.trigger 'control', {'move': attr, 'active': active}
-    $('body').on 'keydown', (e)-> control(e.keyCode, true)
+    $('body').on 'keydown', (e)->
+      e.preventDefault() #prevent scrolling
+      control(e.keyCode, true)
     $('body').on 'keyup', (e)-> control(e.keyCode, false)
     @render()
     @
@@ -113,25 +115,6 @@ App.Router = class Router extends Backbone.Router
 </div>
 
 <section class='room'>
-  <!--<div class="chat">
-		<ol>
-			<li>
-					<i>12:23</i>
-					<strong>Super user</strong>
-					 of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv
-				</ul>
-			</li>
-			<li>
-					<i>12:23</i>
-					<strong>Super user</strong>
-          00s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv
-				</ul>
-			</li>
-		</ol>
-		<textarea cols="35" rows="3" placeholder="(Nastrodoj)Press Enter to add message"></textarea>
-  </div>-->
-
-
   <div class="room-list"></div>
 </section>
 

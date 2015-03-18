@@ -7,12 +7,8 @@ module.exports = (grunt) ->
     watch:
       coffee:
         files: ['../**/*.coffee']
-        options:
-          livereload: true
       sass:
         files: 'public/d/sass/screen.sass'
-        options:
-          livereload: true
       static:
         files: ['public/d/**/*.css',
                 'public/**/*.html',

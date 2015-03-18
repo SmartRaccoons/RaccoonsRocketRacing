@@ -10,16 +10,10 @@
     grunt.initConfig({
       watch: {
         coffee: {
-          files: ['../**/*.coffee'],
-          options: {
-            livereload: true
-          }
+          files: ['../**/*.coffee']
         },
         sass: {
-          files: 'public/d/sass/screen.sass',
-          options: {
-            livereload: true
-          }
+          files: 'public/d/sass/screen.sass'
         },
         "static": {
           files: ['public/d/**/*.css', 'public/**/*.html', 'public/**/*.js', 'public_test/**/*.js'],
