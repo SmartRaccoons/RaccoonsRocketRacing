@@ -1,6 +1,9 @@
 nock = require('nock')
 
 exports.init = (app, config)=>
+  app.use (req, res, next)->
+    req.headers['Cache-Control'] = 'no-cache'
+    next()
   app.get '/lodash/lodash.js', (req, res)-> res.sendfile(__dirname+'/node_modules/lodash/lodash.js')
   app.get '/backbone/backbone.js', (req, res)-> res.sendfile(__dirname+'/node_modules/backbone/backbone.js')
   app.get '/jquery.js', (req, res)-> res.sendfile(__dirname+'/bower_components/jquery/dist/jquery.js')

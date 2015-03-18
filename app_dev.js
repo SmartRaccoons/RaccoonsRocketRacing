@@ -6,6 +6,10 @@
 
   exports.init = (function(_this) {
     return function(app, config) {
+      app.use(function(req, res, next) {
+        req.headers['Cache-Control'] = 'no-cache';
+        return next();
+      });
       app.get('/lodash/lodash.js', function(req, res) {
         return res.sendfile(__dirname + '/node_modules/lodash/lodash.js');
       });
