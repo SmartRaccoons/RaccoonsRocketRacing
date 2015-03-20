@@ -22,6 +22,15 @@
       app.get('/pixi.js', function(req, res) {
         return res.sendfile(__dirname + '/bower_components/pixi.js/bin/pixi.dev.js');
       });
+      app.get('/bco/index.js', function(req, res) {
+        return res.sendfile(__dirname + '/bco/index.js');
+      });
+      app.get('/bco/index.coffee', function(req, res) {
+        return res.sendfile(__dirname + '/bco/index.coffee');
+      });
+      app.get('/bco/index.js.map', function(req, res) {
+        return res.sendfile(__dirname + '/bco/index.js.map');
+      });
       app.get('/bco/client.js', function(req, res) {
         return res.sendfile(__dirname + '/bco/client.js');
       });

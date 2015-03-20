@@ -5,7 +5,7 @@ nock = require('nock')
 extend = require('util')._extend
 
 
-Bco = require('../').Bco
+Bco = require('../server').Bco
 
 
 describe 'Bco', ->

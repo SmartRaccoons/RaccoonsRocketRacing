@@ -10774,152 +10774,154 @@ _.extend(App.socket.receive,Backbone.Events);
 _.extend(App.socket.send,Backbone.Events);
 (function(){App.lang.strings.en={Join:"Join","Create room":"Create room","Left room":"Left room"}
 }).call(this);
-(function(){var f,e,d,b,a={}.hasOwnProperty,c=function(j,h){for(var g in h){if(a.call(h,g)){j[g]=h[g]
-}}function i(){this.constructor=j
-}i.prototype=h.prototype;
-j.prototype=new i();
-j.__super__=h.prototype;
-return j
+(function(){var c,b,a;
+a=typeof require!=="undefined"?require("lodash"):window._;
+c=typeof require!=="undefined"?require("backbone"):window.Backbone;
+(typeof module!=="undefined"?module.exports:window).BcoCore=b=(function(){a.extend(d.prototype,c.Events);
+d.prototype.size=[416,416];
+function d(){this._elements={}
+}d.prototype._collides=function(f,l,k,e,i,j,g,h){return !(k<=i||f>=g||e<=j||l>=h)
 };
-b=typeof require!=="undefined"?require("lodash"):window._;
-f=typeof require!=="undefined"?require("backbone"):window.Backbone;
-(typeof module!=="undefined"?module.exports:window).BcoCore=d=(function(){b.extend(g.prototype,f.Events);
-g.prototype.size=[416,416];
-function g(){this._elements={}
-}g.prototype._collides=function(i,o,n,h,l,m,j,k){return !(n<=l||i>=j||h<=m||o>=k)
+d.prototype._collides_ob=function(f,e){return this._collides(f.pos[0],f.pos[1],f.pos[0]+f.size[0],f.pos[1]+f.size[1],e.pos[0],e.pos[1],e.pos[0]+e.size[0],e.pos[1]+e.size[1])
 };
-g.prototype._collides_ob=function(i,h){return this._collides(i.pos[0],i.pos[1],i.pos[0]+i.size[0],i.pos[1]+i.size[1],h.pos[0],h.pos[1],h.pos[0]+h.size[0],h.pos[1]+h.size[1])
+d.prototype.__requestAnimFrame=function(f){var e;
+e=window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame;
+if(e){return e(f)
+}return window.setTimeout(f,1000/30)
 };
-g.prototype.__requestAnimFrame=function(i){var h;
-h=window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame;
-if(h){return h(i)
-}return window.setTimeout(i,1000/30)
+d.prototype.restart=function(){return this._elements={}
 };
-g.prototype.restart=function(){return this._elements={}
+d.prototype.add=function(e){return this._elements[e.id]=e
 };
-g.prototype.add=function(h){return this._elements[h.id]=h
+d.prototype.add_user=function(e,f){if(f==null){f={}
+}f.object="user";
+f.params={user_id:e};
+return this.add(f)
 };
-g.prototype.add_user=function(h,i){if(i==null){i={}
-}i.object="user";
-i.params={user_id:h};
-return this.add(i)
+d.prototype.get=function(l){var g,k,i,j,h,f,e;
+if(typeof l==="number"){return this._elements[l]
+}g=[];
+e=this._elements;
+for(k in e){h=e[k];
+j=true;
+for(i in l){f=l[i];
+if(j&&h[i]!==f){j=false
+}}if(j){g.push(h)
+}}return g
 };
-g.prototype.get=function(o){var j,n,l,m,k,i,h;
-if(typeof o==="number"){return this._elements[o]
-}j=[];
-h=this._elements;
-for(n in h){k=h[n];
-m=true;
-for(l in o){i=o[l];
-if(m&&k[l]!==i){m=false
-}}if(m){j.push(k)
-}}return j
-};
-g.prototype.get_user=function(h){var k,j,i;
-i=this._elements;
-for(k in i){j=i[k];
-if(j.params.user_id===h){return j
+d.prototype.get_user=function(e){var h,g,f;
+f=this._elements;
+for(h in f){g=f[h];
+if(g.params.user_id===e){return g
 }}return null
 };
-g.prototype.update=function(k){var h,j,i;
-i=[];
-for(h in k){j=k[h];
-if(h!=="id"){i.push(this._elements[k.id][h]=j)
-}else{i.push(void 0)
-}}return i
+d.prototype.update=function(h){var e,g,f;
+f=[];
+for(e in h){g=h[e];
+if(e!=="id"){f.push(this._elements[h.id][e]=g)
+}else{f.push(void 0)
+}}return f
 };
-g.prototype.destroy=function(h){return delete this._elements[h.id]
+d.prototype.destroy=function(e){return delete this._elements[e.id]
 };
-g.prototype.start=function(){this._stop=false;
+d.prototype.start=function(){this._stop=false;
 this._lastTime=Date.now();
 return this._process()
 };
-g.prototype.stop=function(){return this._stop=true
+d.prototype.stop=function(){return this._stop=true
 };
-g.prototype._process=function(){var i,h;
-h=Date.now();
-i=(h-this._lastTime)/1000;
-if(i>0){this._updateView(i)
-}this._lastTime=h;
-return this.__requestAnimFrame((function(j){return function(){if(!j._stop){return j._process()
+d.prototype._process=function(){var f,e;
+e=Date.now();
+f=(e-this._lastTime)/1000;
+if(f>0){this._updateView(f)
+}this._lastTime=e;
+return this.__requestAnimFrame((function(g){return function(){if(!g._stop){return g._process()
 }}
 })(this))
 };
-g.prototype._updateView=function(i){var l,h,o,p,j,n,m,k;
-m=this._elements;
-for(h in m){j=m[h];
-if(j.speed>0){p=j.angle*Math.PI/180;
-l=j.speed*i;
-j.pos[0]+=l*Math.cos(p);
-j.pos[1]+=l*Math.sin(p);
-j.pos[0]=Math.round(j.pos[0]*100)/100;
-j.pos[1]=Math.round(j.pos[1]*100)/100;
-if(j.destroy===0){k=this._elements;
-for(o in k){n=k[o];
-if(h!==o&&n.destroy===0&&this._collides_ob(j,n)){if(j.angle===0){j.pos[0]=n.pos[0]-j.size[0]
-}else{if(j.angle===90){j.pos[1]=n.pos[1]-j.size[1]
-}else{if(j.angle===180){j.pos[0]=n.pos[0]+n.size[0]
-}else{if(j.angle===270){j.pos[1]=n.pos[1]+n.size[1]
-}}}}}}if(j.angle===0&&j.pos[0]+j.size[0]>this.size[0]){j.pos[0]=this.size[0]-j.size[0]
-}else{if(j.angle===90&&j.pos[1]+j.size[1]>this.size[1]){j.pos[1]=this.size[1]-j.size[1]
-}else{if(j.angle===180&&j.pos[0]<0){j.pos[0]=0
-}else{if(j.angle===270&&j.pos[1]<0){j.pos[1]=0
+d.prototype._updateView=function(f){var i,e,l,m,g,k,j,h;
+j=this._elements;
+for(e in j){g=j[e];
+if(g.speed>0){m=g.angle*Math.PI/180;
+i=g.speed*f;
+g.pos[0]+=i*Math.cos(m);
+g.pos[1]+=i*Math.sin(m);
+g.pos[0]=Math.round(g.pos[0]*100)/100;
+g.pos[1]=Math.round(g.pos[1]*100)/100;
+if(g.destroy===0){h=this._elements;
+for(l in h){k=h[l];
+if(e!==l&&k.destroy===0&&this._collides_ob(g,k)){if(g.angle===0){g.pos[0]=k.pos[0]-g.size[0]
+}else{if(g.angle===90){g.pos[1]=k.pos[1]-g.size[1]
+}else{if(g.angle===180){g.pos[0]=k.pos[0]+k.size[0]
+}else{if(g.angle===270){g.pos[1]=k.pos[1]+k.size[1]
+}}}}}}if(g.angle===0&&g.pos[0]+g.size[0]>this.size[0]){g.pos[0]=this.size[0]-g.size[0]
+}else{if(g.angle===90&&g.pos[1]+g.size[1]>this.size[1]){g.pos[1]=this.size[1]-g.size[1]
+}else{if(g.angle===180&&g.pos[0]<0){g.pos[0]=0
+}else{if(g.angle===270&&g.pos[1]<0){g.pos[1]=0
 }}}}}}}return this
 };
+return d
+})()
+}).call(this);
+(function(){var c,a={}.hasOwnProperty,b=function(g,e){for(var d in e){if(a.call(e,d)){g[d]=e[d]
+}}function f(){this.constructor=g
+}f.prototype=e.prototype;
+g.prototype=new f();
+g.__super__=e.prototype;
 return g
-})();
-(typeof module!=="undefined"?module.exports:window).Bco=e=(function(g){c(h,g);
-b.extend(h.prototype,f.View.prototype);
-h.prototype.className="game-canvas";
-h.prototype.options={path:""};
-function h(){h.__super__.constructor.apply(this,arguments);
-f.View.prototype.constructor.apply(this,arguments);
+};
+window.Bco=c=(function(d){b(e,d);
+_.extend(e.prototype,Backbone.View.prototype);
+e.prototype.className="game-canvas";
+e.prototype.options={path:""};
+function e(){e.__super__.constructor.apply(this,arguments);
+Backbone.View.prototype.constructor.apply(this,arguments);
 this
-}h.prototype.restart=function(){var k,j,i;
-i=this._elements;
-for(k in i){j=i[k];
-if(j.sprite){this.stage.removeChild(j.sprite)
-}}return h.__super__.restart.apply(this,arguments)
+}e.prototype.restart=function(){var h,g,f;
+f=this._elements;
+for(h in f){g=f[h];
+if(g.sprite){this.stage.removeChild(g.sprite)
+}}return e.__super__.restart.apply(this,arguments)
 };
-h.prototype.add=function(j){var i;
-h.__super__.add.apply(this,arguments);
-i=new PIXI.Sprite(PIXI.Texture.fromImage(this.options.path+"d/img/"+j.object+".png"));
-i.anchor.x=0.5;
-i.anchor.y=0.5;
-this._elements[j.id]["sprite"]=i;
-return this.stage.addChild(i)
+e.prototype.add=function(g){var f;
+e.__super__.add.apply(this,arguments);
+f=new PIXI.Sprite(PIXI.Texture.fromImage(this.options.path+"d/img/"+g.object+".png"));
+f.anchor.x=0.5;
+f.anchor.y=0.5;
+this._elements[g.id]["sprite"]=f;
+return this.stage.addChild(f)
 };
-h.prototype.elements=function(l){var j,n,m,k,i;
-k=this._elements;
-for(n in k){j=k[n];
-if(j.sprite){this.stage.removeChild(j.sprite)
+e.prototype.elements=function(i){var g,k,j,h,f;
+h=this._elements;
+for(k in h){g=h[k];
+if(g.sprite){this.stage.removeChild(g.sprite)
 }}this._elements={};
-i=[];
-for(n in l){m=l[n];
-i.push(this.add(m))
-}return i
+f=[];
+for(k in i){j=i[k];
+f.push(this.add(j))
+}return f
 };
-h.prototype.destroy=function(i){if(this._elements[i.id].sprite){this.stage.removeChild(this._elements[i.id].sprite)
-}return h.__super__.destroy.apply(this,arguments)
+e.prototype.destroy=function(f){if(this._elements[f.id].sprite){this.stage.removeChild(this._elements[f.id].sprite)
+}return e.__super__.destroy.apply(this,arguments)
 };
-h.prototype._updateView=function(i){h.__super__._updateView.apply(this,arguments);
+e.prototype._updateView=function(f){e.__super__._updateView.apply(this,arguments);
 return this.draw()
 };
-h.prototype.draw=function(){var k,j,i;
-i=this._elements;
-for(k in i){j=i[k];
-if(j.sprite){j.sprite.position.x=j.pos[0]+j.size[0]/2;
-j.sprite.position.y=j.pos[1]+j.size[1]/2;
-j.sprite.rotation=j.angle*Math.PI/180
+e.prototype.draw=function(){var h,g,f;
+f=this._elements;
+for(h in f){g=f[h];
+if(g.sprite){g.sprite.position.x=g.pos[0]+g.size[0]/2;
+g.sprite.position.y=g.pos[1]+g.size[1]/2;
+g.sprite.rotation=g.angle*Math.PI/180
 }}return this.renderer.render(this.stage)
 };
-h.prototype.render=function(){this.stage=new PIXI.Stage;
+e.prototype.render=function(){this.stage=new PIXI.Stage;
 this.renderer=PIXI.autoDetectRenderer(416,416);
 this.$el.append(this.renderer.view);
 return this
 };
-return h
-})(d)
+return e
+})(window.BcoCore)
 }).call(this);
 (function(){var c,h,f,e,b,g,a={}.hasOwnProperty,d=function(l,j){for(var i in j){if(a.call(j,i)){l[i]=j[i]
 }}function k(){this.constructor=l

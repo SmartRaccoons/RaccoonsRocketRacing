@@ -3,7 +3,7 @@ extend = require('util')._extend
 
 Users = require('../room').Users
 Rooms = require('../room').Rooms
-Bco = require('../bco').Bco
+Bco = require('../bco/server').Bco
 
 
 map = [
