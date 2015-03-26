@@ -20,14 +20,6 @@ window.Bco = class Bco extends window.BcoCore
         @stage.removeChild(val.sprite)
     super
 
-#  update: (pr, sync)->
-#    if sync and @_elements[pr.id].object is 'user' and @_elements[pr.id]._keystokes.length > 0
-#      return
-#    super
-
-#  start: ->
-#    super
-
   add: (pr)->
     super
     sprite = new PIXI.Sprite(PIXI.Texture.fromImage(@options.path+'d/img/'+pr.object+'.png'))

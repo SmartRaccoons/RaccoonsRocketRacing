@@ -10,6 +10,11 @@ test :
 	mocha --reporter dot ./room/test/
 	mocha --reporter dot ./router/test/
 	mocha-phantomjs -R dot public_test/js/index.html
+testc :
+	mocha --compilers coffee:coffee-script/register --reporter dot ./bco/test/
+	mocha --compilers coffee:coffee-script/register --reporter dot ./room/test/
+	mocha --compilers coffee:coffee-script/register --reporter dot ./router/test/
+	mocha-phantomjs -R dot public_test/js/index.html
 
 production :
 	yuicompressor public/d/css/screen.css -o public/d/c.css

@@ -99,17 +99,11 @@ describe 'BcoCore', ->
       assert.equal(b._updateView.callCount, 5)
 
     it 'update position', ->
-      b.add({'id': 1, 'object': 'benja', 'speed': 10, 'angle': 0, 'pos': [0, 0], 'stuck': 1})
-      b._updateView(1)
-      assert.deepEqual(b.get(1).pos, [10, 0])
+      b.add({'id': 1, 'object': 'benja', 'pos': [0, 0], 'vel': [1, 1]})
+      b._updateView(2)
+      assert.deepEqual(b.get(1).pos, [2, 2])
       b._updateView(0.5)
-      assert.deepEqual(b.get(1).pos, [15, 0])
-      b.update({'id': 1, 'angle': 90, 'pos': [0, 0]})
-      b._updateView(0.5)
-      assert.deepEqual(b.get(1).pos, [0, 5])
-      b.update({'id': 1, 'angle': 45, 'pos': [0, 0]})
-      b._updateView(1)
-      assert.deepEqual(b.get(1).pos, [7.07, 7.07])
+      assert.deepEqual(b.get(1).pos, [2.5, 2.5])
 
     it 'stop', ->
       b._updateView = sinon.spy()
@@ -124,7 +118,7 @@ describe 'BcoCore', ->
       assert.equal(b._updateView.callCount, 2)
 
 
-  describe 'stop out of box', ->
+  describe.skip 'stop out of box', ->
     beforeEach ->
       b._elements = {}
       b.add({'id': 1, 'object': 'tank', 'speed': 10, 'destroy': 0, 'angle': 0, 'size': [32, 32], 'pos': [0, 0]})
@@ -161,56 +155,56 @@ describe 'BcoCore', ->
       assert.deepEqual(b.get(1).pos, [-9, 0])
 
 
-  describe 'stop on collides', ->
-    clock = null
-    object = 5
-    beforeEach ->
-      clock = sinon.useFakeTimers()
-      b._elements = {}
-      b.add({'id': 1, 'object': 'tank', 'speed': 10, 'destroy': 0, 'angle': 0, 'size': [32, 32], 'pos': [0, 0]})
-      b.add({'id': 5, 'object': 'brick', 'speed': 0, 'destroy': 0, 'angle': 0, 'pos': [100, 100], 'size': [16, 16]})
-    afterEach ->
-      clock.restore()
-
-    it 'over elements', ->
-      b.add({'id': 2, 'object': 'brick', 'speed': 0, 'destroy': 0, 'angle': 0, 'size': [16, 16], 'pos': [34, 0]})
-      b._updateView(0.1)
-      assert.deepEqual(b.get(1).pos, [1, 0])
-      b._updateView(0.4)
-      assert.deepEqual(b.get(1).pos, [2, 0])
-
-    it 'destroy param', ->
-      b.get(1).pos = [0, 0]
-      b.add({'id': 3, 'object': 'bullet', 'speed': 20, 'angle': 0, 'size': [8, 8], 'pos': [0, 0], 'destroy': 1})
-      b._updateView(0.2)
-      assert.deepEqual(b.get(1).pos, [2, 0])
-      assert.deepEqual(b.get(3).pos, [4, 0])
-
-    it 'over element from left', ->
-      b.get(object).pos = [34, 0]
-      b.get(1).pos = [0, 1]
-      b._updateView(1)
-      assert.deepEqual(b.get(1).pos, [2, 1])
-
-    it 'over element from right', ->
-      b.get(1).angle = 180
-      b.get(1).pos = [17, 1]
-      b.get(object).pos = [0, 0]
-      b._updateView(1)
-      assert.deepEqual(b.get(1).pos, [16, 1])
-
-    it 'over element from top', ->
-      b.get(1).angle = 90
-      b.get(object).pos = [0, 34]
-      b._updateView(1)
-      assert.deepEqual(b.get(1).pos, [0, 2])
-
-    it 'over element from bottom', ->
-      b.get(1).angle = 270
-      b.get(1).pos = [0, 17]
-      b.get(object).pos = [0, 0]
-      b._updateView(1)
-      assert.deepEqual(b.get(1).pos, [0, 16])
+#  describe 'stop on collides', ->
+#    clock = null
+#    object = 5
+#    beforeEach ->
+#      clock = sinon.useFakeTimers()
+#      b._elements = {}
+#      b.add({'id': 1, 'object': 'tank', 'speed': 10, 'destroy': 0, 'angle': 0, 'size': [32, 32], 'pos': [0, 0]})
+#      b.add({'id': 5, 'object': 'brick', 'speed': 0, 'destroy': 0, 'angle': 0, 'pos': [100, 100], 'size': [16, 16]})
+#    afterEach ->
+#      clock.restore()
+#
+#    it 'over elements', ->
+#      b.add({'id': 2, 'object': 'brick', 'speed': 0, 'destroy': 0, 'angle': 0, 'size': [16, 16], 'pos': [34, 0]})
+#      b._updateView(0.1)
+#      assert.deepEqual(b.get(1).pos, [1, 0])
+#      b._updateView(0.4)
+#      assert.deepEqual(b.get(1).pos, [2, 0])
+#
+#    it 'destroy param', ->
+#      b.get(1).pos = [0, 0]
+#      b.add({'id': 3, 'object': 'bullet', 'speed': 20, 'angle': 0, 'size': [8, 8], 'pos': [0, 0], 'destroy': 1})
+#      b._updateView(0.2)
+#      assert.deepEqual(b.get(1).pos, [2, 0])
+#      assert.deepEqual(b.get(3).pos, [4, 0])
+#
+#    it 'over element from left', ->
+#      b.get(object).pos = [34, 0]
+#      b.get(1).pos = [0, 1]
+#      b._updateView(1)
+#      assert.deepEqual(b.get(1).pos, [2, 1])
+#
+#    it 'over element from right', ->
+#      b.get(1).angle = 180
+#      b.get(1).pos = [17, 1]
+#      b.get(object).pos = [0, 0]
+#      b._updateView(1)
+#      assert.deepEqual(b.get(1).pos, [16, 1])
+#
+#    it 'over element from top', ->
+#      b.get(1).angle = 90
+#      b.get(object).pos = [0, 34]
+#      b._updateView(1)
+#      assert.deepEqual(b.get(1).pos, [0, 2])
+#
+#    it 'over element from bottom', ->
+#      b.get(1).angle = 270
+#      b.get(1).pos = [0, 17]
+#      b.get(object).pos = [0, 0]
+#      b._updateView(1)
+#      assert.deepEqual(b.get(1).pos, [0, 16])
 
 
   describe 'collides', ->

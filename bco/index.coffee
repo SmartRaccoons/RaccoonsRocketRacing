@@ -3,9 +3,31 @@ _ = if typeof require isnt 'undefined' then require('lodash') else window._
 Backbone = if typeof require isnt 'undefined' then require('backbone') else window.Backbone
 
 
+class Vector
+  multiply: (vector, scalar)->
+    [vector[0] * scalar, vector[1] * scalar]
+
+  plus: (v1, v2)->
+    [v1[0] + v2[0], v1[1] + v2[1]]
+
+  magnitude: (v)->
+    Math.sqrt(v[0] * v[0] + v[1] * v[1])
+
+  create: (angle, length)->
+    [Math.cos(angle) * length, Math.sin(angle) * length]
+
+  accelerate: (v, speed, angle, max)->
+    v = @plus(v, @create(angle, speed))
+    magnitude = @magnitude(v)
+    if max < magnitude
+      @multiply(v, max / magnitude)
+    v
+
 
 (if typeof module isnt 'undefined' then module.exports else window).BcoCore = class BcoCore
   _.extend @prototype, Backbone.Events
+
+  vector: new Vector()
 
   size: [416, 416]
 
@@ -87,31 +109,27 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
         @_process()
 
   _updateView: (dt)->
-    for id, val of @_elements
-      if val.speed > 0
-        rd = val.angle * Math.PI/180.0
-        hypo = val.speed * dt
-        val.pos[0] += hypo * Math.cos(rd)
-        val.pos[1] += hypo * Math.sin(rd)
-        val.pos[0] = Math.round(val.pos[0] * 100)/100
-        val.pos[1] = Math.round(val.pos[1] * 100)/100
-        if val.destroy is 0
-          for id2, val2 of @_elements
-            if id isnt id2 and val2.destroy is 0 and @_collides_ob(val, val2)
-              if val.angle is 0
-                val.pos[0] = val2.pos[0]-val.size[0]
-              else if val.angle is 90
-                val.pos[1] = val2.pos[1]-val.size[1]
-              else if val.angle is 180
-                val.pos[0] = val2.pos[0]+val2.size[0]
-              else if val.angle is 270
-                val.pos[1] = val2.pos[1]+val2.size[1]
-          if val.angle is 0 and val.pos[0]+val.size[0]>@size[0]
-            val.pos[0] = @size[0]-val.size[0]
-          else if val.angle is 90 and val.pos[1]+val.size[1]>@size[1]
-            val.pos[1] = @size[1]-val.size[1]
-          else if val.angle is 180 and val.pos[0]<0
-            val.pos[0] = 0
-          else if val.angle is 270 and val.pos[1]<0
-            val.pos[1] = 0
+    for id, el of @_elements
+      if el.vel[0] isnt 0 or el.vel[1] isnt 0
+        el.pos = @vector.plus(el.pos, @vector.multiply(el.vel, dt))
+#      if val.speed > 0
+#        if val.destroy is 0
+#          for id2, val2 of @_elements
+#            if id isnt id2 and val2.destroy is 0 and @_collides_ob(val, val2)
+#              if val.angle is 0
+#                val.pos[0] = val2.pos[0]-val.size[0]
+#              else if val.angle is 90
+#                val.pos[1] = val2.pos[1]-val.size[1]
+#              else if val.angle is 180
+#                val.pos[0] = val2.pos[0]+val2.size[0]
+#              else if val.angle is 270
+#                val.pos[1] = val2.pos[1]+val2.size[1]
+#          if val.angle is 0 and val.pos[0]+val.size[0]>@size[0]
+#            val.pos[0] = @size[0]-val.size[0]
+#          else if val.angle is 90 and val.pos[1]+val.size[1]>@size[1]
+#            val.pos[1] = @size[1]-val.size[1]
+#          else if val.angle is 180 and val.pos[0]<0
+#            val.pos[0] = 0
+#          else if val.angle is 270 and val.pos[1]<0
+#            val.pos[1] = 0
     @
