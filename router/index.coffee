@@ -66,7 +66,7 @@ module.exports = class Router extends events.EventEmitter
       r.game = new Bco(map)
       r.game.on 'add', (pr)=> @emit_room(r, 'game:add', pr)
       r.game.on 'update', (pr)=>
-        @emit_room(r, 'game:update', extend({'pos': r.game.get(pr.id).pos}, pr), true)
+        @emit_room(r, 'game:update', extend({'pos': r.game.get(pr.id).pos, 'vel': r.game.get(pr.id).vel}, pr), true)
       r.game.on 'restart', => @emit_room(r, 'game:restart')
       r.game.on 'destroy', (pr)=>
         @emit_room(r, 'game:destroy', pr)

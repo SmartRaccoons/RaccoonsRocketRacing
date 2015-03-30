@@ -53,7 +53,9 @@
         });
         assert.equal(1, id);
         assert.deepEqual(b.get(id).size, [32, 32]);
-        assert.equal(b.get(id).accelerator, 0);
+        assert.equal(b.get(id).speed, 0.3);
+        assert.equal(b.get(id).accelerator, 0.0001);
+        assert.equal(b.get(id).rub, 0.96);
         return assert.deepEqual(b.get(id).moving, []);
       });
       it('bullet', function() {
@@ -123,7 +125,6 @@
         assert.deepEqual([0, 0], b.get(id).pos);
         assert.deepEqual([0, 0], b.get(id).vel);
         assert.deepEqual([16, 16], b.get(id).size);
-        assert.equal(0, b.get(id).speed);
         assert.equal(0, b.get(id).angle);
         assert.equal(0, b.get(id).destroy);
         assert.equal(1, b.get(id).hitpoints);
@@ -133,7 +134,6 @@
             '1': 1
           },
           'pos': [1, 2],
-          'speed': 2,
           'angle': 3,
           'destroy': 1,
           'hitpoints': 10
@@ -145,7 +145,6 @@
         }, b.get(id).params);
         assert.deepEqual([1, 2], b.get(id).pos);
         assert.deepEqual([16, 16], b.get(id).size);
-        assert.equal(2, b.get(id).speed);
         assert.equal(3, b.get(id).angle);
         return assert.equal(10, b.get(id).hitpoints);
       });

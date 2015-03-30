@@ -383,6 +383,7 @@ describe 'router', ->
       assert.equal(update.getCall(0).args[2].id, id)
       assert.equal(update.getCall(0).args[2].speed, 10)
       assert.deepEqual(update.getCall(0).args[2].pos, [0, 0])
+      assert.deepEqual(update.getCall(0).args[2].vel, [0, 0])
       assert.equal(update.getCall(0).args[3], true)
 
     it 'event restart', ->

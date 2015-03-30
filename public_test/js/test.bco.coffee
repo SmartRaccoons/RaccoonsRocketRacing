@@ -94,7 +94,7 @@ describe 'BcoCore', ->
       assert.equal(b._updateView.callCount, 0)
       clock.tick(25)
       assert.equal(b._updateView.callCount, 1)
-      assert.equal(b._updateView.getCall(0).args[0], 0.025)
+      assert.equal(b._updateView.getCall(0).args[0], 25)
       clock.tick(100)
       assert.equal(b._updateView.callCount, 5)
 
@@ -104,6 +104,27 @@ describe 'BcoCore', ->
       assert.deepEqual(b.get(1).pos, [2, 2])
       b._updateView(0.5)
       assert.deepEqual(b.get(1).pos, [2.5, 2.5])
+
+    it 'update velocity', ->
+      b.add({'id': 1, 'object': 'benja', 'pos': [0, 0], angle: 0, 'vel': [0, 0]})
+      b._elements[1].accelerator = 10
+      b._elements[1].moving = ['up']
+      b._updateView(1)
+      assert.deepEqual(b.get(1).vel, [10, 0])
+
+    it 'decrease velocity', ->
+      b.add({'id': 1, 'object': 'benja', 'pos': [0, 0], angle: 0, 'vel': [10, 20]})
+      b._elements[1].rub = 0.9
+      b._updateView(2)
+      assert(8.09 < b.get(1).vel[0] < 8.11)
+      assert(16.19 < b.get(1).vel[1] < 16.21)
+
+    it 'update velocity (no moving)', ->
+      b.add({'id': 1, 'object': 'benja', 'pos': [0, 0], 'vel': [0, 0]})
+      b._elements[1].accelerator = 10
+      b._elements[1].moving = []
+      b._updateView(1)
+      assert.deepEqual(b.get(1).vel, [0, 0])
 
     it 'stop', ->
       b._updateView = sinon.spy()
@@ -118,41 +139,41 @@ describe 'BcoCore', ->
       assert.equal(b._updateView.callCount, 2)
 
 
-  describe.skip 'stop out of box', ->
-    beforeEach ->
-      b._elements = {}
-      b.add({'id': 1, 'object': 'tank', 'speed': 10, 'destroy': 0, 'angle': 0, 'size': [32, 32], 'pos': [0, 0]})
-      b.add({'id': 5, 'object': 'brick', 'speed': 0, 'destroy': 0, 'angle': 0, 'pos': [100, 100], 'size': [16, 16]})
-
-    it 'left', ->
-      b.get(1).angle = 180
-      b.get(1).pos = [1, 0]
-      b._updateView(1)
-      assert.deepEqual(b.get(1).pos, [0, 0])
-
-    it 'right', ->
-      b.get(1).pos = [b.size[0]-b.get(1).size[0]-1, 0]
-      b._updateView(1)
-      expect(b.get(1).pos, [b.size[0]-b.get(1).size[0], 0])
-
-    it 'up', ->
-      b.get(1).angle = 270
-      b.get(1).pos = [0, 1]
-      b._updateView(1)
-      assert.deepEqual(b.get(1).pos, [0, 0])
-
-    it 'down', ->
-      b.get(1).angle = 90
-      b.get(1).pos = [0, b.size[1]-b.get(1).size[1]-1]
-      b._updateView(1)
-      assert.deepEqual(b.get(1).pos, [0, b.size[1]-b.get(1).size[1]])
-
-    it 'destroy param', ->
-      b.get(1).destroy = 1
-      b.get(1).angle = 180
-      b.get(1).pos = [1, 0]
-      b._updateView(1)
-      assert.deepEqual(b.get(1).pos, [-9, 0])
+#  describe 'stop out of box', ->
+#    beforeEach ->
+#      b._elements = {}
+#      b.add({'id': 1, 'object': 'tank', 'speed': 10, 'destroy': 0, 'angle': 0, 'size': [32, 32], 'pos': [0, 0]})
+#      b.add({'id': 5, 'object': 'brick', 'speed': 0, 'destroy': 0, 'angle': 0, 'pos': [100, 100], 'size': [16, 16]})
+#
+#    it 'left', ->
+#      b.get(1).angle = 180
+#      b.get(1).pos = [1, 0]
+#      b._updateView(1)
+#      assert.deepEqual(b.get(1).pos, [0, 0])
+#
+#    it 'right', ->
+#      b.get(1).pos = [b.size[0]-b.get(1).size[0]-1, 0]
+#      b._updateView(1)
+#      expect(b.get(1).pos, [b.size[0]-b.get(1).size[0], 0])
+#
+#    it 'up', ->
+#      b.get(1).angle = 270
+#      b.get(1).pos = [0, 1]
+#      b._updateView(1)
+#      assert.deepEqual(b.get(1).pos, [0, 0])
+#
+#    it 'down', ->
+#      b.get(1).angle = 90
+#      b.get(1).pos = [0, b.size[1]-b.get(1).size[1]-1]
+#      b._updateView(1)
+#      assert.deepEqual(b.get(1).pos, [0, b.size[1]-b.get(1).size[1]])
+#
+#    it 'destroy param', ->
+#      b.get(1).destroy = 1
+#      b.get(1).angle = 180
+#      b.get(1).pos = [1, 0]
+#      b._updateView(1)
+#      assert.deepEqual(b.get(1).pos, [-9, 0])
 
 
 #  describe 'stop on collides', ->

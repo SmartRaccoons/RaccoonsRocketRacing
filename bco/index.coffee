@@ -20,7 +20,7 @@ class Vector
     v = @plus(v, @create(angle, speed))
     magnitude = @magnitude(v)
     if max < magnitude
-      @multiply(v, max / magnitude)
+      return @multiply(v, max / magnitude)
     v
 
 
@@ -100,7 +100,7 @@ class Vector
 
   _process: ->
     now = Date.now()
-    dt = (now - @_lastTime) / 1000.0
+    dt = now - @_lastTime
     if dt>0
       @_updateView(dt)
     @_lastTime = now
@@ -110,6 +110,10 @@ class Vector
 
   _updateView: (dt)->
     for id, el of @_elements
+      if el.accelerator and el.moving.indexOf('up') > -1
+        el.vel = @vector.accelerate(el.vel, dt * el.accelerator, el.angle, el.speed)
+      else if el.rub
+        el.vel = @vector.multiply(el.vel, Math.pow(el.rub, dt))
       if el.vel[0] isnt 0 or el.vel[1] isnt 0
         el.pos = @vector.plus(el.pos, @vector.multiply(el.vel, dt))
 #      if val.speed > 0

@@ -157,7 +157,7 @@
         assert.equal(b._updateView.callCount, 0);
         clock.tick(25);
         assert.equal(b._updateView.callCount, 1);
-        assert.equal(b._updateView.getCall(0).args[0], 0.025);
+        assert.equal(b._updateView.getCall(0).args[0], 25);
         clock.tick(100);
         return assert.equal(b._updateView.callCount, 5);
       });
@@ -173,6 +173,45 @@
         b._updateView(0.5);
         return assert.deepEqual(b.get(1).pos, [2.5, 2.5]);
       });
+      it('update velocity', function() {
+        b.add({
+          'id': 1,
+          'object': 'benja',
+          'pos': [0, 0],
+          angle: 0,
+          'vel': [0, 0]
+        });
+        b._elements[1].accelerator = 10;
+        b._elements[1].moving = ['up'];
+        b._updateView(1);
+        return assert.deepEqual(b.get(1).vel, [10, 0]);
+      });
+      it('decrease velocity', function() {
+        var _ref, _ref1;
+        b.add({
+          'id': 1,
+          'object': 'benja',
+          'pos': [0, 0],
+          angle: 0,
+          'vel': [10, 20]
+        });
+        b._elements[1].rub = 0.9;
+        b._updateView(2);
+        assert((8.09 < (_ref = b.get(1).vel[0]) && _ref < 8.11));
+        return assert((16.19 < (_ref1 = b.get(1).vel[1]) && _ref1 < 16.21));
+      });
+      it('update velocity (no moving)', function() {
+        b.add({
+          'id': 1,
+          'object': 'benja',
+          'pos': [0, 0],
+          'vel': [0, 0]
+        });
+        b._elements[1].accelerator = 10;
+        b._elements[1].moving = [];
+        b._updateView(1);
+        return assert.deepEqual(b.get(1).vel, [0, 0]);
+      });
       return it('stop', function() {
         b._updateView = sinon.spy();
         b.start();
@@ -184,59 +223,6 @@
         b.start();
         clock.tick(25);
         return assert.equal(b._updateView.callCount, 2);
-      });
-    });
-    describe.skip('stop out of box', function() {
-      beforeEach(function() {
-        b._elements = {};
-        b.add({
-          'id': 1,
-          'object': 'tank',
-          'speed': 10,
-          'destroy': 0,
-          'angle': 0,
-          'size': [32, 32],
-          'pos': [0, 0]
-        });
-        return b.add({
-          'id': 5,
-          'object': 'brick',
-          'speed': 0,
-          'destroy': 0,
-          'angle': 0,
-          'pos': [100, 100],
-          'size': [16, 16]
-        });
-      });
-      it('left', function() {
-        b.get(1).angle = 180;
-        b.get(1).pos = [1, 0];
-        b._updateView(1);
-        return assert.deepEqual(b.get(1).pos, [0, 0]);
-      });
-      it('right', function() {
-        b.get(1).pos = [b.size[0] - b.get(1).size[0] - 1, 0];
-        b._updateView(1);
-        return expect(b.get(1).pos, [b.size[0] - b.get(1).size[0], 0]);
-      });
-      it('up', function() {
-        b.get(1).angle = 270;
-        b.get(1).pos = [0, 1];
-        b._updateView(1);
-        return assert.deepEqual(b.get(1).pos, [0, 0]);
-      });
-      it('down', function() {
-        b.get(1).angle = 90;
-        b.get(1).pos = [0, b.size[1] - b.get(1).size[1] - 1];
-        b._updateView(1);
-        return assert.deepEqual(b.get(1).pos, [0, b.size[1] - b.get(1).size[1]]);
-      });
-      return it('destroy param', function() {
-        b.get(1).destroy = 1;
-        b.get(1).angle = 180;
-        b.get(1).pos = [1, 0];
-        b._updateView(1);
-        return assert.deepEqual(b.get(1).pos, [-9, 0]);
       });
     });
     return describe('collides', function() {

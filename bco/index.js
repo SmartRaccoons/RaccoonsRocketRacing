@@ -30,7 +30,7 @@
       v = this.plus(v, this.create(angle, speed));
       magnitude = this.magnitude(v);
       if (max < magnitude) {
-        this.multiply(v, max / magnitude);
+        return this.multiply(v, max / magnitude);
       }
       return v;
     };
@@ -152,7 +152,7 @@
     BcoCore.prototype._process = function() {
       var dt, now;
       now = Date.now();
-      dt = (now - this._lastTime) / 1000.0;
+      dt = now - this._lastTime;
       if (dt > 0) {
         this._updateView(dt);
       }
@@ -171,6 +171,11 @@
       _ref = this._elements;
       for (id in _ref) {
         el = _ref[id];
+        if (el.accelerator && el.moving.indexOf('up') > -1) {
+          el.vel = this.vector.accelerate(el.vel, dt * el.accelerator, el.angle, el.speed);
+        } else if (el.rub) {
+          el.vel = this.vector.multiply(el.vel, Math.pow(el.rub, dt));
+        }
         if (el.vel[0] !== 0 || el.vel[1] !== 0) {
           el.pos = this.vector.plus(el.pos, this.vector.multiply(el.vel, dt));
         }

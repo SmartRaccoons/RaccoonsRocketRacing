@@ -67,7 +67,8 @@
           });
           r.game.on('update', function(pr) {
             return _this.emit_room(r, 'game:update', extend({
-              'pos': r.game.get(pr.id).pos
+              'pos': r.game.get(pr.id).pos,
+              'vel': r.game.get(pr.id).vel
             }, pr), true);
           });
           r.game.on('restart', function() {

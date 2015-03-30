@@ -90,14 +90,15 @@
         pos: pr.pos || [0, 0],
         vel: pr.vel || [0, 0],
         size: [16, 16],
-        speed: pr.speed || 0,
         angle: pr.angle || 0,
         destroy: pr.destroy || 0,
         hitpoints: pr.hitpoints || 1
       };
       if (pr.object === 'user') {
         params.size = [32, 32];
-        params.accelerator = 8;
+        params.speed = 0.3;
+        params.accelerator = 0.0001;
+        params.rub = 0.96;
         params.moving = [];
         if (!params.pos_start) {
           params.pos_start = [params['pos'][0], params['pos'][1]];
