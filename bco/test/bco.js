@@ -54,8 +54,9 @@
         assert.equal(1, id);
         assert.deepEqual(b.get(id).size, [32, 32]);
         assert.equal(b.get(id).speed, 0.3);
+        assert.equal(b.get(id).wheel, 0.003);
         assert.equal(b.get(id).accelerator, 0.0001);
-        assert.equal(b.get(id).rub, 0.96);
+        assert.equal(b.get(id).rub, 0.999);
         return assert.deepEqual(b.get(id).moving, []);
       });
       it('bullet', function() {

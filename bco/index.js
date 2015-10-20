@@ -171,6 +171,12 @@
       _ref = this._elements;
       for (id in _ref) {
         el = _ref[id];
+        if (el.wheel && el.moving.indexOf('right') > -1) {
+          el.angle += el.wheel * dt;
+        }
+        if (el.wheel && el.moving.indexOf('left') > -1) {
+          el.angle -= el.wheel * dt;
+        }
         if (el.accelerator && el.moving.indexOf('up') > -1) {
           el.vel = this.vector.accelerate(el.vel, dt * el.accelerator, el.angle, el.speed);
         } else if (el.rub) {

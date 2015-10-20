@@ -68,6 +68,7 @@
           r.game.on('update', function(pr) {
             return _this.emit_room(r, 'game:update', extend({
               'pos': r.game.get(pr.id).pos,
+              'angle': r.game.get(pr.id).angle,
               'vel': r.game.get(pr.id).vel
             }, pr), true);
           });

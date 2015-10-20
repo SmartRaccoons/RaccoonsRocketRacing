@@ -97,8 +97,9 @@
       if (pr.object === 'user') {
         params.size = [32, 32];
         params.speed = 0.3;
+        params.wheel = 0.003;
         params.accelerator = 0.0001;
-        params.rub = 0.96;
+        params.rub = 0.999;
         params.moving = [];
         if (!params.pos_start) {
           params.pos_start = [params['pos'][0], params['pos'][1]];

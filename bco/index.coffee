@@ -4,6 +4,7 @@ Backbone = if typeof require isnt 'undefined' then require('backbone') else wind
 
 
 class Vector
+  #isnt tested
   multiply: (vector, scalar)->
     [vector[0] * scalar, vector[1] * scalar]
 
@@ -110,6 +111,10 @@ class Vector
 
   _updateView: (dt)->
     for id, el of @_elements
+      if el.wheel and el.moving.indexOf('right') > -1
+        el.angle += el.wheel * dt
+      if el.wheel and  el.moving.indexOf('left') > -1
+        el.angle -= el.wheel * dt
       if el.accelerator and el.moving.indexOf('up') > -1
         el.vel = @vector.accelerate(el.vel, dt * el.accelerator, el.angle, el.speed)
       else if el.rub
