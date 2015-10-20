@@ -1,14 +1,14 @@
 
 
-class BcoCore extends window.BcoCore
+class GameCore extends window.GameCore
   __requestAnimFrame: (callback)-> window.setTimeout(callback, 1000 / 40)
 
 
 
-describe 'BcoCore', ->
+describe 'GameCore', ->
   b = null
   beforeEach ->
-    b = new BcoCore()
+    b = new GameCore()
 
   afterEach ->
     b = null
@@ -16,7 +16,7 @@ describe 'BcoCore', ->
 
   describe 'init', ->
     it 'size', ->
-      b = new BcoCore()
+      b = new GameCore()
       assert.deepEqual(b.size, [416, 416])
 
   describe 'get', ->

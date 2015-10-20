@@ -5,30 +5,30 @@ nock = require('nock')
 extend = require('util')._extend
 
 
-Bco = require('../server').Bco
+Game = require('../server').Game
 
 
-describe 'Bco', ->
+describe 'Game', ->
   b = null
   beforeEach ->
-    b = new Bco()
+    b = new Game()
 
   afterEach ->
 
 
   describe 'load map', ->
     it 'brick', ->
-      b = new Bco([[0, 0, 1], [1, 0, 0]])
+      b = new Game([[0, 0, 1], [1, 0, 0]])
       assert.deepEqual([32, 0], b.get(1).pos)
       assert.equal('brick', b.get(1).object)
       assert.deepEqual([0, 16], b.get(2).pos)
 
     it 'iron', ->
-      b = new Bco([[0, 0, 2]])
+      b = new Game([[0, 0, 2]])
       assert.equal('iron', b.get(1).object)
 
     it 'base', ->
-      b = new Bco([[0, 10, 0], [0, 0, 0]])
+      b = new Game([[0, 10, 0], [0, 0, 0]])
       assert.deepEqual([16, 0], b.get(1).pos)
       assert.equal('base', b.get(1).object)
 
@@ -113,27 +113,27 @@ describe 'Bco', ->
 
   describe 'restart', ->
     it 'same map', ->
-      b = new Bco([[0, 1], [0, 1]])
+      b = new Game([[0, 1], [0, 1]])
       b.destroy(1)
       assert.equal(1, b.get({}).length)
       b.restart()
       assert.equal(2, b.get({}).length)
 
     it 'event', ->
-      b = new Bco()
+      b = new Game()
       spy = sinon.spy()
       b.on 'restart', spy
       b.restart()
       assert.equal(1, spy.callCount)
 
     it 'users', ->
-      b = new Bco([[0, 1], [0, 1]])
+      b = new Game([[0, 1], [0, 1]])
       b.add_user('ben')
       b.restart()
       assert.notEqual(null, b.get_user('ben'))
 
     it 'users coors', ->
-      b = new Bco()
+      b = new Game()
       b.add_user('ben', {'pos': [1, 2], 'speed': 10})
       b._updateView(1)
       b.restart()

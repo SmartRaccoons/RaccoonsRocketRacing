@@ -3,10 +3,10 @@ _ = require('lodash')
 
 
 
-BcoCore = require('./index').BcoCore
+GameCore = require('./index').GameCore
 
 
-module.exports.Bco = class Bco extends BcoCore
+module.exports.Game = class Game extends GameCore
   id: 0
   _map: []
   _tank_pos: {}

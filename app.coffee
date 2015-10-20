@@ -90,4 +90,4 @@ primus.on 'connection', (spark)->
   r.connection(socket)
 
 
-console.log('http://127.0.0.1:'+config.port+'/-bco version:'+pjson.version)
+console.log('http://127.0.0.1:'+config.port+'/-d version:'+pjson.version)

@@ -1,17 +1,15 @@
-update :
+install :
 	npm install
 	bower install
+upgrade :
+	ncu -a
+	bcu -a
 
-server :
-	python simleserver.py 8000
+compile :
+	grunt compile
 
 test :
-	mocha --reporter dot ./bco/test/
-	mocha --reporter dot ./room/test/
-	mocha --reporter dot ./router/test/
-	mocha-phantomjs -R dot public_test/js/index.html
-testc :
-	mocha --compilers coffee:coffee-script/register --reporter dot ./bco/test/
+	mocha --compilers coffee:coffee-script/register --reporter dot ./game/test/
 	mocha --compilers coffee:coffee-script/register --reporter dot ./room/test/
 	mocha --compilers coffee:coffee-script/register --reporter dot ./router/test/
 	mocha-phantomjs -R dot public_test/js/index.html
@@ -25,8 +23,8 @@ production :
 	bower_components/pixi.js/bin/pixi.dev.js \
 	public/d/js/init.js \
 	public/d/locale/en.js \
-	bco/index.js \
-	bco/client.js \
+	game/index.js \
+	game/client.js \
 	public/d/js/objects.js \
 	public/d/js/rooms.js \
 	public/d/js/router.js \

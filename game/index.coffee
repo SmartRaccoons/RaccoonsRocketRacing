@@ -25,7 +25,7 @@ class Vector
     v
 
 
-(if typeof module isnt 'undefined' then module.exports else window).BcoCore = class BcoCore
+(if typeof module isnt 'undefined' then module.exports else window).GameCore = class GameCore
   _.extend @prototype, Backbone.Events
 
   vector: new Vector()

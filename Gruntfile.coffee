@@ -2,11 +2,28 @@ exec = require('child_process').exec
 
 module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-watch')
+  coffee = [
+    'game/index.coffee'
+    'game/client.coffee'
+    'public/d/js/*.coffee'
+    'public/d/locale/*.coffee'
+    'public_test/js/*.coffee'
+  ]
+  coffee_command = "coffee -m -c"
+  sass_command = "cd public/d && compass compile --sourcemap sass/screen.sass"
+  exec_callback = (error, stdout, stderr)->
+    if error
+      console.log('exec error: ' + error)
+
+  grunt.registerTask 'compile', ->
+    for file in coffee
+      exec("#{coffee_command} #{file}", exec_callback)
+    exec(sass_command, exec_callback)
 
   grunt.initConfig
     watch:
       coffee:
-        files: ['../**/*.coffee']
+        files: coffee
       sass:
         files: 'public/d/sass/screen.sass'
       static:
@@ -16,17 +33,16 @@ module.exports = (grunt) ->
                 'public_test/**/*.js'],
         options:
           livereload: true
-
-  exec_callback = (error, stdout, stderr)->
-    if error
-      console.log('exec error: ' + error)
+    compile:
+      coffee:
+        files: coffee
 
   grunt.event.on 'watch', (event, file, ext)->
     if ext == 'coffee'
 #      console.info("compiling: #{file}")
-      exec("coffee -m -c #{file}", exec_callback)
+      exec("#{coffee_command} #{file}", exec_callback)
     if ext == 'sass'
 #      console.info("compiling: #{file}")
-      exec("cd public/d && compass compile --sourcemap sass/screen.sass", exec_callback)
+      exec(sass_command, exec_callback)
 
   grunt.registerTask('default', ['watch'])

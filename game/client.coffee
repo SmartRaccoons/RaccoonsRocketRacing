@@ -2,7 +2,7 @@
 #Backbone = window.Backbone
 
 
-window.Bco = class Bco extends window.BcoCore
+window.Game = class Bco extends window.GameCore
   #TODO TDD
   _.extend @prototype, Backbone.View.prototype
   className: 'game-canvas'

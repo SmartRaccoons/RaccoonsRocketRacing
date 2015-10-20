@@ -3,7 +3,7 @@ extend = require('util')._extend
 
 Users = require('../room').Users
 Rooms = require('../room').Rooms
-Bco = require('../bco/server').Bco
+Game = require('../game/server').Game
 
 
 map = [
@@ -63,7 +63,7 @@ module.exports = class Router extends events.EventEmitter
 
     @rooms.on 'add', (r)=>
       @emit_lobby('room:room_add', r.toJSON())
-      r.game = new Bco(map)
+      r.game = new Game(map)
       r.game.on 'add', (pr)=> @emit_room(r, 'game:add', pr)
       r.game.on 'update', (pr)=>
         @emit_room(r, 'game:update', extend({'pos': r.game.get(pr.id).pos, 'angle': r.game.get(pr.id).angle, 'vel': r.game.get(pr.id).vel}, pr), true)

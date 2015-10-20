@@ -36,7 +36,7 @@ App.Router = class Router extends Backbone.Router
     @roompreview = new App.RoomPreview()
     @listenTo @roompreview, 'join', (d)-> App.socket.send.trigger 'room:join', d
 
-    @game = new window.Bco()
+    @game = new window.Game()
     @game.render()
 
     @listenTo App.socket.receive, 'login:success', (user)=>
