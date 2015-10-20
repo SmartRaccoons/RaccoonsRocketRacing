@@ -52,7 +52,12 @@
           'object': 'user'
         });
         assert.equal(1, id);
-        return assert.deepEqual(b.get(id).size, [32, 32]);
+        assert.deepEqual(b.get(id).size, [32, 32]);
+        assert.equal(b.get(id).speed, 0.3);
+        assert.equal(b.get(id).wheel, 0.003);
+        assert.equal(b.get(id).accelerator, 0.0001);
+        assert.equal(b.get(id).rub, 0.999);
+        return assert.deepEqual(b.get(id).moving, []);
       });
       it('bullet', function() {
         var id;
@@ -60,7 +65,34 @@
           'object': 'bullet'
         });
         assert.equal(1, id);
+        assert.equal(b.get(id).speed, 8);
         return assert.deepEqual(b.get(id).size, [8, 8]);
+      });
+      it('bullet velocity', function() {
+        var id, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+        id = b.add({
+          'object': 'bullet',
+          'angle': 0
+        });
+        assert.deepEqual(b.get(id).vel, [8, 0]);
+        id = b.add({
+          'object': 'bullet',
+          'angle': Math.PI
+        });
+        assert((-8.001 < (_ref = b.get(id).vel[0]) && _ref < -7.999));
+        assert((-0.001 < (_ref1 = b.get(id).vel[1]) && _ref1 < 0.001));
+        id = b.add({
+          'object': 'bullet',
+          'angle': Math.PI / 4
+        });
+        assert((5.65 < (_ref2 = b.get(id).vel[0]) && _ref2 < 5.66));
+        assert((5.65 < (_ref3 = b.get(id).vel[1]) && _ref3 < 5.66));
+        id = b.add({
+          'object': 'bullet',
+          'angle': Math.PI / 5
+        });
+        assert((6.3 < (_ref4 = b.get(id).vel[0]) && _ref4 < 6.5));
+        return assert((4.7 < (_ref5 = b.get(id).vel[1]) && _ref5 < 4.9));
       });
       it('brick', function() {
         var id;
@@ -92,8 +124,8 @@
         assert.equal('benja', b.get(id).object);
         assert.deepEqual({}, b.get(id).params);
         assert.deepEqual([0, 0], b.get(id).pos);
+        assert.deepEqual([0, 0], b.get(id).vel);
         assert.deepEqual([16, 16], b.get(id).size);
-        assert.equal(0, b.get(id).speed);
         assert.equal(0, b.get(id).angle);
         assert.equal(0, b.get(id).destroy);
         assert.equal(1, b.get(id).hitpoints);
@@ -103,7 +135,6 @@
             '1': 1
           },
           'pos': [1, 2],
-          'speed': 2,
           'angle': 3,
           'destroy': 1,
           'hitpoints': 10
@@ -115,10 +146,8 @@
         }, b.get(id).params);
         assert.deepEqual([1, 2], b.get(id).pos);
         assert.deepEqual([16, 16], b.get(id).size);
-        assert.equal(2, b.get(id).speed);
         assert.equal(3, b.get(id).angle);
-        assert.equal(10, b.get(id).hitpoints);
-        return assert.equal(false, b.get(id).over);
+        return assert.equal(10, b.get(id).hitpoints);
       });
       return it('event', function() {
         var id, spy;
@@ -255,36 +284,32 @@
         var id;
         id = b.add({
           'object': 'benja',
-          'speed': 10,
-          'angle': 180,
           'pos': [1, 1],
+          vel: [0, -10],
           'destroy': 1
         });
         b._updateView(0.2);
         assert.equal(null, b.get(id));
         id = b.add({
           'object': 'benja',
-          'speed': 10,
-          'angle': 270,
           'pos': [1, 1],
+          vel: [-10, 0],
           'destroy': 1
         });
         b._updateView(0.2);
         assert.equal(null, b.get(id));
         id = b.add({
           'object': 'benja',
-          'speed': 10,
-          'angle': 0,
           'pos': [408, 1],
+          vel: [0, 10],
           'destroy': 1
         });
         b._updateView(0.2);
         assert.equal(null, b.get(id));
         id = b.add({
           'object': 'benja',
-          'speed': 10,
-          'angle': 90,
           'pos': [1, 408],
+          vel: [10, 0],
           'destroy': 1
         });
         b._updateView(0.2);
@@ -295,15 +320,13 @@
         spy = sinon.spy(b, 'destroy');
         bullet = b.add({
           'object': 'bullet',
-          'speed': 10,
           'angle': 0,
           'pos': [10, 10],
           'destroy': 1
         });
         user = b.add({
           'object': 'user',
-          'speed': 0,
-          'angle': 90,
+          'angle': Math.PI / 2,
           'pos': [20, 10]
         });
         b._updateView(0.1);
@@ -319,13 +342,11 @@
         spy = sinon.spy(b, 'destroy');
         user = b.add({
           'object': 'user',
-          'speed': 0,
-          'angle': 90,
+          'angle': Math.PI / 2,
           'pos': [20, 10]
         });
         bullet = b.add({
           'object': 'bullet',
-          'speed': 10,
           'angle': 0,
           'pos': [10, 10],
           'destroy': 1,
@@ -341,15 +362,13 @@
         spy = sinon.spy(b, 'update');
         bullet = b.add({
           'object': 'bullet',
-          'speed': 10,
           'angle': 0,
           'pos': [10, 10],
           'destroy': 1
         });
         user = b.add({
           'object': 'user',
-          'speed': 0,
-          'angle': 90,
+          'angle': Math.PI / 2,
           'pos': [20, 10],
           'hitpoints': 2
         });
@@ -372,14 +391,12 @@
         });
         b.add({
           'object': 'user',
-          'speed': 0,
-          'angle': 90,
+          angle: Math.PI / 2,
           'pos': [20, 10]
         });
         b.add({
           'object': 'user',
-          'speed': 0,
-          'angle': 90,
+          'angle': Math.PI / 2,
           'pos': [20, 10]
         });
         b._updateView(0.3);
@@ -388,83 +405,48 @@
       });
     });
     return describe('control', function() {
-      var id, spy, spy_add, user_id;
+      var id, spy_add, spy_update, user_id;
       user_id = 10;
       id = null;
-      spy = null;
+      spy_update = null;
       spy_add = null;
       beforeEach(function() {
         id = b.add_user(user_id, {
           'pos': [2, 3],
           'angle': 90
         });
-        spy = sinon.spy(b, 'update');
+        spy_update = sinon.spy(b, 'update');
         return spy_add = sinon.spy(b, 'add');
       });
-      it('fire', function() {
-        b.user_action(user_id, 'fire', true);
-        assert.equal('bullet', spy_add.getCall(0).args[0].object);
-        assert.equal(id, spy_add.getCall(0).args[0].params.owner);
-        assert.deepEqual([14, 15], spy_add.getCall(0).args[0].pos);
-        assert.deepEqual(90, spy_add.getCall(0).args[0].angle);
-        assert.deepEqual(200, spy_add.getCall(0).args[0].speed);
-        return assert.deepEqual(1, spy_add.getCall(0).args[0].destroy);
-      });
-      it('fire inactive', function() {
-        b.user_action(user_id, 'fire', false);
-        return assert.equal(0, spy_add.callCount);
-      });
-      it('move up', function() {
+      it('turn up', function() {
         b.user_action(user_id, 'up');
-        assert.equal(id, spy.getCall(0).args[0].id);
-        assert.equal(270, spy.getCall(0).args[0].angle);
-        return assert.equal(100, spy.getCall(0).args[0].speed);
+        assert.equal(id, spy_update.getCall(0).args[0].id);
+        return assert.deepEqual(['up'], spy_update.getCall(0).args[0].moving);
       });
-      it('move down', function() {
-        b.user_action(user_id, 'down');
-        return assert.equal(90, spy.getCall(0).args[0].angle);
-      });
-      it('move left', function() {
-        b.user_action(user_id, 'left');
-        return assert.equal(180, spy.getCall(0).args[0].angle);
-      });
-      it('move right', function() {
-        b.user_action(user_id, 'right');
-        return assert.equal(0, spy.getCall(0).args[0].angle);
-      });
-      it('move round coors', function() {
-        b.get_user(user_id).pos = [7, 8];
-        b.get_user(user_id).angle = 0;
-        b.user_action(user_id, 'right');
-        assert(!spy.getCall(0).args[0].pos);
+      it('turn up twice', function() {
         b.user_action(user_id, 'up');
-        assert.deepEqual([0, 16], spy.getCall(1).args[0].pos);
-        b._elements[id].pos = [24, 23];
-        b.user_action(user_id, 'left');
-        return assert.deepEqual([32, 16], spy.getCall(2).args[0].pos);
+        b.user_action(user_id, 'up');
+        assert.equal(id, spy_update.getCall(0).args[0].id);
+        return assert.deepEqual(['up'], spy_update.getCall(0).args[0].moving);
       });
-      it('move stop', function() {
+      it('turn up stop', function() {
         b.user_action(user_id, 'up');
         b.user_action(user_id, 'up', false);
-        return assert.equal(0, spy.getCall(1).args[0].speed);
+        assert.equal(id, spy_update.getCall(1).args[0].id);
+        return assert.deepEqual([], spy_update.getCall(1).args[0].moving);
       });
-      it('move with more keystokes', function() {
-        b.user_action(user_id, 'down');
-        b.user_action(user_id, 'left');
+      it('turn down (after up)', function() {
         b.user_action(user_id, 'up');
-        b.user_action(user_id, 'up', false);
-        assert.equal(4, spy.callCount);
-        assert.equal(180, spy.getCall(3).args[0].angle);
-        assert.equal(100, spy.getCall(3).args[0].speed);
+        b.user_action(user_id, 'down');
+        assert.equal(id, spy_update.getCall(1).args[0].id);
+        return assert.deepEqual(['up', 'down'], spy_update.getCall(1).args[0].moving);
+      });
+      return it('turn down stop (after up)', function() {
+        b.user_action(user_id, 'up');
+        b.user_action(user_id, 'down');
         b.user_action(user_id, 'down', false);
-        return assert.equal(4, spy.callCount);
-      });
-      return it('wrong move', function() {
-        b._user_move = sinon.spy();
-        b.user_action(user_id, 'wrong');
-        assert.equal(0, spy.callCount);
-        assert.equal(0, spy_add.callCount);
-        return assert.equal(0, b._user_move.callCount);
+        assert.equal(id, spy_update.getCall(2).args[0].id);
+        return assert.deepEqual(['up'], spy_update.getCall(2).args[0].moving);
       });
     });
   });

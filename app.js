@@ -23,8 +23,8 @@
   Router = require('./router');
 
   email = require('emailjs').server.connect({
-    user: 'no-reply@raccoons.lv',
-    password: 'yozpupuy',
+    user: config.support.email,
+    password: config.support.pass,
     host: 'smtp.gmail.com',
     ssl: true
   });
@@ -60,7 +60,7 @@
         subject: '[CounterTanks] server error: ' + err.message,
         text: err.stack + '',
         from: '<no-reply@raccoons.lv>',
-        to: '<valuks@raccoons.lv>'
+        to: '<v@raccoons.lv>'
       }, function() {
         return process.exit(1);
       });

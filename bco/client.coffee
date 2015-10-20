@@ -20,14 +20,6 @@ window.Bco = class Bco extends window.BcoCore
         @stage.removeChild(val.sprite)
     super
 
-#  update: (pr, sync)->
-#    if sync and @_elements[pr.id].object is 'user' and @_elements[pr.id]._keystokes.length > 0
-#      return
-#    super
-
-#  start: ->
-#    super
-
   add: (pr)->
     super
     sprite = new PIXI.Sprite(PIXI.Texture.fromImage(@options.path+'d/img/'+pr.object+'.png'))
@@ -58,7 +50,7 @@ window.Bco = class Bco extends window.BcoCore
       if val.sprite
         val.sprite.position.x = val.pos[0] + val.size[0]/2
         val.sprite.position.y = val.pos[1] + val.size[1]/2
-        val.sprite.rotation = val.angle * Math.PI/180.0
+        val.sprite.rotation = val.angle
     @renderer.render(@stage)
 
   render: ->

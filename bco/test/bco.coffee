@@ -43,11 +43,33 @@ describe 'Bco', ->
       id = b.add({'object': 'user'})
       assert.equal(1, id)
       assert.deepEqual(b.get(id).size, [32, 32])
+      assert.equal(b.get(id).speed, 0.3)
+      assert.equal(b.get(id).wheel, 0.003)
+      assert.equal(b.get(id).accelerator, 0.0001)
+      assert.equal(b.get(id).rub, 0.999)
+      assert.deepEqual(b.get(id).moving, [])
 
     it 'bullet', ->
       id = b.add({'object': 'bullet'})
       assert.equal(1, id)
+      assert.equal(b.get(id).speed, 8)
       assert.deepEqual(b.get(id).size, [8, 8])
+
+    it 'bullet velocity', ->
+      id = b.add({'object': 'bullet', 'angle': 0})
+      assert.deepEqual(b.get(id).vel, [8, 0])
+
+      id = b.add({'object': 'bullet', 'angle': Math.PI})
+      assert(-8.001 < b.get(id).vel[0] < -7.999)
+      assert(-0.001 < b.get(id).vel[1] < 0.001)
+
+      id = b.add({'object': 'bullet', 'angle': Math.PI / 4})
+      assert(5.65 < b.get(id).vel[0] < 5.66)
+      assert(5.65 < b.get(id).vel[1] < 5.66)
+
+      id = b.add({'object': 'bullet', 'angle': Math.PI / 5})
+      assert(6.3 < b.get(id).vel[0] < 6.5)
+      assert(4.7 < b.get(id).vel[1] < 4.9)
 
     it 'brick', ->
       id = b.add({'object': 'brick'})
@@ -67,21 +89,19 @@ describe 'Bco', ->
       assert.equal('benja', b.get(id).object)
       assert.deepEqual({}, b.get(id).params)
       assert.deepEqual([0, 0], b.get(id).pos)
+      assert.deepEqual([0, 0], b.get(id).vel)
       assert.deepEqual([16, 16], b.get(id).size)
-      assert.equal(0, b.get(id).speed)
       assert.equal(0, b.get(id).angle)
       assert.equal(0, b.get(id).destroy)
       assert.equal(1, b.get(id).hitpoints)
-      id = b.add({'object': 'benja2', 'params': {'1': 1}, 'pos': [1, 2], 'speed': 2, 'angle': 3, 'destroy': 1, 'hitpoints': 10})
+      id = b.add({'object': 'benja2', 'params': {'1': 1}, 'pos': [1, 2], 'angle': 3, 'destroy': 1, 'hitpoints': 10})
       assert.equal(2, b.get(id).id)
       assert.equal('benja2', b.get(id).object)
       assert.deepEqual({'1': 1}, b.get(id).params)
       assert.deepEqual([1, 2], b.get(id).pos)
       assert.deepEqual([16, 16], b.get(id).size)
-      assert.equal(2, b.get(id).speed)
       assert.equal(3, b.get(id).angle)
       assert.equal(10, b.get(id).hitpoints)
-      assert.equal(false, b.get(id).over)
 
     it 'event', ->
       spy = sinon.spy()
@@ -187,23 +207,23 @@ describe 'Bco', ->
       clock.restore()
 
     it 'update position out of space for destroyers', ->
-      id = b.add({'object': 'benja', 'speed': 10, 'angle': 180, 'pos': [1, 1], 'destroy': 1})
+      id = b.add({'object': 'benja', 'pos': [1, 1], vel: [0, -10], 'destroy': 1})
       b._updateView(0.2)
       assert.equal(null, b.get(id))
-      id = b.add({'object': 'benja', 'speed': 10, 'angle': 270, 'pos': [1, 1], 'destroy': 1})
+      id = b.add({'object': 'benja', 'pos': [1, 1], vel: [-10, 0], 'destroy': 1})
       b._updateView(0.2)
       assert.equal(null, b.get(id))
-      id = b.add({'object': 'benja', 'speed': 10, 'angle': 0, 'pos': [408, 1], 'destroy': 1})
+      id = b.add({'object': 'benja', 'pos': [408, 1], vel: [0, 10],  'destroy': 1})
       b._updateView(0.2)
       assert.equal(null, b.get(id))
-      id = b.add({'object': 'benja', 'speed': 10, 'angle': 90, 'pos': [1, 408], 'destroy': 1})
+      id = b.add({'object': 'benja', 'pos': [1, 408], vel: [10, 0],  'destroy': 1})
       b._updateView(0.2)
       assert.equal(null, b.get(id))
 
     it 'collides bullet', ->
       spy = sinon.spy(b, 'destroy')
-      bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1})
-      user = b.add({'object': 'user', 'speed': 0, 'angle': 90, 'pos': [20, 10]})
+      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1})
+      user = b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10]})
       b._updateView(0.1)
       assert.equal(bullet, b.get(bullet).id)
       b._updateView(0.2)
@@ -214,16 +234,15 @@ describe 'Bco', ->
 
     it 'collides self bullet', ->
       spy = sinon.spy(b, 'destroy')
-      user = b.add({'object': 'user', 'speed': 0, 'angle': 90, 'pos': [20, 10]})
-      bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1, 'params': {'owner': user}})
+      user = b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10]})
+      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1, 'params': {'owner': user}})
       b._updateView(0.3)
       assert.equal(0, spy.callCount)
 
-
     it 'collides bullet with hitpoints', ->
       spy = sinon.spy(b, 'update')
-      bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1})
-      user = b.add({'object': 'user', 'speed': 0, 'angle': 90, 'pos': [20, 10], 'hitpoints': 2})
+      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1})
+      user = b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10], 'hitpoints': 2})
       b._updateView(0.3)
       assert.equal(null, b.get(bullet))
       assert.equal(1, b.get(user).hitpoints)
@@ -234,8 +253,8 @@ describe 'Bco', ->
     it 'collides bullet with 2 elements', ->
       spy = sinon.spy(b, 'destroy')
       bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1})
-      b.add({'object': 'user', 'speed': 0, 'angle': 90, 'pos': [20, 10]})
-      b.add({'object': 'user', 'speed': 0, 'angle': 90, 'pos': [20, 10]})
+      b.add({'object': 'user', angle: Math.PI / 2, 'pos': [20, 10]})
+      b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10]})
       b._updateView(0.3)
       assert.equal(3, spy.callCount)
       assert(spy.withArgs(bullet, 'destroy').calledOnce)
@@ -244,74 +263,39 @@ describe 'Bco', ->
   describe 'control', ->
     user_id = 10
     id = null
-    spy = null
+    spy_update = null
     spy_add = null
     beforeEach ->
       id = b.add_user(user_id, {'pos': [2, 3], 'angle': 90})
-      spy = sinon.spy(b, 'update')
+      spy_update = sinon.spy(b, 'update')
       spy_add = sinon.spy(b, 'add')
 
-    it 'fire', ->
-      b.user_action(user_id, 'fire', true)
-      assert.equal('bullet', spy_add.getCall(0).args[0].object)
-      assert.equal(id, spy_add.getCall(0).args[0].params.owner)
-      assert.deepEqual([14, 15], spy_add.getCall(0).args[0].pos)
-      assert.deepEqual(90, spy_add.getCall(0).args[0].angle)
-      assert.deepEqual(200, spy_add.getCall(0).args[0].speed)
-      assert.deepEqual(1, spy_add.getCall(0).args[0].destroy)
-
-    it 'fire inactive', ->
-      b.user_action(user_id, 'fire', false)
-      assert.equal(0, spy_add.callCount)
-
-    it 'move up', ->
+    it 'turn up', ->
       b.user_action(user_id, 'up')
-      assert.equal(id, spy.getCall(0).args[0].id)
-      assert.equal(270, spy.getCall(0).args[0].angle)
-      assert.equal(100, spy.getCall(0).args[0].speed)
+      assert.equal(id, spy_update.getCall(0).args[0].id)
+      assert.deepEqual(['up'], spy_update.getCall(0).args[0].moving)
 
-    it 'move down', ->
-      b.user_action(user_id, 'down')
-      assert.equal(90, spy.getCall(0).args[0].angle)
-
-    it 'move left', ->
-      b.user_action(user_id, 'left')
-      assert.equal(180, spy.getCall(0).args[0].angle)
-
-    it 'move right', ->
-      b.user_action(user_id, 'right')
-      assert.equal(0, spy.getCall(0).args[0].angle)
-
-    it 'move round coors', ->
-      b.get_user(user_id).pos = [7, 8]
-      b.get_user(user_id).angle = 0
-      b.user_action(user_id, 'right')
-      assert(!spy.getCall(0).args[0].pos)
+    it 'turn up twice', ->
       b.user_action(user_id, 'up')
-      assert.deepEqual([0, 16], spy.getCall(1).args[0].pos)
-      b._elements[id].pos = [24, 23]
-      b.user_action(user_id, 'left')
-      assert.deepEqual([32, 16], spy.getCall(2).args[0].pos)
+      b.user_action(user_id, 'up')
+      assert.equal(id, spy_update.getCall(0).args[0].id)
+      assert.deepEqual(['up'], spy_update.getCall(0).args[0].moving)
 
-    it 'move stop', ->
+    it 'turn up stop', ->
       b.user_action(user_id, 'up')
       b.user_action(user_id, 'up', false)
-      assert.equal(0, spy.getCall(1).args[0].speed)
+      assert.equal(id, spy_update.getCall(1).args[0].id)
+      assert.deepEqual([], spy_update.getCall(1).args[0].moving)
 
-    it 'move with more keystokes', ->
-      b.user_action(user_id, 'down')
-      b.user_action(user_id, 'left')
+    it 'turn down (after up)', ->
       b.user_action(user_id, 'up')
-      b.user_action(user_id, 'up', false)
-      assert.equal(4, spy.callCount)
-      assert.equal(180, spy.getCall(3).args[0].angle)
-      assert.equal(100, spy.getCall(3).args[0].speed)
+      b.user_action(user_id, 'down')
+      assert.equal(id, spy_update.getCall(1).args[0].id)
+      assert.deepEqual(['up', 'down'], spy_update.getCall(1).args[0].moving)
+
+    it 'turn down stop (after up)', ->
+      b.user_action(user_id, 'up')
+      b.user_action(user_id, 'down')
       b.user_action(user_id, 'down', false)
-      assert.equal(4, spy.callCount)
-
-    it 'wrong move', ->
-      b._user_move = sinon.spy()
-      b.user_action(user_id, 'wrong')
-      assert.equal(0, spy.callCount)
-      assert.equal(0, spy_add.callCount)
-      assert.equal(0, b._user_move.callCount)
+      assert.equal(id, spy_update.getCall(2).args[0].id)
+      assert.deepEqual(['up'], spy_update.getCall(2).args[0].moving)

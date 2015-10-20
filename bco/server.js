@@ -74,7 +74,7 @@
       for (_i = 0, _len = users.length; _i < _len; _i++) {
         t = users[_i];
         this.add_user(t.params.user_id, {
-          'pos': t['pos_start']
+          'pos': t.pos_start
         });
       }
       return this;
@@ -88,30 +88,36 @@
         object: pr.object,
         params: pr.params || {},
         pos: pr.pos || [0, 0],
+        vel: pr.vel || [0, 0],
         size: [16, 16],
-        speed: pr.speed || 0,
         angle: pr.angle || 0,
         destroy: pr.destroy || 0,
-        over: false,
         hitpoints: pr.hitpoints || 1
       };
       if (pr.object === 'user') {
-        params['size'] = [32, 32];
-        if (!params['pos_start']) {
-          params['pos_start'] = [params['pos'][0], params['pos'][1]];
+        params.size = [32, 32];
+        params.speed = 0.3;
+        params.wheel = 0.003;
+        params.accelerator = 0.0001;
+        params.rub = 0.999;
+        params.moving = [];
+        if (!params.pos_start) {
+          params.pos_start = [params['pos'][0], params['pos'][1]];
         }
       }
       if (pr.object === 'bullet') {
-        params['size'] = [8, 8];
+        params.speed = 8;
+        params.size = [8, 8];
+        params.vel = [Math.cos(params.angle) * params.speed, Math.sin(params.angle) * params.speed];
       }
       if (pr.object === 'brick') {
-        params['hitpoints'] = 2;
+        params.hitpoints = 2;
       }
       if (pr.object === 'iron') {
-        params['hitpoints'] = 20;
+        params.hitpoints = 20;
       }
       if (pr.object === 'base') {
-        params['size'] = [32, 32];
+        params.size = [32, 32];
       }
       Bco.__super__.add.call(this, params);
       this.trigger('add', params);
@@ -141,75 +147,30 @@
       });
       if (ob && ob.object === 'user' && reason === 'destroy') {
         this.add_user(ob.params.user_id, {
-          'pos': ob['pos_start']
+          'pos': ob.pos_start
         });
       }
       return this;
     };
 
     Bco.prototype.user_action = function(user_id, move, active) {
-      var user;
+      var index, t;
       if (active == null) {
         active = true;
       }
-      if (move === 'up' || move === 'down' || move === 'left' || move === 'right') {
-        this._user_move(user_id, move, active);
-      }
-      if (move === 'fire' && active) {
-        user = this.get_user(user_id);
-        return this.add({
-          'object': 'bullet',
-          'params': {
-            'owner': user.id
-          },
-          'pos': [user.pos[0] + user.size[0] / 2 - 4, user.pos[1] + user.size[1] / 2 - 4],
-          'angle': user.angle,
-          'destroy': 1,
-          'speed': 200
-        });
-      }
-    };
-
-    Bco.prototype._user_move = function(user_id, move, active) {
-      var last_move, params, pr, t;
-      if (active == null) {
-        active = false;
-      }
       t = this.get_user(user_id);
-      if (!t._keystokes) {
-        t._keystokes = [];
-      }
+      index = t.moving.indexOf(move);
       if (active) {
-        t._keystokes.push(move);
+        if (index < 0) {
+          t.moving.push(move);
+        }
       } else {
-        if (t._keystokes[t._keystokes.length - 1] !== move) {
-          return t._keystokes.splice(t._keystokes.indexOf(move), 1);
-        }
-        t._keystokes.splice(t._keystokes.length - 1, 1);
+        t.moving.splice(index, 1);
       }
-      params = {
-        'id': t.id,
-        'speed': 100
-      };
-      if (t._keystokes.length === 0) {
-        params['speed'] = 0;
-      } else {
-        last_move = t._keystokes[t._keystokes.length - 1];
-        if (last_move === 'up') {
-          params['angle'] = 270;
-        } else if (last_move === 'down') {
-          params['angle'] = 90;
-        } else if (last_move === 'left') {
-          params['angle'] = 180;
-        } else if (last_move === 'right') {
-          params['angle'] = 0;
-        }
-        if (t.angle !== params['angle']) {
-          pr = 16;
-          params['pos'] = [Math.round(t.pos[0] / pr) * pr, Math.round(t.pos[1] / pr) * pr];
-        }
-      }
-      return this.update(params);
+      return this.update({
+        id: t.id,
+        moving: t.moving
+      });
     };
 
     Bco.prototype._updateView = function(dt) {
