@@ -16,11 +16,11 @@ test :
 
 production :
 	yuicompressor public/d/css/screen.css -o public/d/c.css
-	cat node_modules/lodash/lodash.js \
+	cat node_modules/lodash/index.js \
 	bower_components/jquery/dist/jquery.js \
 	node_modules/backbone/backbone.js \
 	public/d/js/backbone-patch.js \
-	bower_components/pixi.js/bin/pixi.dev.js \
+	bower_components/pixi.js/bin/pixi.js \
 	public/d/js/init.js \
 	public/d/locale/en.js \
 	game/index.js \

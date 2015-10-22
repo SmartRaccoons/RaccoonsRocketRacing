@@ -18,6 +18,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'compile', ->
     for file in coffee
       exec("#{coffee_command} #{file}", exec_callback)
+    exec("mkdir public/d/css", exec_callback)
     exec(sass_command, exec_callback)
 
   grunt.initConfig
