@@ -4,18 +4,45 @@
     <meta charset="utf-8">
     <link href='../../public/d/css/screen.css' rel='stylesheet' />
     <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
+    <style>
+        body {
+            background: #aaa;
+        }
+    </style>
 </head>
 <body>
 <div id="mocha"></div>
+<script>
+    if (window.mochaPhantomJS) {
+        (function () {
+            var bind,
+                    slice = [].slice;
+            bind = function bind(obj) {
+                var args = slice.call(arguments, 1),
+                        self = this,
+                        nop = function () {
+                        },
+                        bound = function () {
+                            return self.apply(this instanceof nop ? this : (obj || {}), args.concat(slice.call(arguments)));
+                        };
+                nop.prototype = this.prototype || {}; // Firefox cries sometimes if prototype is undefined
+                bound.prototype = new nop();
+                return bound;
+            };
+            Function.prototype.bind = bind;
+        })();
+    }
+
+</script>
 <script src="../../bower_components/jquery/dist/jquery.js"></script>
 <script src="../../bower_components/assert/assert.js"></script>
 <script src="../../bower_components/sinonjs/sinon.js"></script>
 
-<script src="../../node_modules/lodash/lodash.js"></script>
+<script src="../../bower_components/lodash/lodash.js"></script>
 <script src="../../node_modules/backbone/backbone.js"></script>
 <script src="../../public/d/js/backbone-patch.js"></script>
 
-<script src="../../bower_components/pixi.js/bin/pixi.dev.js"></script>
+<script src="../../bower_components/pixi.js/bin/pixi.js"></script>
 
 <script src="../../public/d/js/init.js"></script>
 <script src="../../public/d/locale/en.js"></script>
@@ -27,7 +54,7 @@
 <script src="../../public/d/js/rooms.js"></script>
 <script src="../../public/d/js/router.js"></script>
 
-<script src="../../node_modules/expect.js/expect.js"></script>
+<script src="../../node_modules/expect.js/index.js"></script>
 <script src="../../node_modules/mocha/mocha.js"></script>
 <script>
     var _lPrev = window._l;
@@ -49,7 +76,7 @@
 <script src="test.router.js"></script>
 
 <script>
-    if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
+    if (window.mochaPhantomJS) {mochaPhantomJS.run(); }
     else { mocha.run(); }
 </script>
 </body>

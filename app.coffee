@@ -17,7 +17,6 @@ email   = require('emailjs').server.connect({
     ssl: true
 })
 
-#db = require('mysql').createConnection(config.db)
 
 app = express()
 server = app.listen(config.port)
@@ -45,8 +44,7 @@ else
 
 
 primus = new Primus(server, { transformer: 'websockets' })
-primus_client = pro.gen_code(pro.ast_squeeze(pro.ast_mangle(jsp.parse(primus.library()))))
-app.get '/pr.js', (req, res)-> res.send primus_client
+app.get '/pr.js', (req, res)-> res.send primus.library()
 
 
 callback_data = (socket, data)-> socket.emit.apply(socket, data)

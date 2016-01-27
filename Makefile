@@ -8,10 +8,13 @@ upgrade :
 compile :
 	grunt compile
 
-test :
+test-server :
 	mocha --compilers coffee:coffee-script/register --reporter dot ./game/test/
 	mocha --compilers coffee:coffee-script/register --reporter dot ./room/test/
 	mocha --compilers coffee:coffee-script/register --reporter dot ./router/test/
+
+test :
+	make test-server
 	mocha-phantomjs -R dot public_test/js/index.html
 
 production :

@@ -1,6 +1,8 @@
 
 BackboneViewRemove = Backbone.View::remove
 _.extend Backbone.View.prototype,
+  initialize: (options)->
+    @options = _.extend(@options or {}, options)
   __render: (data) ->
     d = _.extend({}, data)
     d['self'] = this
