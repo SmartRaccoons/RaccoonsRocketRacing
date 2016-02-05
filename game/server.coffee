@@ -48,16 +48,16 @@ module.exports.Game = class Game extends GameCore
 
   add: (pr)->
     @id++
-    params =
+    params = _.extend({
       id: @id
-      object: pr.object
-      params: pr.params || {}
-      pos: pr.pos || [0, 0]
-      vel: pr.vel || [0, 0]
+      params: {}
+      pos: [0, 0]
+      vel: [0, 0]
       size: [16, 16]
-      angle: pr.angle || 0
-      destroy: pr.destroy || 0
-      hitpoints: pr.hitpoints || 1
+      angle: 0
+      destroy: 0
+      hitpoints: 1
+    }, pr)
     if pr.object is 'user'
       params.size = [32, 32]
       params.speed = 0.3
