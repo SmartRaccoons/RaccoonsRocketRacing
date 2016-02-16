@@ -41,17 +41,6 @@ describe 'GameCore', ->
       b.add({'id': 2, 'speed': 4})
       assert.equal(b.get(2).speed, 4)
 
-    it 'add/get user', ->
-      id = 5
-      b.add_user('ser', {'id': id, 'pos': [1, 2]})
-      assert.equal('user', b.get(id).object)
-      assert.deepEqual([1, 2], b.get(id).pos)
-      assert.equal('ser', b.get(id).params.user_id)
-      assert.equal(id, b.get_user('ser').id)
-
-    it 'get unknown user', ->
-      assert.equal(null, b.get_user('random'))
-
 
   describe 'update', ->
     beforeEach ->

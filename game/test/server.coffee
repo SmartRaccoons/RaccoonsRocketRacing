@@ -34,10 +34,31 @@ describe 'Game', ->
 
 
   describe 'add', ->
+
+    it 'default params', ->
+      id = b.add({'object': 'benja'})
+      assert.equal(1, b.get(id).id)
+      assert.equal('benja', b.get(id).object)
+      assert.deepEqual({}, b.get(id).params)
+      assert.deepEqual([0, 0], b.get(id).pos)
+      assert.deepEqual([0, 0], b.get(id).vel)
+      assert.deepEqual([16, 16], b.get(id).size)
+      assert.equal(0, b.get(id).angle)
+      assert.equal(0, b.get(id).destroy)
+      assert.equal(1, b.get(id).hitpoints)
+      id = b.add({'object': 'benja2', 'params': {'1': 1}, 'pos': [1, 2], 'angle': 3, 'destroy': 1, 'hitpoints': 10})
+      assert.equal(2, b.get(id).id)
+      assert.equal('benja2', b.get(id).object)
+      assert.deepEqual({'1': 1}, b.get(id).params)
+      assert.deepEqual([1, 2], b.get(id).pos)
+      assert.deepEqual([16, 16], b.get(id).size)
+      assert.equal(3, b.get(id).angle)
+      assert.equal(10, b.get(id).hitpoints)
+
     it 'auto id', ->
-      assert.equal(b.id, 0)
+      assert.equal(b._id, 0)
       b.add({'object': 'user'})
-      assert.equal(b.id, 1)
+      assert.equal(b._id, 1)
 
     it 'user', ->
       id = b.add({'object': 'user'})
@@ -49,11 +70,29 @@ describe 'Game', ->
       assert.equal(b.get(id).rub, 0.999)
       assert.deepEqual(b.get(id).moving, [])
 
+    it 'add/get user', ->
+      id = 5
+      b.add_user('ser', {'id': id, 'pos': [1, 2]})
+      assert.equal('user', b.get(id).object)
+      assert.deepEqual([1, 2], b.get(id).pos)
+      assert.equal('ser', b.get(id).params.user_id)
+      assert.equal(id, b.get_user('ser').id)
+
+    it 'get unknown user', ->
+      assert.equal(null, b.get_user('random'))
+
     it 'bullet', ->
       id = b.add({'object': 'bullet'})
       assert.equal(1, id)
       assert.equal(b.get(id).speed, 8)
       assert.deepEqual(b.get(id).size, [8, 8])
+
+    it 'user bullet', ->
+      user_id = b.add({'object': 'user', pos: [1, 2]})
+      id = b.add_bullet(b.get(user_id))
+      assert.equal(b.get(id).object, 'bullet')
+      assert.equal(b.get(id).params.owner, user_id)
+      assert.deepEqual(b.get(id).pos, [1, 2])
 
     it 'bullet velocity', ->
       id = b.add({'object': 'bullet', 'angle': 0})
@@ -82,26 +121,6 @@ describe 'Game', ->
     it 'base', ->
       id = b.add({'object': 'base'})
       assert.deepEqual(b.get(id).size, [32, 32])
-
-    it 'default params', ->
-      id = b.add({'object': 'benja'})
-      assert.equal(1, b.get(id).id)
-      assert.equal('benja', b.get(id).object)
-      assert.deepEqual({}, b.get(id).params)
-      assert.deepEqual([0, 0], b.get(id).pos)
-      assert.deepEqual([0, 0], b.get(id).vel)
-      assert.deepEqual([16, 16], b.get(id).size)
-      assert.equal(0, b.get(id).angle)
-      assert.equal(0, b.get(id).destroy)
-      assert.equal(1, b.get(id).hitpoints)
-      id = b.add({'object': 'benja2', 'params': {'1': 1}, 'pos': [1, 2], 'angle': 3, 'destroy': 1, 'hitpoints': 10})
-      assert.equal(2, b.get(id).id)
-      assert.equal('benja2', b.get(id).object)
-      assert.deepEqual({'1': 1}, b.get(id).params)
-      assert.deepEqual([1, 2], b.get(id).pos)
-      assert.deepEqual([16, 16], b.get(id).size)
-      assert.equal(3, b.get(id).angle)
-      assert.equal(10, b.get(id).hitpoints)
 
     it 'event', ->
       spy = sinon.spy()
@@ -142,7 +161,6 @@ describe 'Game', ->
       b.update({'id': id, 'pos': [0, 1]})
       b.restart()
       assert.deepEqual([1, 2], b.get_user('ben').pos)
-
 
 
   describe 'update', ->
@@ -219,6 +237,19 @@ describe 'Game', ->
       id = b.add({'object': 'benja', 'pos': [1, 408], vel: [10, 0],  'destroy': 1})
       b._updateView(0.2)
       assert.equal(null, b.get(id))
+
+#    it 'launch rocket', ->
+#      id = b.add_user('ben')
+#      b.user_action(id, 'fire')
+#      b.update({id: id, angle: 12, })
+#      spy = sinon.spy(b, 'add')
+#      b._updateView(0.2)
+#      assert.equal(0, spy.callCount)
+
+#    it 'launch rocket', ->
+#      spy = sinon.spy(b, 'add')
+#      b._updateView(0.2)
+#      assert.equal(0, spy.callCount)
 
     it 'collides bullet', ->
       spy = sinon.spy(b, 'destroy')

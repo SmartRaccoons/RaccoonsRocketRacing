@@ -54,7 +54,7 @@ window.Game = class Bco extends window.GameCore
     @renderer.render(@stage)
 
   render: ->
-    @stage = new PIXI.Stage
+    @stage = new PIXI.Container()
     @renderer = PIXI.autoDetectRenderer(416, 416)
     @$el.append(@renderer.view)
     @

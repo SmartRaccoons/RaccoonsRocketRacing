@@ -7,12 +7,12 @@ GameCore = require('./index').GameCore
 
 
 module.exports.Game = class Game extends GameCore
-  id: 0
   _map: []
   _tank_pos: {}
 
   constructor: (map=[])->
     super
+    @_id = 0
     @_map = map
     @_draw_map()
     @
@@ -47,9 +47,9 @@ module.exports.Game = class Game extends GameCore
     @
 
   add: (pr)->
-    @id++
+    @_id++
     params = _.extend({
-      id: @id
+      id: @_id
       params: {}
       pos: [0, 0]
       vel: [0, 0]
@@ -79,7 +79,27 @@ module.exports.Game = class Game extends GameCore
       params.size = [32, 32]
     super(params)
     @trigger 'add', params
-    @id
+    @_id
+
+  add_user: (user_id, params = {})->
+    params['object'] = 'user'
+    params['params'] = {'user_id': user_id}
+    @add(params)
+
+  get_user: (user_id)->
+    for id, val of @_elements
+      if val.params.user_id is user_id
+        return val
+    return null
+
+  add_bullet: (user)->
+    @add({
+      object: 'bullet'
+      pos: user.pos
+      params: {
+        owner: user.id
+      }
+    })
 
   destroy_user: (user_id)->
     t = @get_user(user_id)
@@ -114,6 +134,8 @@ module.exports.Game = class Game extends GameCore
     super(dt)
 
     for id, val of @_elements
+#      if el.wheel and el.moving.indexOf('fire') > -1
+#        @add_bullet(el)
       if val.destroy > 0 and (val.pos[0] < 0 or val.pos[1] < 0 or val.pos[0]+val.size[0] > @size[0] or val.pos[1]+val.size[1] > @size[1])
         @destroy(id)
     remove = []
