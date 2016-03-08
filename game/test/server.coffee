@@ -4,6 +4,9 @@ events = require('events')
 nock = require('nock')
 extend = require('util')._extend
 
+assert.double = (check, v)->
+  assert(v - 0.01 < check < v + 0.01)
+
 
 Game = require('../server').Game
 
@@ -67,6 +70,8 @@ describe 'Game', ->
       assert.equal(b.get(id).speed, 0.3)
       assert.equal(b.get(id).wheel, 0.003)
       assert.equal(b.get(id).accelerator, 0.0001)
+      assert.equal(b.get(id).fire_rate, 1000)
+      assert.equal(b.get(id).fire_last, 0)
       assert.equal(b.get(id).rub, 0.999)
       assert.deepEqual(b.get(id).moving, [])
 
@@ -84,31 +89,28 @@ describe 'Game', ->
     it 'bullet', ->
       id = b.add({'object': 'bullet'})
       assert.equal(1, id)
-      assert.equal(b.get(id).speed, 8)
+      assert.equal(b.get(id).speed, 0.3)
       assert.deepEqual(b.get(id).size, [8, 8])
+
+    it 'bullet overwrite params', ->
+      id = b.add({'object': 'bullet', speed: 8})
+      assert.equal(b.get(id).speed, 8)
+
+    it 'bullet velocity', ->
+      id = b.add({'object': 'bullet', 'angle': 0})
+      assert.deepEqual(b.get(id).vel, [0.3, 0])
+
+    it 'bullet velocity (45angle)', ->
+      id = b.add({'object': 'bullet', 'angle': Math.PI / 4})
+      assert.double(b.get(id).speed * 0.70, b.get(id).vel[0])
+      assert.double(b.get(id).speed * 0.70, b.get(id).vel[1])
 
     it 'user bullet', ->
       user_id = b.add({'object': 'user', pos: [1, 2]})
       id = b.add_bullet(b.get(user_id))
       assert.equal(b.get(id).object, 'bullet')
       assert.equal(b.get(id).params.owner, user_id)
-      assert.deepEqual(b.get(id).pos, [1, 2])
-
-    it 'bullet velocity', ->
-      id = b.add({'object': 'bullet', 'angle': 0})
-      assert.deepEqual(b.get(id).vel, [8, 0])
-
-      id = b.add({'object': 'bullet', 'angle': Math.PI})
-      assert(-8.001 < b.get(id).vel[0] < -7.999)
-      assert(-0.001 < b.get(id).vel[1] < 0.001)
-
-      id = b.add({'object': 'bullet', 'angle': Math.PI / 4})
-      assert(5.65 < b.get(id).vel[0] < 5.66)
-      assert(5.65 < b.get(id).vel[1] < 5.66)
-
-      id = b.add({'object': 'bullet', 'angle': Math.PI / 5})
-      assert(6.3 < b.get(id).vel[0] < 6.5)
-      assert(4.7 < b.get(id).vel[1] < 4.9)
+      assert.deepEqual(b.get(id).pos, [13, 14])
 
     it 'brick', ->
       id = b.add({'object': 'brick'})
@@ -238,22 +240,30 @@ describe 'Game', ->
       b._updateView(0.2)
       assert.equal(null, b.get(id))
 
-#    it 'launch rocket', ->
-#      id = b.add_user('ben')
-#      b.user_action(id, 'fire')
-#      b.update({id: id, angle: 12, })
-#      spy = sinon.spy(b, 'add')
-#      b._updateView(0.2)
-#      assert.equal(0, spy.callCount)
+    it 'launch rocket', ->
+      clock.tick(100000)
+      id = b.add_user('ben')
+      b.user_action('ben', 'fire')
+      spy = sinon.spy(b, 'add_bullet')
+      b._updateView(1)
+      assert.equal(1, spy.callCount)
+      assert.equal(id, spy.getCall(0).args[0].id)
 
-#    it 'launch rocket', ->
-#      spy = sinon.spy(b, 'add')
-#      b._updateView(0.2)
-#      assert.equal(0, spy.callCount)
+    it 'launch rocket timeout', ->
+      clock.tick(100000)
+      id = b.add_user('ben')
+      b.user_action('ben', 'fire')
+      spy = sinon.spy(b, 'add_bullet')
+      b._updateView(1)
+      b._updateView(1)
+      assert.equal(1, spy.callCount)
+      clock.tick(100000)
+      b._updateView(1)
+      assert.equal(2, spy.callCount)
 
     it 'collides bullet', ->
       spy = sinon.spy(b, 'destroy')
-      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1})
+      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1, speed: 8})
       user = b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10]})
       b._updateView(0.1)
       assert.equal(bullet, b.get(bullet).id)
@@ -266,13 +276,13 @@ describe 'Game', ->
     it 'collides self bullet', ->
       spy = sinon.spy(b, 'destroy')
       user = b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10]})
-      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1, 'params': {'owner': user}})
+      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1, speed: 8, 'params': {'owner': user}})
       b._updateView(0.3)
       assert.equal(0, spy.callCount)
 
     it 'collides bullet with hitpoints', ->
       spy = sinon.spy(b, 'update')
-      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1})
+      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1, speed: 8})
       user = b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10], 'hitpoints': 2})
       b._updateView(0.3)
       assert.equal(null, b.get(bullet))
@@ -283,7 +293,7 @@ describe 'Game', ->
 
     it 'collides bullet with 2 elements', ->
       spy = sinon.spy(b, 'destroy')
-      bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1})
+      bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1, speed: 8})
       b.add({'object': 'user', angle: Math.PI / 2, 'pos': [20, 10]})
       b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10]})
       b._updateView(0.3)

@@ -64,11 +64,13 @@ module.exports.Game = class Game extends GameCore
       params.wheel = 0.003
       params.accelerator = 0.0001
       params.rub = 0.999
+      params.fire_rate = 1000
+      params.fire_last = 0
       params.moving = []
       if not params.pos_start
         params.pos_start = [params['pos'][0], params['pos'][1]]
     if pr.object is 'bullet'
-      params.speed = 8
+      params.speed = params.speed or 0.3
       params.size = [8,  8]
       params.vel = [Math.cos(params.angle) * params.speed, Math.sin(params.angle) * params.speed]
     if pr.object is 'brick'
@@ -93,9 +95,11 @@ module.exports.Game = class Game extends GameCore
     return null
 
   add_bullet: (user)->
+    user.fire_last = new Date().getTime()
     @add({
       object: 'bullet'
-      pos: user.pos
+      pos: [user.pos[0] + user.size[0]/2 - 4, user.pos[1] + user.size[1]/2 - 4]
+      angle: user.angle
       params: {
         owner: user.id
       }
@@ -134,8 +138,8 @@ module.exports.Game = class Game extends GameCore
     super(dt)
 
     for id, val of @_elements
-#      if el.wheel and el.moving.indexOf('fire') > -1
-#        @add_bullet(el)
+      if val.moving and val.moving.indexOf('fire') > -1 and val.fire_last + val.fire_rate < new Date().getTime()
+        @add_bullet(val)
       if val.destroy > 0 and (val.pos[0] < 0 or val.pos[1] < 0 or val.pos[0]+val.size[0] > @size[0] or val.pos[1]+val.size[1] > @size[1])
         @destroy(id)
     remove = []
