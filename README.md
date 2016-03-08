@@ -2,24 +2,13 @@
 
 The game
 
-1) create config.js file with content
-```
- exports.development = true;
- exports.development_delay_in = 0;
- exports.development_delay_out = 0;
- exports.port = 9052;
+1) npm install && bower install
 
- exports.support = {
-     email: 'no-reply@raccoons.lv',
-     pass: ''
- };
+2) grunt compile
 
-```
+3) Run coffee app.coffee
 
-2) npm install && bower install
+4) enjoy
 
-3) grunt compile
 
-4) Run coffee app.coffee
-
-5) enjoy
+Follow in the blog http://1month1game.tumblr.com/

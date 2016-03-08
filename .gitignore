@@ -1,4 +1,4 @@
-config.js
+config.*.coffee
 public/d/.sass-cache/
 .idea/
 node_modules/

@@ -1,4 +1,4 @@
-config = require('./config.js')
+config = require('./config')
 express = require('express')
 _ = require('lodash')
 fs = require('fs')
@@ -9,6 +9,9 @@ events = require('events')
 pjson = require('./package.json')
 Router = require('./router')
 
+
+if process.argv[2]
+  _.extend(config, require("./config.#{process.argv[2]}"))
 
 email   = require('emailjs').server.connect({
     user: config.support.email,
