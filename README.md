@@ -12,3 +12,4 @@ The game
 
 
 Follow in the blog http://1month1game.tumblr.com/
+Game real address http://rrr.raccoons.lv/
