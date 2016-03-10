@@ -94,11 +94,21 @@ module.exports = class Router extends events.EventEmitter
       user.set({'id': socket.id, 'name': 'Guest '+socket.id})
       @emit_user user, 'login:success', user.user_data(true)
       user.set({'room': null})
+      return
+      if @rooms.length > 0
+        room_join({
+          room: @rooms.models[0].id
+          team: 0
+        })
+      else
+        room_create()
 
-    socket.on 'room:create', =>
+    room_create = =>
       if not user.is_authenticated() or user.get('room')
         return
       @rooms.add({'users': [user], 'stage': 1, 'max': 4, 'teams': [[user.id], []]})
+
+    socket.on 'room:create', room_create
 
     socket.on 'room:open', (r)=>
       room = @rooms.get(r)
@@ -106,12 +116,14 @@ module.exports = class Router extends events.EventEmitter
         return
       @emit_user user, 'roompreview:show', room.toJSON()
 
-    socket.on 'room:join', (pr)=>
+    room_join = (pr)=>
       if not user.is_authenticated()
         return
       try
         @rooms.user_join(user, pr)
       catch e
+
+    socket.on 'room:join', room_join
 
     socket.on 'room:left', =>
       try
