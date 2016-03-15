@@ -25,7 +25,7 @@ app = express()
 server = app.listen(config.port)
 
 _mainHtml = ''
-fs.readFile __dirname+'/public/index.html', 'utf8', (err, text)-> _mainHtml = text.replace(/{version}/g, pjson.version)
+fs.readFile __dirname+'/public/index.html', 'utf8', (err, text)-> _mainHtml = text.replace(/{version}/g, pjson.version).replace(/{analytics}/g, config.analytics)
 
 app.use('/d', express.static(__dirname + '/public/d'))
 app.get '/', (req, res)-> res.send _mainHtml
