@@ -110,7 +110,7 @@ describe 'Game', ->
       id = b.add_bullet(b.get(user_id))
       assert.equal(b.get(id).object, 'bullet')
       assert.equal(b.get(id).params.owner, user_id)
-      assert.deepEqual(b.get(id).pos, [13, 14])
+      assert.deepEqual(b.get(id).pos, [1, 2])
 
     it 'brick', ->
       id = b.add({'object': 'brick'})

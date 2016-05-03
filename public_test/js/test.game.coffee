@@ -120,14 +120,14 @@ describe 'GameCore', ->
       b._elements[1].wheel = 10
       b._elements[1].moving = ['right']
       b._updateView(1)
-      assert.deepEqual(b.get(1).angle, 10)
+      assert.deepEqual(b.get(1).angle, -10)
 
     it 'update angle (left)', ->
       b.add({'id': 1, 'object': 'benja', 'pos': [0, 0], angle: 0, 'vel': [10, 20]})
       b._elements[1].wheel = 10
       b._elements[1].moving = ['left']
       b._updateView(1)
-      assert.deepEqual(b.get(1).angle, -10)
+      assert.deepEqual(b.get(1).angle, 10)
 
     it 'stop', ->
       b._updateView = sinon.spy()

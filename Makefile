@@ -23,7 +23,7 @@ production :
 	bower_components/jquery/dist/jquery.js \
 	node_modules/backbone/backbone.js \
 	public/d/js/backbone-patch.js \
-	bower_components/pixi.js/bin/pixi.js \
+    bower_components/babylonjs/dist/babylon.2.2.js \
 	public/d/js/init.js \
 	public/d/locale/en.js \
 	game/index.js \

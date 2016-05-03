@@ -17,3 +17,4 @@ exports.init = (app, config)=>
   app.get '/game/client.coffee', (req, res)-> res.sendfile(__dirname+'/game/client.coffee')
   app.get '/game/client.js.map', (req, res)-> res.sendfile(__dirname+'/game/client.js.map')
   app.get '/-d', (req, res)-> res.sendfile(__dirname+'/public/dev.html')
+  app.use '/public_test', express.static(__dirname + '/public_test')

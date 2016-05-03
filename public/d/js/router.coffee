@@ -37,7 +37,6 @@ App.Router = class Router extends Backbone.Router
     @listenTo @roompreview, 'join', (d)-> App.socket.send.trigger 'room:join', d
 
     @game = new window.Game()
-    @game.render()
 
     @listenTo App.socket.receive, 'login:success', (user)=>
       @user = user
@@ -146,6 +145,7 @@ App.Router = class Router extends Backbone.Router
     @room_new.render().$el.appendTo(@$el.find('.room-list'))
     @roompreview.$el.appendTo(@$el.find('.room'))
     @game.$el.appendTo(@$el.find('.game'))
+    @game.render()
 #    $("""
 #    div class="users">
 #      <h1>Super mapka</h1>
