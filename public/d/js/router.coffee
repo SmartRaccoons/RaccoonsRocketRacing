@@ -24,6 +24,7 @@ App.Router = class Router extends Backbone.Router
     @listenTo App.socket.receive, 'login:success', (user)=>
       @user = user
       @room.options.monitor = user.id
+      @game.options.user = user.id
 
     @listenTo App.socket.receive, 'room:list', =>
       @game.stop()

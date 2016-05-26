@@ -112,6 +112,7 @@ describe 'Router', ->
     it 'login:success', ->
       App.socket.receive.trigger 'login:success', {'id': 1, 'name': 'beni'}
       expect(r.room.options.monitor).to.be(1)
+      expect(r.game.options.user).to.be(1)
 
 
   describe 'rooms', ->

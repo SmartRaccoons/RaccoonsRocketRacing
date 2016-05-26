@@ -25,7 +25,8 @@ window.Game = class Bco extends window.GameCore
       child = BABYLON.Mesh.CreateCylinder("#{pr.object}#{pr.id}", 16, 16, 16, 5, 5, @scene)
       child.parent = view
       @_elements[pr.id].view.child = child
-      @camera.target = view
+      if pr.params.user_id is @options.user
+        @camera.target = view
     if pr.object is 'bullet'
       @_elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("#{pr.object}#{pr.id}", 5, 8, @scene)
 
