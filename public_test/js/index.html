@@ -42,8 +42,13 @@
 <script src="../../node_modules/backbone/backbone.js"></script>
 <script src="../../public/d/js/backbone-patch.js"></script>
 
-<!--<script src="../../bower_components/pixi.js/bin/pixi.js"></script>-->
-<script src="../../bower_components/babylonjs/dist/babylon.2.2.js"></script>
+<!--<script src="../../bower_components/babylonjs/dist/babylon.2.2.js"></script>-->
+<script>
+    var BABYLON = {
+        Engine: function () {}
+    };
+</script>
+<script src="../../node_modules/Order/index.js"></script>
 
 <script src="../../public/d/js/init.js"></script>
 <script src="../../public/d/locale/en.js"></script>

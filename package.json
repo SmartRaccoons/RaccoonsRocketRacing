@@ -5,6 +5,7 @@
     "name": "raccoons.lv"
   },
   "dependencies": {
+    "Order": "0.0.1",
     "backbone": "1.2",
     "browserchannel": "2.0",
     "emailjs": "1.0",

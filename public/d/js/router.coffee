@@ -1,21 +1,4 @@
-App.Order = class Order
-  constructor: ->
-    @buffer = []
-    @end()
-  _last_update: -> @_last = (new Date()).getTime()
-  next: (fn, delay=0)->
-    @buffer.push({'fn': fn, 'delay': delay})
-    @end(true) if not @buffer_execute
-  end: (immediate=false)->
-    if not immediate
-      @_last_update()
-    @buffer_execute = true
-    if @buffer.length>0
-      pr = @buffer.shift()
-      diff =  @_last + pr.delay - (new Date()).getTime()
-      if diff>0 then setTimeout(pr.fn, diff) else pr.fn()
-    else
-      @buffer_execute = false
+Order = window._Order
 
 
 App.Router = class Router extends Backbone.Router
@@ -58,7 +41,6 @@ App.Router = class Router extends Backbone.Router
           delay = 0
           o.next =>
             @[params[0]][params[1]].apply(@[params[0]], args)
-            o.end()
           , delay
 
     keys =
@@ -101,11 +83,6 @@ App.Router = class Router extends Backbone.Router
   render: ->
     @$el.html """
 <div id="user-panel">
-  <!--<ul>
-    <li>Rules</li>
-    <li>My profile</li>
-    <li>Best users</li>
-  </ul>-->
   <div class="room-left"><a href="#">"""+_l('Left room')+"""</a></div>
   <!--<div class="info">
     <span class="username">fake name</span>
@@ -118,26 +95,6 @@ App.Router = class Router extends Backbone.Router
 </section>
 
 <section class='game'>
-
-  <!--<div class="chat">
-		<ol>
-			<li>
-					<i>12:23</i>
-					<strong>Super user</strong>
-					 of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv
-				</ul>
-			</li>
-			<li>
-					<i>12:23</i>
-					<strong>Super user</strong>
-          00s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only fiv
-				</ul>
-			</li>
-		</ol>
-		<textarea cols="35" rows="3" placeholder="(Nastrodoj)Press Enter to add message"></textarea>
-  </div>-->
-
-
 </section>
 """
     @$el.find('.room-left a').on 'click', -> App.socket.send.trigger 'room:left'

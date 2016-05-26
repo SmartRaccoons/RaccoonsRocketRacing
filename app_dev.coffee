@@ -10,6 +10,7 @@ exports.init = (app, config)=>
   app.get '/lodash/lodash.js', (req, res)-> res.sendfile(__dirname+'/node_modules/lodash/index.js')
   app.get '/backbone/backbone.js', (req, res)-> res.sendfile(__dirname+'/node_modules/backbone/backbone.js')
   app.use('/bower_components', express.static(__dirname + '/bower_components'))
+  app.use('/node_modules', express.static(__dirname + '/node_modules'))
   app.get '/game/index.js', (req, res)-> res.sendfile(__dirname+'/game/index.js')
   app.get '/game/index.coffee', (req, res)-> res.sendfile(__dirname+'/game/index.coffee')
   app.get '/game/index.js.map', (req, res)-> res.sendfile(__dirname+'/game/index.js.map')
