@@ -53,13 +53,7 @@ module.exports = class Router extends events.EventEmitter
     join_user = (u)=>
       r = u.get('room')
       @emit_user(u, 'game:elements', r.game._elements)
-      x = 0
-      y = 0
-      if u.get('team') > 0
-        y = r.game.size[1]-32
-      if r.get('teams')[u.get('team')].length > 1 and r.game.get_user(r.get('teams')[0][0]).pos_start[0] is 0
-        x = r.game.size[0]-32
-      r.game.add_user(u.id, {'pos': [x, y]})
+      r.game.add_user(u.id, {'pos': [0, 0]})
 
     @rooms.on 'add', (r)=>
       @emit_lobby('room:room_add', r.toJSON())
@@ -94,19 +88,19 @@ module.exports = class Router extends events.EventEmitter
       user.set({'id': socket.id, 'name': 'Guest '+socket.id})
       @emit_user user, 'login:success', user.user_data(true)
       user.set({'room': null})
-      return
-      if @rooms.length > 0
-        room_join({
-          room: @rooms.models[0].id
-          team: 0
-        })
-      else
-        room_create()
+#      return
+#      if @rooms.length > 0
+#        room_join({
+#          room: @rooms.models[0].id
+#          team: 0
+#        })
+#      else
+#        room_create()
 
     room_create = =>
       if not user.is_authenticated() or user.get('room')
         return
-      @rooms.add({'users': [user], 'stage': 1, 'max': 4, 'teams': [[user.id], []]})
+      @rooms.add({'users': [user], 'stage': 1, 'max': 4})
 
     socket.on 'room:create', room_create
 

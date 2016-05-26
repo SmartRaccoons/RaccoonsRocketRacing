@@ -144,19 +144,19 @@ describe 'Router', ->
 
   describe 'room preview', ->
     it 'preview', ->
-      App.socket.receive.trigger 'roompreview:show', ({'id': 10, 'name': 'ben', 'max': 2, 'stage': 1, 'users': [], 'teams': []})
+      App.socket.receive.trigger 'roompreview:show', ({'id': 10, 'name': 'ben', 'max': 2, 'stage': 1, 'users': []})
       expect($('.room .preview strong').html()).to.be('ben')
 
     it 'join event', ->
-      App.socket.receive.trigger 'roompreview:show', ({'id': 10, 'name': 'ben', 'max': 2, 'stage': 1, 'users': [], 'teams': [[], []]})
+      App.socket.receive.trigger 'roompreview:show', ({'id': 10, 'name': 'ben', 'max': 2, 'stage': 1, 'users': []})
       spy = sinon.spy()
       App.socket.send.on 'room:join', spy
-      $('.room .teams>div:nth-child(1) button').click()
-      expect(spy.getCall(0).args[0]).to.be.eql({'room': 10, 'team': 0})
+      $('.room .users button').click()
+      expect(spy.getCall(0).args[0]).to.be.eql({'room': 10})
 
     it 'trigger navigation', ->
       r.navigate = sinon.spy()
-      App.socket.receive.trigger 'roompreview:show', ({'id': 11, 'name': 'ben', 'max': 2, 'stage': 1, 'users': [], 'teams': [[], []]})
+      App.socket.receive.trigger 'roompreview:show', ({'id': 11, 'name': 'ben', 'max': 2, 'stage': 1, 'users': []})
       expect(r.navigate.callCount).to.be(1)
       expect(r.navigate.getCall(0).args[0]).to.be('m11')
 

@@ -76,25 +76,21 @@ App.RoomPreview = class RoomPreview extends Backbone.View
               <strong><%=name%></strong>
               <i><%=users.length%>/<%=max%></i>
             </div>
-						<input type="text" value="http://countertank.com/#m<%=id%>" />
-            <div class="teams" data-teams="<%=teams.length%>">
-              <% _.each(teams, function(users, i){ %>
-                <div data-id="<%=i%>">
-                  <ol>
-                    <% _.each(users, function(u){ %>
-                      <li data-id="<%=u%>">
-                          <strong><%=users_ids[u].name%></strong>
-                      </li>
-                    <% }) %>
-                  </ol>
-                  <button><%=_l('Join')%></button>
-                </div>
-              <% }) %>
+            <div class="users">
+              <ol>
+                <% _.each(users, function(u){ %>
+                  <li data-id="<%=u.id%>">
+                      <strong><%=u.name%></strong>
+                  </li>
+                <% }) %>
+              </ol>
+              <button><%=_l('Join')%></button>
             </div>
+
   """
   events:
     'click input': (e)-> @$('input').select()
-    'click .teams button': (e)-> @trigger 'join', {'room': @_room_id, 'team': parseInt($(e.target).parent('div').attr('data-id'))}
+    'click .users button': (e)-> @trigger 'join', {'room': @_room_id}
 
 
   show: -> @render.apply(@, arguments)
