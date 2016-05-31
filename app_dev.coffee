@@ -3,7 +3,9 @@ nock = require('nock')
 express = require('express')
 
 
-exports.init = (app, config)=>
+exports.init = (app, primus)=>
+
+  primus.save(__dirname + '/public/d/js/plugins/primus.js')
   app.use (req, res, next)->
     req.headers['Cache-Control'] = 'no-cache'
     next()

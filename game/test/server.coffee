@@ -66,13 +66,13 @@ describe 'Game', ->
     it 'user', ->
       id = b.add({'object': 'user'})
       assert.equal(1, id)
-      assert.deepEqual(b.get(id).size, [32, 32])
-      assert.equal(b.get(id).speed, 0.3)
-      assert.equal(b.get(id).wheel, 0.003)
+      assert.deepEqual(b.get(id).size, [8, 8])
+      assert.equal(b.get(id).speed, 0.12)
+      assert.equal(b.get(id).wheel, 0.002)
       assert.equal(b.get(id).accelerator, 0.0001)
       assert.equal(b.get(id).fire_rate, 1000)
       assert.equal(b.get(id).fire_last, 0)
-      assert.equal(b.get(id).rub, 0.999)
+      assert.equal(b.get(id).rub, 0.9999)
       assert.deepEqual(b.get(id).moving, [])
 
     it 'add/get user', ->

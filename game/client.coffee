@@ -22,13 +22,15 @@ window.Game = class Bco extends window.GameCore
     super
     if pr.object is 'user'
       @_elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("#{pr.object}#{pr.id}", 0, 0, @scene)
-      child = BABYLON.Mesh.CreateCylinder("#{pr.object}#{pr.id}", 16, 16, 16, 5, 5, @scene)
+      child = BABYLON.Mesh.CreateCylinder("#{pr.object}#{pr.id}", 8, 8, 8, 5, 5, @scene)
       child.parent = view
       @_elements[pr.id].view.child = child
       if pr.params.user_id is @options.user
         @camera.target = view
     if pr.object is 'bullet'
       @_elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("#{pr.object}#{pr.id}", 5, 8, @scene)
+    if pr.object is 'brick'
+      @_elements[pr.id].view = view = BABYLON.Mesh.CreateBox("#{pr.object}#{pr.id}", 15, @scene)
 
   elements: (data)->
     for id, el of @_elements
@@ -69,15 +71,15 @@ window.Game = class Bco extends window.GameCore
     @scene = new BABYLON.Scene(@engine)
     @camera = new BABYLON.FollowCamera("camera", new BABYLON.Vector3(20, -40, -150), @scene)
     @camera.setTarget(BABYLON.Vector3.Zero())
-    @camera.heightOffset = 50
-    @camera.radius = 150
+    @camera.heightOffset = 150
+    @camera.radius = 300
     @camera.rotationOffset = 170
 
     new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), @scene)
-    groundMaterial = new BABYLON.StandardMaterial("ground", @scene)
-    groundMaterial.diffuseTexture = new BABYLON.Texture("/d/img/earth.jpg", @scene)
-    ground = BABYLON.Mesh.CreateGround("ground1", 600, 600, 600, @scene)
-    ground.material = groundMaterial
+#    groundMaterial = new BABYLON.StandardMaterial("ground", @scene)
+#    groundMaterial.diffuseTexture = new BABYLON.Texture("/d/img/earth.jpg", @scene)
+#    ground = BABYLON.Mesh.CreateGround("ground1", 600, 600, 600, @scene)
+#    ground.material = groundMaterial
     @engine.resize()
 
 

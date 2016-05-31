@@ -33,21 +33,20 @@ app.get '/callback.html', (req, res)-> res.sendfile(__dirname + '/public/callbac
 app.get '/transaction61ysdf', (req, res)->
 #  r.transactionCoins parseInt(req.query['id']), req.query, -> res.send('OK')
 
+
+primus = new Primus(server, { transformer: 'websockets' })
+
 if config.development
-  require('./app_dev').init(app)
+  require('./app_dev').init(app, primus)
 else
   process.on 'uncaughtException', (err)->
     console.log err.message, err.stack
     email.send({
-      subject: '[CounterTanks] server error: '+err.message
+      subject: '[RRR] server error: '+err.message
       text: err.stack+''
       from: '<no-reply@raccoons.lv>'
       to: '<v@raccoons.lv>'
     }, -> process.exit(1))
-
-
-primus = new Primus(server, { transformer: 'websockets' })
-app.get '/pr.js', (req, res)-> res.send primus.library()
 
 
 callback_data = (socket, data)-> socket.emit.apply(socket, data)

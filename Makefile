@@ -18,12 +18,14 @@ test :
 	mocha-phantomjs -R dot public_test/js/index.html
 
 production :
-	yuicompressor public/d/css/screen.css -o public/d/c.css
-	cat node_modules/lodash/index.js \
-	bower_components/jquery/dist/jquery.js \
+	uglifycss public/d/css/screen.css > public/d/c.css
+	cat bower_components/jquery/dist/jquery.js \
+	public/d/js/plugins/primus.js \
+	node_modules/lodash/index.js \
 	node_modules/backbone/backbone.js \
 	public/d/js/backbone-patch.js \
     bower_components/babylonjs/dist/babylon.2.2.js \
+    node_modules/Order/index.js \
 	public/d/js/init.js \
 	public/d/locale/en.js \
 	game/index.js \
@@ -33,7 +35,7 @@ production :
 	public/d/js/router.js \
 	public/d/js/run.js \
 > public/d/all.js
-	yuicompressor --line-break 0 public/d/all.js -o public/d/j.js
+	uglifyjs --beautify "indent-level=0" public/d/all.js -o public/d/j.js
 	rm public/d/all.js
 
 

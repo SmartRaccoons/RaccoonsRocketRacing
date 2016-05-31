@@ -59,11 +59,11 @@ module.exports.Game = class Game extends GameCore
       hitpoints: 1
     }, pr)
     if pr.object is 'user'
-      params.size = [32, 32]
-      params.speed = 0.3
-      params.wheel = 0.003
+      params.size = [8, 8]
+      params.speed = 0.12
+      params.wheel = 0.002
       params.accelerator = 0.0001
-      params.rub = 0.999
+      params.rub = 0.9999
       params.fire_rate = 1000
       params.fire_last = 0
       params.moving = []

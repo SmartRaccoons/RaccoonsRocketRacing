@@ -319,7 +319,7 @@ describe 'router', ->
       r.rooms.user_join(r.users.models[0], {'room': 1})
       assert.equal(g.add_user.callCount, 1)
       assert.equal(g.add_user.getCall(0).args[0], 'ben')
-      assert.deepEqual(g.add_user.getCall(0).args[1], {'pos': [0, 0]})
+      assert.deepEqual(g.add_user.getCall(0).args[1], {'pos': [64, 64]})
 
     it 'destroy user', ->
       r.rooms.add({'users': [r.users.models[1]]})

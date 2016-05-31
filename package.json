@@ -2,7 +2,9 @@
   "name": "RaccoonsRocketRacing",
   "version": "0.0.6",
   "author": {
-    "name": "raccoons.lv"
+    "name": "Smart Raccoons",
+    "email": "smart@raccoons.lv",
+    "url": "http://smart.raccoons.lv/"
   },
   "dependencies": {
     "Order": "0.0.1",
