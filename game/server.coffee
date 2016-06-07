@@ -99,6 +99,7 @@ module.exports.Game = class Game extends GameCore
     user.fire_last = new Date().getTime()
     @add({
       object: 'bullet'
+      destroy: 1
       pos: [user.pos[0], user.pos[1]]
       angle: user.angle
       params: {
