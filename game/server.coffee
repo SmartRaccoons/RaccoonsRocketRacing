@@ -34,6 +34,7 @@ module.exports.Game = class Game extends GameCore
         @add {'object': object, pos: [x*16, y*16]} if object
         x++
       y++
+    @size = [x*16, y*16]
     @
 
   restart: ->
