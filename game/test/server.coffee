@@ -293,44 +293,51 @@ describe 'Game', ->
       b._updateView(1)
       assert.equal(2, spy.callCount)
 
-    it 'collides bullet', ->
-      spy = sinon.spy(b, 'destroy')
-      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1, speed: 8})
-      user = b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10]})
-      b._updateView(0.1)
-      assert.equal(bullet, b.get(bullet).id)
-      b._updateView(0.2)
+
+  describe 'collide', ->
+    bullet_data = null
+    user_data = null
+    beforeEach ->
+      bullet_data = {'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1, speed: 8}
+      user_data = {'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10]}
+
+    it 'bullet', ->
+      user_data.hitpoints = 10
+      bullet = b.add(bullet_data)
+      user = b.add(user_data)
+      b.collide(b.get(bullet), b.get(user))
+      assert.equal(9, b.get(user).hitpoints)
+
+    it 'bullet destroy', ->
+      bullet = b.add(bullet_data)
+      user = b.add(user_data)
+      b.collide(b.get(bullet), b.get(user))
       assert.equal(null, b.get(bullet))
+
+    it 'destroy hitpoints 0', ->
+      bullet = b.add(bullet_data)
+      user = b.add(user_data)
+      b.update = sinon.spy()
+      b.collide(b.get(bullet), b.get(user))
       assert.equal(null, b.get(user))
-      assert(spy.withArgs(user, 'destroy').calledOnce)
-      assert(spy.withArgs(bullet, 'destroy').calledOnce)
+      assert.equal(0, b.update.callCount)
 
-    it 'collides self bullet', ->
-      spy = sinon.spy(b, 'destroy')
-      user = b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10]})
-      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1, speed: 8, 'params': {'owner': user}})
-      b._updateView(0.3)
-      assert.equal(0, spy.callCount)
-
-    it 'collides bullet with hitpoints', ->
-      spy = sinon.spy(b, 'update')
-      bullet = b.add({'object': 'bullet', 'angle': 0, 'pos': [10, 10], 'destroy': 1, speed: 8})
-      user = b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10], 'hitpoints': 2})
-      b._updateView(0.3)
-      assert.equal(null, b.get(bullet))
+    it 'owner', ->
+      b.update = sinon.spy()
+      user = b.add(user_data)
+      bullet_data['params'] = {'owner': user}
+      bullet = b.add(bullet_data)
+      b.collide(b.get(bullet), b.get(user))
       assert.equal(1, b.get(user).hitpoints)
-      assert.equal(1, spy.callCount)
-      assert.equal(user, spy.getCall(0).args[0].id)
-      assert.equal(1, spy.getCall(0).args[0].hitpoints)
 
-    it 'collides bullet with 2 elements', ->
-      spy = sinon.spy(b, 'destroy')
-      bullet = b.add({'object': 'bullet', 'speed': 10, 'angle': 0, 'pos': [10, 10], 'destroy': 1, speed: 8})
-      b.add({'object': 'user', angle: Math.PI / 2, 'pos': [20, 10]})
-      b.add({'object': 'user', 'angle': Math.PI / 2, 'pos': [20, 10]})
-      b._updateView(0.3)
-      assert.equal(3, spy.callCount)
-      assert(spy.withArgs(bullet, 'destroy').calledOnce)
+    it 'destroy zero', ->
+      b.update = sinon.spy()
+      bullet_data.destroy = 0
+      bullet = b.add(bullet_data)
+      user = b.add(user_data)
+      b.collide(b.get(bullet), b.get(user))
+      assert.equal(1, b.get(user).hitpoints)
+      assert.equal(0, b.update.callCount)
 
 
   describe 'control', ->

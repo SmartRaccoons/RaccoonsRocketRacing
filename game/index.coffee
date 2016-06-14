@@ -87,6 +87,8 @@ class Vector
   stop: ->
     @_stop = true
 
+  collide: (el1, el2)->
+
   _process: ->
     now = Date.now()
     dt = now - @_lastTime
@@ -109,6 +111,12 @@ class Vector
         el.vel = @vector.multiply(el.vel, Math.pow(el.rub, dt))
       if el.vel[0] isnt 0 or el.vel[1] isnt 0
         el.pos = @vector.plus(el.pos, @vector.multiply(el.vel, dt))
+
+      if el.speed > 0
+        for id2, el2 of @_elements
+          if id isnt id2  and @_collides_ob(el, el2)
+#            collided[id] = id2
+            @collide(el, el2)
 #      if val.speed > 0
 #        if val.destroy is 0
 #          for id2, val2 of @_elements

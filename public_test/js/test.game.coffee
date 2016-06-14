@@ -142,6 +142,45 @@ describe 'GameCore', ->
       assert.equal(b._updateView.callCount, 2)
 
 
+  describe 'collision', ->
+    user_data = null
+    bullet_data = null
+    beforeEach ->
+      user_data = {id: 1, 'object': 'bullet', 'speed': 10, 'angle': 0, vel: [0, 0], 'pos': [10, 10], size: [8, 8], 'destroy': 1, speed: 8}
+      bullet_data = {id: 2, 'object': 'user', angle: Math.PI / 2, vel: [0, 0], 'pos': [20, 10], size: [8, 8]}
+
+    it 'match', ->
+      sinon.stub(b, '_collides_ob', -> true)
+      b.collide = sinon.spy()
+      bullet = b.add(user_data)
+      b.add(bullet_data)
+      b._updateView(0.3)
+      assert(b._collides_ob.callCount > 0)
+      assert.equal(b._collides_ob.getCall(0).args[0].id, 1)
+      assert.equal(b._collides_ob.getCall(0).args[1].id, 2)
+      assert.equal(b.collide.callCount, 1)
+      assert.equal(b.collide.getCall(0).args[0].id, 1)
+      assert.equal(b.collide.getCall(0).args[1].id, 2)
+
+    it 'is not match', ->
+      sinon.stub(b, '_collides_ob', -> false)
+      b.collide = sinon.spy()
+      bullet = b.add(user_data)
+      b.add(bullet_data)
+      b._updateView(0.3)
+      assert(b._collides_ob.callCount > 0)
+      assert.equal(b.collide.callCount, 0)
+
+    it 'with 0 speed', ->
+      sinon.stub(b, '_collides_ob', -> true)
+      b.collide = sinon.spy()
+      user_data.speed = 0
+      bullet = b.add(user_data)
+      b.add(bullet_data)
+      b._updateView(0.3)
+      assert.equal(b._collides_ob.callCount, 0)
+
+
 #  describe 'stop out of box', ->
 #    beforeEach ->
 #      b._elements = {}

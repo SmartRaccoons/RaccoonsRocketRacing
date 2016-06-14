@@ -136,6 +136,14 @@ module.exports.Game = class Game extends GameCore
       moving: t.moving
     })
 
+  collide: (el1, el2)->
+    if el1.destroy > 0 and el1.params.owner isnt el2.id
+      if el2.hitpoints - el1.destroy <= 0
+        @destroy(el2.id, 'destroy')
+      else
+        @update({'id': el2.id, 'hitpoints': el2.hitpoints - el1.destroy})
+      @destroy(el1.id, 'destroy')
+
   _updateView: (dt)->
     super(dt)
 
@@ -144,15 +152,3 @@ module.exports.Game = class Game extends GameCore
         @add_bullet(val)
       if val.destroy > 0 and (val.pos[0] < 0 or val.pos[1] < 0 or val.pos[0]+val.size[0] > @size[0] or val.pos[1]+val.size[1] > @size[1])
         @destroy(id)
-    remove = []
-    for id, val of @_elements
-      for id2, val2 of @_elements
-        if id isnt id2 and @_collides_ob(val, val2)
-          if val.destroy > 0 and val.params.owner isnt val2.id
-            #bullet
-            @update({'id': val2.id, 'hitpoints': val2.hitpoints - val.destroy})
-            remove.push(val.id) if remove.indexOf(val.id) is -1
-            if val2.hitpoints <= 0
-              remove.push(val2.id) if remove.indexOf(val2.id) is -1
-    for id in remove
-      @destroy(id, 'destroy')
