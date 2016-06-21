@@ -115,7 +115,6 @@ class Vector
       if el.speed > 0
         for id2, el2 of @_elements
           if id isnt id2  and @_collides_ob(el, el2)
-#            collided[id] = id2
             @collide(el, el2)
 #      if val.speed > 0
 #        if val.destroy is 0
