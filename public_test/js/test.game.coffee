@@ -146,8 +146,8 @@ describe 'GameCore', ->
     user_data = null
     bullet_data = null
     beforeEach ->
-      user_data = {id: 1, 'object': 'bullet', 'speed': 10, 'angle': 0, vel: [0, 0], 'pos': [10, 10], size: [8, 8], 'destroy': 1, speed: 8}
-      bullet_data = {id: 2, 'object': 'user', angle: Math.PI / 2, vel: [0, 0], 'pos': [20, 10], size: [8, 8]}
+      user_data = {id: 1, 'object': 'user', 'speed': 10, 'angle': 0, vel: [0, 0], 'pos': [10, 10], size: [8, 8], 'destroy': 1, speed: 8}
+      bullet_data = {id: 2, 'object': 'bullet', angle: Math.PI / 2, vel: [0, 0], 'pos': [20, 10], size: [8, 8]}
 
     it 'match', ->
       sinon.stub(b, '_collides_ob', -> true)

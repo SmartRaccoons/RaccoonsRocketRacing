@@ -137,6 +137,7 @@ module.exports.Game = class Game extends GameCore
     })
 
   collide: (el1, el2)->
+    super
     if el1.destroy > 0 and el1.params.owner isnt el2.id
       if el2.hitpoints - el1.destroy <= 0
         @destroy(el2.id, 'destroy')
