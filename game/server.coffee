@@ -52,7 +52,6 @@ module.exports.Game = class Game extends GameCore
       params: {}
       pos: [0, 0]
       vel: [0, 0]
-      size: [16, 16]
       radius: 8
       angle: 0
       destroy: 0
@@ -65,7 +64,6 @@ module.exports.Game = class Game extends GameCore
   add_user: (user_id, params = {})->
     @add(_.extend({
       object: 'user'
-      size: [8, 8]
       radius: 4
       speed: 0.12
       wheel: 0.002
@@ -91,7 +89,6 @@ module.exports.Game = class Game extends GameCore
     angle = user.angle
     @add({
       object: 'bullet'
-      size: [8, 8]
       radius: 4
       destroy: 1
       speed: speed
@@ -142,10 +139,11 @@ module.exports.Game = class Game extends GameCore
   collide: (el1, el2)->
     super
     if el1.destroy > 0 and el1.params.owner isnt el2.id
-      if el2.hitpoints - el1.destroy <= 0
+      hitpoints = el2.hitpoints - el1.destroy
+      if hitpoints <= 0
         @destroy(el2.id, 'destroy')
       else
-        @update({'id': el2.id, 'hitpoints': el2.hitpoints - el1.destroy})
+        @update({'id': el2.id, 'hitpoints': hitpoints})
       @destroy(el1.id, 'destroy')
 
   _updateView: (dt)->
@@ -154,5 +152,5 @@ module.exports.Game = class Game extends GameCore
     for id, val of @_elements
       if val.moving and val.moving.indexOf('fire') > -1 and val.fire_last + val.fire_rate < new Date().getTime()
         @add_bullet(val)
-      if val.destroy > 0 and (val.pos[0] < 0 or val.pos[1] < 0 or val.pos[0]+val.size[0] > @size[0] or val.pos[1]+val.size[1] > @size[1])
+      if val.destroy > 0 and (val.pos[0] - val.radius < 0 or val.pos[1] - val.radius < 0 or val.pos[0] + val.radius > @size[0] or val.pos[1] + val.radius > @size[1])
         @destroy(id)
