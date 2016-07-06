@@ -14,11 +14,6 @@ describe 'GameCore', ->
     b = null
 
 
-  describe 'init', ->
-    it 'size', ->
-      b = new GameCore()
-      assert.deepEqual(b.size, [416, 416])
-
   describe 'get', ->
     it 'id', ->
       b.add({'id': 1, 'name': 'ben'})

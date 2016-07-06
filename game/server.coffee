@@ -44,7 +44,7 @@ module.exports.Game = class Game extends GameCore
     @trigger 'restart'
     @_draw_map()
     for t in users
-      @add_user(t.params.user_id, {'pos': t.pos_start})
+      @add_user(t.params.user_id, {'pos': t.pos})
     @
 
   add: (pr)->
@@ -59,35 +59,26 @@ module.exports.Game = class Game extends GameCore
       destroy: 0
       hitpoints: 1
     }, pr)
-    if pr.object is 'user'
-      params.size = [8, 8]
-      params.speed = 0.12
-      params.wheel = 0.002
-      params.accelerator = 0.0001
-      params.rub = 0.9999
-      params.fire_rate = 1000
-      params.fire_last = 0
-      params.moving = []
-      if not params.pos_start
-        params.pos_start = [params['pos'][0], params['pos'][1]]
-    if pr.object is 'bullet'
-      params.speed = params.speed or 0.3
-      params.size = [8,  8]
-      params.vel = [Math.cos(params.angle) * params.speed, Math.sin(params.angle) * params.speed]
-    if pr.object is 'brick'
-      params.hitpoints = 2
-    if pr.object is 'iron'
-      params.hitpoints = 20
-    if pr.object is 'base'
-      params.size = [32, 32]
     super(params)
     @trigger 'add', params
     @_id
 
   add_user: (user_id, params = {})->
-    params['object'] = 'user'
-    params['params'] = {'user_id': user_id}
-    @add(params)
+    @add(_.extend({
+      object: 'user'
+      size: [8, 8]
+      speed: 0.12
+      wheel: 0.002
+      accelerator: 0.0001
+      rub: 0.9999
+      fire_rate: 1000
+      fire_last: 0
+      moving: []
+      radius: 4
+      params: {
+        user_id: user_id
+      }
+    }, params))
 
   get_user: (user_id)->
     for id, val of @_elements
@@ -97,15 +88,28 @@ module.exports.Game = class Game extends GameCore
 
   add_bullet: (user)->
     user.fire_last = new Date().getTime()
+    speed = 0.3
+    angle = user.angle
     @add({
       object: 'bullet'
+      size: [8, 8]
       destroy: 1
+      speed: speed
+      radius: 4
       pos: [user.pos[0], user.pos[1]]
-      angle: user.angle
+      vel: [Math.cos(angle) * speed, Math.sin(angle) * speed]
+      angle: angle
       params: {
         owner: user.id
       }
     })
+    
+  add_wall: (params)->
+    @add _.extend({
+      object: 'wall'
+      hitpoints: 2
+    }, params)
+    
 
   destroy_user: (user_id)->
     t = @get_user(user_id)
@@ -120,7 +124,7 @@ module.exports.Game = class Game extends GameCore
     ob = @get(id)
     super({'id': id})
     if ob and ob.object is 'user' and reason is 'destroy'
-      @add_user(ob.params.user_id, {'pos': ob.pos_start})
+      @add_user(ob.params.user_id, {'pos': ob.pos})
     @
 
   user_action: (user_id, move, active=true)->

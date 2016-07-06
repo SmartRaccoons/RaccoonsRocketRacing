@@ -31,7 +31,6 @@ class Vector
   vector: new Vector()
 
   constructor: ->
-    @size = [416, 416]
     @_elements = {}
 
   _collides: (x, y, r, b, x2, y2, r2, b2)->

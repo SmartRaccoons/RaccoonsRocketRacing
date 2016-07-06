@@ -95,9 +95,9 @@ describe 'Game', ->
       assert.equal(b._id, 1)
 
     it 'user', ->
-      id = b.add({'object': 'user'})
-      assert.equal(1, id)
-      assert.deepEqual(b.get(id).size, [8, 8])
+      id = b.add_user('ser', {pos: [1, 2]})
+      assert.equal('user', b.get(id).object)
+      assert.deepEqual([8, 8], b.get(id).size)
       assert.equal(b.get(id).speed, 0.12)
       assert.equal(b.get(id).wheel, 0.002)
       assert.equal(b.get(id).accelerator, 0.0001)
@@ -105,56 +105,41 @@ describe 'Game', ->
       assert.equal(b.get(id).fire_last, 0)
       assert.equal(b.get(id).rub, 0.9999)
       assert.deepEqual(b.get(id).moving, [])
-
-    it 'add/get user', ->
-      id = 5
-      b.add_user('ser', {'id': id, 'pos': [1, 2]})
-      assert.equal('user', b.get(id).object)
       assert.deepEqual([1, 2], b.get(id).pos)
+      assert.equal(4, b.get(id).radius)
       assert.equal('ser', b.get(id).params.user_id)
+
+    it 'get user', ->
+      id = b.add_user('ser')
       assert.equal(id, b.get_user('ser').id)
 
     it 'get unknown user', ->
       assert.equal(null, b.get_user('random'))
 
-    it 'bullet', ->
-      id = b.add({'object': 'bullet'})
-      assert.equal(1, id)
-      assert.equal(b.get(id).speed, 0.3)
-      assert.deepEqual(b.get(id).size, [8, 8])
-
-    it 'bullet overwrite params', ->
-      id = b.add({'object': 'bullet', speed: 8})
-      assert.equal(b.get(id).speed, 8)
-
-    it 'bullet velocity', ->
-      id = b.add({'object': 'bullet', 'angle': 0})
-      assert.deepEqual(b.get(id).vel, [0.3, 0])
-
-    it 'bullet velocity (45angle)', ->
-      id = b.add({'object': 'bullet', 'angle': Math.PI / 4})
-      assert.double(b.get(id).speed * 0.70, b.get(id).vel[0])
-      assert.double(b.get(id).speed * 0.70, b.get(id).vel[1])
-
     it 'user bullet', ->
-      user_id = b.add({'object': 'user', pos: [1, 2]})
+      user_id = b.add_user('1', {pos: [1, 2]})
       id = b.add_bullet(b.get(user_id))
       assert.equal(b.get(id).object, 'bullet')
       assert.equal(b.get(id).destroy, 1)
+      assert.equal(b.get(id).speed, 0.3)
+      assert.equal(b.get(id).radius, 4)
+      assert.equal(b.get(id).angle, 0)
+      assert.deepEqual(b.get(id).size, [8,  8])
+      assert.deepEqual(b.get(id).vel, [0.3, 0])
       assert.equal(b.get(id).params.owner, user_id)
       assert.deepEqual(b.get(id).pos, [1, 2])
 
-    it 'brick', ->
-      id = b.add({'object': 'brick'})
+    it 'user bullet velocity (45 angle)', ->
+      user_id = b.add_user('1', {pos: [1, 2], angle: Math.PI / 4})
+      id = b.add_bullet(b.get(user_id))
+      assert.double(b.get(id).speed * 0.70, b.get(id).vel[0])
+      assert.double(b.get(id).speed * 0.70, b.get(id).vel[1])
+
+    it 'wall', ->
+      id = b.add_wall({pos: [1, 2]})
+      assert.equal(b.get(id).object, 'wall')
       assert.equal(b.get(id).hitpoints, 2)
-
-    it 'iron', ->
-      id = b.add({'object': 'iron'})
-      assert.equal(b.get(id).hitpoints, 20)
-
-    it 'base', ->
-      id = b.add({'object': 'base'})
-      assert.deepEqual(b.get(id).size, [32, 32])
+      assert.deepEqual(b.get(id).pos, [1, 2])
 
     it 'event', ->
       spy = sinon.spy()
@@ -189,10 +174,6 @@ describe 'Game', ->
       b = new Game()
       b.add_user('ben', {'pos': [1, 2], 'speed': 10})
       b._updateView(1)
-      b.restart()
-      assert.deepEqual([1, 2], b.get_user('ben').pos)
-      id = b.get_user('ben').id
-      b.update({'id': id, 'pos': [0, 1]})
       b.restart()
       assert.deepEqual([1, 2], b.get_user('ben').pos)
 
