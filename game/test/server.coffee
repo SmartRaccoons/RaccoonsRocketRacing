@@ -47,24 +47,15 @@ describe 'Game', ->
 
 
   describe 'load map', ->
-    it 'brick', ->
+    it 'walls', ->
       b = new Game([[0, 0, 1], [1, 0, 0]])
       assert.deepEqual([32, 0], b.get(1).pos)
-      assert.equal('brick', b.get(1).object)
+      assert.equal('wall', b.get(1).object)
       assert.deepEqual([0, 16], b.get(2).pos)
 
     it 'size', ->
       b = new Game([[0, 0, 0], [0, 0, 0]])
       assert.deepEqual([48, 32], b.size)
-
-    it 'iron', ->
-      b = new Game([[0, 0, 2]])
-      assert.equal('iron', b.get(1).object)
-
-    it 'base', ->
-      b = new Game([[0, 10, 0], [0, 0, 0]])
-      assert.deepEqual([16, 0], b.get(1).pos)
-      assert.equal('base', b.get(1).object)
 
 
   describe 'add', ->

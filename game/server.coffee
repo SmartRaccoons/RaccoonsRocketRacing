@@ -20,18 +20,16 @@ module.exports.Game = class Game extends GameCore
   __requestAnimFrame: (callback)-> setTimeout(callback, 1000 / 40)
 
   _draw_map: ->
+    objects = {
+      0: null
+      1: 'wall'
+    }
     y = 0
     for r in @_map
       x = 0
       for l in r
-        object = null
-        if l is 1
-          object = 'brick'
-        else if l is 10
-          object = 'base'
-        else if l is 2
-          object = 'iron'
-        @add {'object': object, pos: [x*16, y*16]} if object
+        if objects[l]
+          @['add_' + objects[l]]({pos: [x*16, y*16]})
         x++
       y++
     @size = [x*16, y*16]
