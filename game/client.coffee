@@ -29,7 +29,7 @@ window.Game = class Bco extends window.GameCore
         @camera.target = view
     if pr.object is 'bullet'
       @_elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("#{pr.object}#{pr.id}", 5, 8, @scene)
-    if pr.object is 'brick'
+    if pr.object is 'wall'
       @_elements[pr.id].view = view = BABYLON.Mesh.CreateBox("#{pr.object}#{pr.id}", 15, @scene)
 
   elements: (data)->
