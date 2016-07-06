@@ -68,6 +68,7 @@ describe 'Game', ->
       assert.deepEqual([0, 0], b.get(id).pos)
       assert.deepEqual([0, 0], b.get(id).vel)
       assert.deepEqual([16, 16], b.get(id).size)
+      assert.equal(8, b.get(id).radius)
       assert.equal(0, b.get(id).angle)
       assert.equal(0, b.get(id).destroy)
       assert.equal(1, b.get(id).hitpoints)

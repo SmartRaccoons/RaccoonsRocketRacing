@@ -53,6 +53,7 @@ module.exports.Game = class Game extends GameCore
       pos: [0, 0]
       vel: [0, 0]
       size: [16, 16]
+      radius: 8
       angle: 0
       destroy: 0
       hitpoints: 1
@@ -65,6 +66,7 @@ module.exports.Game = class Game extends GameCore
     @add(_.extend({
       object: 'user'
       size: [8, 8]
+      radius: 4
       speed: 0.12
       wheel: 0.002
       accelerator: 0.0001
@@ -72,7 +74,6 @@ module.exports.Game = class Game extends GameCore
       fire_rate: 1000
       fire_last: 0
       moving: []
-      radius: 4
       params: {
         user_id: user_id
       }
@@ -91,9 +92,9 @@ module.exports.Game = class Game extends GameCore
     @add({
       object: 'bullet'
       size: [8, 8]
+      radius: 4
       destroy: 1
       speed: speed
-      radius: 4
       pos: [user.pos[0], user.pos[1]]
       vel: [Math.cos(angle) * speed, Math.sin(angle) * speed]
       angle: angle
