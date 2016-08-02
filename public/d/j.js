@@ -28472,7 +28472,7 @@ function Vector() {}
 Vector.prototype.multiply = function(vector, scalar) {
 return [ vector[0] * scalar, vector[1] * scalar ];
 };
-Vector.prototype.plus = function(v1, v2) {
+Vector.prototype.add = function(v1, v2) {
 return [ v1[0] + v2[0], v1[1] + v2[1] ];
 };
 Vector.prototype.magnitude = function(v) {
@@ -28483,27 +28483,40 @@ return [ Math.cos(angle) * length, Math.sin(angle) * length ];
 };
 Vector.prototype.accelerate = function(v, speed, angle, max) {
 var magnitude;
-v = this.plus(v, this.create(angle, speed));
+v = this.add(v, this.create(angle, speed));
 magnitude = this.magnitude(v);
 if (max < magnitude) {
 return this.multiply(v, max / magnitude);
 }
 return v;
 };
+Vector.prototype.normalise = function(vector) {
+var m;
+m = this.magnitude(vector);
+return [ vector[0] / m, vector[1] / m ];
+};
+Vector.prototype.dot = function(vector, vector2) {
+return vector[0] * vector2[0] + vector[1] * vector2[1];
+};
 return Vector;
 }();
 (typeof module !== "undefined" ? module.exports : window).GameCore = GameCore = function() {
 _.extend(GameCore.prototype, Backbone.Events);
 GameCore.prototype.vector = new Vector();
-GameCore.prototype.size = [ 416, 416 ];
 function GameCore() {
 this._elements = {};
 }
-GameCore.prototype._collides = function(x, y, r, b, x2, y2, r2, b2) {
+GameCore.prototype._collides_box = function(x, y, r, b, x2, y2, r2, b2) {
 return !(r <= x2 || x >= r2 || b <= y2 || y >= b2);
 };
+GameCore.prototype._collides_circle = function(x, y, r, x2, y2, r2) {
+var dx, dy;
+dx = x - x2;
+dy = y - y2;
+return Math.sqrt(dx * dx + dy * dy) <= r + r2;
+};
 GameCore.prototype._collides_ob = function(val, val2) {
-return this._collides(val.pos[0], val.pos[1], val.pos[0] + val.size[0], val.pos[1] + val.size[1], val2.pos[0], val2.pos[1], val2.pos[0] + val2.size[0], val2.pos[1] + val2.size[1]);
+return this._collides_box(val.pos[0] - val.radius, val.pos[1] - val.radius, val.pos[0] + val.radius, val.pos[1] + val.radius, val2.pos[0] - val2.radius, val2.pos[1] - val2.radius, val2.pos[0] + val2.radius, val2.pos[1] + val2.radius) && this._collides_circle(val.pos[0], val.pos[1], val.radius, val2.pos[0], val2.pos[1], val2.radius);
 };
 GameCore.prototype.__requestAnimFrame = function(callback) {
 var fn;
@@ -28565,6 +28578,78 @@ return this._process();
 GameCore.prototype.stop = function() {
 return this._stop = true;
 };
+GameCore.prototype._collide_circle_unmovable = function(el1, el2) {
+var normal, tangent;
+normal = this.vector.normalise([ el2.pos[0] - el1.pos[0], el2.pos[1] - el1.pos[1] ]);
+tangent = [ -normal[1], normal[0] ];
+return this.vector.add(this.vector.multiply(tangent, this.vector.dot(tangent, el1.vel)), this.vector.multiply(normal, -this.vector.dot(normal, el1.vel)));
+};
+GameCore.prototype.collide = function(el1, el2) {
+var fn;
+fn = this["collide_" + el1.object + "_to_" + el2.object];
+if (!fn) {
+return;
+}
+return fn.apply(this, arguments);
+};
+GameCore.prototype.collide_user_to_wall = function(el1, el2, dt) {
+el1.vel = this._collide_circle_unmovable(el1, el2);
+return this._update_element_position(el1, dt, true);
+};
+GameCore.prototype._update_element_angle = function(el, dt, recalculate) {
+if (recalculate == null) {
+recalculate = false;
+}
+if (recalculate) {
+el.angle = el.angle_last;
+} else {
+el.angle_last = el.angle;
+}
+if (el.wheel) {
+if (el.moving.indexOf("right") > -1) {
+el.angle -= el.wheel * dt;
+}
+if (el.moving.indexOf("left") > -1) {
+return el.angle += el.wheel * dt;
+}
+}
+};
+GameCore.prototype._update_element_velocity = function(el, dt, recalculate) {
+if (recalculate == null) {
+recalculate = false;
+}
+if (recalculate) {
+el.vel = el.vel_last;
+} else {
+el.vel_last = el.vel;
+}
+if (el.accelerator && el.moving.indexOf("up") > -1) {
+return el.vel = this.vector.accelerate(el.vel, dt * el.accelerator, el.angle, el.speed);
+} else if (el.rub && (el.vel[0] !== 0 || el.vel[1] !== 0)) {
+return el.vel = this.vector.multiply(el.vel, Math.pow(el.rub, dt));
+}
+};
+GameCore.prototype._update_element_position = function(el, dt, recalculate) {
+if (recalculate == null) {
+recalculate = false;
+}
+if (recalculate) {
+el.pos = el.pos_last;
+} else {
+el.pos_last = el.pos;
+}
+if (el.vel[0] !== 0 || el.vel[1] !== 0) {
+return el.pos = this.vector.add(el.pos, this.vector.multiply(el.vel, dt));
+}
+};
+GameCore.prototype._update_element = function(el, dt, recalculate) {
+if (recalculate == null) {
+recalculate = false;
+}
+this._update_element_angle.apply(this, arguments);
+this._update_element_velocity.apply(this, arguments);
+return this._update_element_position.apply(this, arguments);
+};
 GameCore.prototype._process = function() {
 var dt, now;
 now = Date.now();
@@ -28582,23 +28667,19 @@ return _this._process();
 }(this));
 };
 GameCore.prototype._updateView = function(dt) {
-var el, id, _ref;
+var el, el2, id, id2, _ref, _ref1;
 _ref = this._elements;
 for (id in _ref) {
 el = _ref[id];
-if (el.wheel && el.moving.indexOf("right") > -1) {
-el.angle -= el.wheel * dt;
+this._update_element(el, dt);
+if (el.speed > 0) {
+_ref1 = this._elements;
+for (id2 in _ref1) {
+el2 = _ref1[id2];
+if (id !== id2 && this._collides_ob(el, el2)) {
+this.collide(el, el2, dt);
 }
-if (el.wheel && el.moving.indexOf("left") > -1) {
-el.angle += el.wheel * dt;
 }
-if (el.accelerator && el.moving.indexOf("up") > -1) {
-el.vel = this.vector.accelerate(el.vel, dt * el.accelerator, el.angle, el.speed);
-} else if (el.rub) {
-el.vel = this.vector.multiply(el.vel, Math.pow(el.rub, dt));
-}
-if (el.vel[0] !== 0 || el.vel[1] !== 0) {
-el.pos = this.vector.plus(el.pos, this.vector.multiply(el.vel, dt));
 }
 }
 return this;
@@ -28637,11 +28718,12 @@ this.stop();
 return Bco.__super__.restart.apply(this, arguments);
 };
 Bco.prototype.add = function(pr) {
-var child, view;
+var child, el, view;
 Bco.__super__.add.apply(this, arguments);
+el = this._elements[pr.id];
 if (pr.object === "user") {
 this._elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("" + pr.object + pr.id, 0, 0, this.scene);
-child = BABYLON.Mesh.CreateCylinder("" + pr.object + pr.id, 8, 8, 8, 5, 5, this.scene);
+child = BABYLON.Mesh.CreateCylinder("" + pr.object + pr.id, el.radius * 2, el.radius * 2, el.radius * 2, 5, 5, this.scene);
 child.parent = view;
 this._elements[pr.id].view.child = child;
 if (pr.params.user_id === this.options.user) {
@@ -28649,10 +28731,10 @@ this.camera.target = view;
 }
 }
 if (pr.object === "bullet") {
-this._elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("" + pr.object + pr.id, 5, 8, this.scene);
+this._elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("" + pr.object + pr.id, 5, el.radius * 2, this.scene);
 }
-if (pr.object === "brick") {
-return this._elements[pr.id].view = view = BABYLON.Mesh.CreateBox("" + pr.object + pr.id, 15, this.scene);
+if (pr.object === "wall") {
+return this._elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("" + pr.object + pr.id, 5, el.radius * 2, this.scene);
 }
 };
 Bco.prototype.elements = function(data) {
