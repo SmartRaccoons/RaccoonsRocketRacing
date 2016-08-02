@@ -67,7 +67,6 @@ describe 'Game', ->
       assert.deepEqual({}, b.get(id).params)
       assert.deepEqual([0, 0], b.get(id).pos)
       assert.deepEqual([0, 0], b.get(id).vel)
-      assert.deepEqual([16, 16], b.get(id).size)
       assert.equal(8, b.get(id).radius)
       assert.equal(0, b.get(id).angle)
       assert.equal(0, b.get(id).destroy)
@@ -77,7 +76,6 @@ describe 'Game', ->
       assert.equal('benja2', b.get(id).object)
       assert.deepEqual({'1': 1}, b.get(id).params)
       assert.deepEqual([1, 2], b.get(id).pos)
-      assert.deepEqual([16, 16], b.get(id).size)
       assert.equal(3, b.get(id).angle)
       assert.equal(10, b.get(id).hitpoints)
 
@@ -89,7 +87,6 @@ describe 'Game', ->
     it 'user', ->
       id = b.add_user('ser', {pos: [1, 2]})
       assert.equal('user', b.get(id).object)
-      assert.deepEqual([8, 8], b.get(id).size)
       assert.equal(b.get(id).speed, 0.12)
       assert.equal(b.get(id).wheel, 0.002)
       assert.equal(b.get(id).accelerator, 0.0001)
@@ -116,7 +113,6 @@ describe 'Game', ->
       assert.equal(b.get(id).speed, 0.3)
       assert.equal(b.get(id).radius, 4)
       assert.equal(b.get(id).angle, 0)
-      assert.deepEqual(b.get(id).size, [8,  8])
       assert.deepEqual(b.get(id).vel, [0.3, 0])
       assert.equal(b.get(id).params.owner, user_id)
       assert.deepEqual(b.get(id).pos, [1, 2])

@@ -20,17 +20,18 @@ window.Game = class Bco extends window.GameCore
 
   add: (pr)->
     super
+    el = @_elements[pr.id]
     if pr.object is 'user'
       @_elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("#{pr.object}#{pr.id}", 0, 0, @scene)
-      child = BABYLON.Mesh.CreateCylinder("#{pr.object}#{pr.id}", 8, 8, 8, 5, 5, @scene)
+      child = BABYLON.Mesh.CreateCylinder("#{pr.object}#{pr.id}", el.radius * 2, el.radius * 2, el.radius * 2, 5, 5, @scene)
       child.parent = view
       @_elements[pr.id].view.child = child
       if pr.params.user_id is @options.user
         @camera.target = view
     if pr.object is 'bullet'
-      @_elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("#{pr.object}#{pr.id}", 5, 8, @scene)
+      @_elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("#{pr.object}#{pr.id}", 5, el.radius * 2, @scene)
     if pr.object is 'wall'
-      @_elements[pr.id].view = view = BABYLON.Mesh.CreateBox("#{pr.object}#{pr.id}", 15, @scene)
+      @_elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("#{pr.object}#{pr.id}", 5, el.radius * 2, @scene)
 
   elements: (data)->
     for id, el of @_elements

@@ -8,6 +8,9 @@ upgrade :
 compile :
 	grunt compile
 
+run :
+	coffee app.coffee
+
 test-server :
 	mocha --compilers coffee:coffee-script/register --reporter dot ./game/test/
 	mocha --compilers coffee:coffee-script/register --reporter dot ./room/test/
