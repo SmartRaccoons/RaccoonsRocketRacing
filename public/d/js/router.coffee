@@ -98,7 +98,9 @@ App.Router = class Router extends Backbone.Router
 <section class='game'>
 </section>
 """
-    @$el.find('.room-left a').on 'click', -> App.socket.send.trigger 'room:left'
+    @$el.find('.room-left a').on 'click', ->
+      App.socket.send.trigger 'room:left'
+      return false
     @room.$el.appendTo(@$el.find('.room-list'))
     @room_new.render().$el.appendTo(@$el.find('.room-list'))
     @roompreview.$el.appendTo(@$el.find('.room'))

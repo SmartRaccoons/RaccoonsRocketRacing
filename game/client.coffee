@@ -23,7 +23,11 @@ window.Game = class Bco extends window.GameCore
     el = @_elements[pr.id]
     if pr.object is 'user'
       @_elements[pr.id].view = view = BABYLON.Mesh.CreateSphere("#{pr.object}#{pr.id}", 0, 0, @scene)
-      child = BABYLON.Mesh.CreateCylinder("#{pr.object}#{pr.id}", el.radius * 2, el.radius * 2, el.radius * 2, 5, 5, @scene)
+      child = BABYLON.Mesh.CreateSphere("#{pr.object}#{pr.id}", 0, 0, @scene)
+      object = BABYLON.Mesh.CreateCylinder("#{pr.object}#{pr.id}", el.radius * 2, el.radius, el.radius * 2, 10, 10, @scene)
+      object.rotation.x = Math.PI/2
+      object.rotation.y = Math.PI/2
+      object.parent = child
       child.parent = view
       @_elements[pr.id].view.child = child
       if pr.params.user_id is @options.user

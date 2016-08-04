@@ -3,7 +3,9 @@ install :
 	bower install
 upgrade :
 	ncu -a
+	npm update
 	bcu -a
+	bower update
 
 compile :
 	grunt compile
