@@ -29,7 +29,7 @@ fs.readFile __dirname+'/public/index.html', 'utf8', (err, text)-> _mainHtml = te
 
 app.use('/d', express.static(__dirname + '/public/d'))
 app.get '/', (req, res)-> res.send _mainHtml
-app.get '/callback.html', (req, res)-> res.sendfile(__dirname + '/public/callback.html')
+app.get '/callback.html', (req, res)-> res.sendFile(__dirname + '/public/callback.html')
 app.get '/transaction61ysdf', (req, res)->
 #  r.transactionCoins parseInt(req.query['id']), req.query, -> res.send('OK')
 

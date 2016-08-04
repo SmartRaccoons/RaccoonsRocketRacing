@@ -26,10 +26,10 @@ production :
 	uglifycss public/d/css/screen.css > public/d/c.css
 	cat bower_components/jquery/dist/jquery.js \
 	public/d/js/plugins/primus.js \
-	node_modules/lodash/index.js \
+	bower_components/lodash/dist/lodash.min.js \
 	node_modules/backbone/backbone.js \
 	public/d/js/backbone-patch.js \
-    bower_components/babylonjs/dist/babylon.2.2.js \
+    bower_components/babylonjs/dist/preview\ release/babylon.js \
     node_modules/Order/index.js \
 	public/d/js/init.js \
 	public/d/locale/en.js \
